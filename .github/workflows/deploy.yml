@@ -38,7 +38,7 @@ jobs:
           external_repository: Haffi112/haffi112.github.io
           publish_branch: master
           publish_dir: ./dist
-          keep_files: true
+          keep_files: false
           commit_message: "Deploy ${{ github.sha }}"
           user_name: github-actions[bot]
           user_email: github-actions[bot]@users.noreply.github.com

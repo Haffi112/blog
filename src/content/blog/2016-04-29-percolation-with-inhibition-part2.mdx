@@ -1,0 +1,119 @@
+---
+title: Percolation with inhibition - part 2
+date: 2016-04-29
+excerpt: Modelling the percolation-with-inhibition process as a Markov chain on the potential of a single vertex, with an interactive D3 visualisation of the chain, a histogram of stopping times, and a running estimate of the probability of activation.
+cited: []
+---
+
+import Simulation from '~/components/Simulation.astro';
+
+This part 2 in the series on percolation with inhbition. If you have not yet
+read part 1 you can find it [here](/2016/04/25/percolation-with-inhibition/).
+
+In this post we will try to get an intuition for how many vertices eventually
+turn active in the process. Let us assume that we have $n$ vertices in total,
+$n^+$ of them which send positive messages and $n^-$ of them which send
+negative messages.
+
+For a fixed vertex in the graph we can assume that it does not know if its
+neighbours are positive or negative. Since it only receives at most one
+message from each neighbour we can think of these messages being
+independently positive with probability $n^+/n$ and negative with probability
+$n^-/n$. Formally these events are not independent but the dependence is
+weak so you can assume they are to get some intuition behind the process.
+
+This allows us to model the process as a Markov chain. If you are unfamiliar
+with Markov chains there is a great pictorial explanation
+[here](http://setosa.io/blog/2014/07/26/markov-chains/). Our Markov chain
+consists of *infinitely* many states which represent the potential of our
+single vertex under consideration. The states are given by the set
+$\{\ldots,-2,-1,0,1,2,\ldots,K\}$ and correspond to the value of the
+potential of the vertex. Like all vertices which are not active at the start
+it starts with its potential in state 0 and it can only stop if it ever
+reaches state $K$. The transition probabilities are given as the probability
+of increasing or decreasing the potential as explained in the previous
+paragraph.
+
+Below you see an interactive version of the process. The fact that state $K$
+is an absorbing state is denoted by a self-loop. Since we do not have space
+for infinitely many states the left-most state represents all states smaller
+or equal to $-K$. You can imagine the chain extending infinitely to the
+left. Additionally we reset the process if it has not finished after 10
+steps (you can change this variable below). Note that the process should
+always reach $K$ if $n^-<n^+$ with enough many steps. However, if
+$n^- > n^+$ we have a drift to the left. This means that if the potential
+becomes too small there is hardly any chance that it will be able to
+recover. Try it out by choosing $n^- = 100$ and $n^+ = 50$ for example.
+
+<Simulation
+  scripts={['/js/d3/d3.min.js', '/js/percolation_inhibition_part2.js']}
+  styles={['/css/markov.css']}
+  needsJquery={false}
+>
+  <div id="chain"></div>
+
+  <form onsubmit="change_params(); return false;" style="margin-bottom:20px">
+    <input type="button" value="Update parameters" onclick="change_params()" />
+    <table style="max-width: 720px; font-size:75%; margin-bottom:10px">
+      <tr>
+        <td>
+          <label for="nodeCount">Number of positive vertices</label>
+        </td>
+        <td>
+          <input id="nodeCount" type="text" value="50" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="inodeCount">Number of negative vertices </label>
+        </td>
+        <td>
+          <input id="inodeCount" type="text" value="50" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="maximumSteps">Maximum number of steps</label>
+        </td>
+        <td>
+          <input id="maximumSteps" type="text" value="10" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="kPerc">Activation threshold (<i>K</i>)</label>
+        </td>
+        <td>
+          <input id="kPerc" type="text" value="2" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="delay">Animation speed, ms (lower is faster)</label>
+        </td>
+        <td>
+          <input id="delay" type="text" value="50" style="width: 50px;" />
+        </td>
+      </tr>
+    </table>
+  </form>
+
+  Below you can see some statistics of the simulations of the Markov chain.
+  The histogram shows after how many steps the potential reached $K$.
+  Observe that for $n^-\gg n^+$ the most likely outcome is that the
+  process goes directly to $K$.
+
+  <div id="hist"></div>
+
+  The plot below shows which fraction of all the simulations ever reach
+  $K$ within the given number of steps. You can use it to estimate which
+  fraction of the vertices turn active in the bootstrap percolation
+  process. Just set the maximum number of steps in the Markov chain to the
+  average degree of the graph.
+
+  By pressing the *update parameters* button you start a new simulation
+  and draw a new curve. The old one is not lost however so you can compare
+  different parameters.
+
+  <div id="stats"></div>
+</Simulation>

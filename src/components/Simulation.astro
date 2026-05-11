@@ -1,0 +1,17 @@
+---
+interface Props {
+  scripts: string[]; // public-relative paths, e.g. ['/js/vis.min.js', '/js/bootstrap_percolation_visjs.js']
+  styles?: string[]; // public-relative paths
+  needsJquery?: boolean;
+}
+
+const { scripts, styles = [], needsJquery = true } = Astro.props;
+---
+{styles.map((href) => <link rel="stylesheet" href={href} />)}
+<div class="my-8 border border-rule rounded-xl bg-bg-elev p-4 overflow-x-auto">
+  <slot />
+</div>
+{needsJquery && (
+  <script is:inline src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+)}
+{scripts.map((src) => <script is:inline src={src}></script>)}

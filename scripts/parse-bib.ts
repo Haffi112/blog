@@ -132,14 +132,26 @@ function merge(raw: RawEntry, overrides: Partial<Publication> = {}): Publication
   };
 }
 
-async function main() {
-  const bibSource = readFileSync(BIB_PATH, 'utf8');
+async function processBibFile(
+  bibPath: string,
+  outPath: string,
+  overrides: Record<string, Partial<Publication>>
+) {
+  const bibSource = readFileSync(bibPath, 'utf8');
   const raw = parseBib(bibSource);
-  const overrides = loadOverrides();
   const merged = raw.map((entry) => merge(entry, overrides[entry.id]));
   merged.sort((a, b) => b.year - a.year || a.id.localeCompare(b.id));
-  writeFileSync(OUT_PATH, JSON.stringify(merged, null, 2));
-  console.log(`Wrote ${merged.length} publications to ${OUT_PATH}`);
+  writeFileSync(outPath, JSON.stringify(merged, null, 2));
+  console.log(`Wrote ${merged.length} publications to ${outPath}`);
+}
+
+async function main() {
+  const overrides = loadOverrides();
+  await processBibFile(BIB_PATH, OUT_PATH, overrides);
+  // Cited refs from old blog posts
+  const citedBib = path.join(ROOT, '_bibliography/references.bib');
+  const citedOut = path.join(ROOT, 'src/data/cited-refs.json');
+  await processBibFile(citedBib, citedOut, {});
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
