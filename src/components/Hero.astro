@@ -1,16 +1,17 @@
 ---
-interface Props {
-  photoSrc: string;
-}
-const { photoSrc } = Astro.props;
+import { Picture } from 'astro:assets';
+import hafsteinnPhoto from '~/assets/hafsteinn.png';
 ---
 <section class="max-w-page mx-auto px-6 pt-16 pb-12 md:pt-24 md:pb-20">
   <div class="grid md:grid-cols-[180px_1fr] gap-8 md:gap-12 items-start">
-    <img
-      src={photoSrc}
+    <Picture
+      src={hafsteinnPhoto}
       alt="Hafsteinn Einarsson"
-      width="180"
-      height="225"
+      width={180}
+      height={225}
+      densities={[1, 2]}
+      formats={['avif', 'webp']}
+      fallbackFormat="png"
       class="w-36 md:w-44 rounded-xl border border-rule"
       loading="eager"
       fetchpriority="high"
