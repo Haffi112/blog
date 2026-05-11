@@ -1,0 +1,23 @@
+---
+import cited from '~/data/cited-refs.json';
+import type { Publication } from '~/data/publications.schema';
+
+interface Props {
+  key: string;
+}
+
+const { key } = Astro.props;
+const refs = cited as unknown as Publication[];
+const ref = refs.find((r) => r.id === key);
+const number = ref ? refs.indexOf(ref) + 1 : null;
+
+if (!ref) {
+  // Surface broken citations at build time
+  console.warn(`[Cite] Unknown bibtex key: ${key}`);
+}
+---
+{ref ? (
+  <a href={`#ref-${ref.id}`} class="text-sm align-baseline">[{number}]</a>
+) : (
+  <span class="text-accent-energy">[?{key}]</span>
+)}

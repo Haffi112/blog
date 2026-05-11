@@ -1,0 +1,39 @@
+---
+import cited from '~/data/cited-refs.json';
+import type { Publication } from '~/data/publications.schema';
+
+interface Props {
+  keys: string[]; // bibtex ids cited in the page
+}
+
+const { keys } = Astro.props;
+const refs = (cited as unknown as Publication[]).filter((r) =>
+  keys.includes(r.id)
+);
+// Preserve order: by year desc then alpha by id (matches parse-bib order)
+refs.sort((a, b) => b.year - a.year || a.id.localeCompare(b.id));
+
+function formatInitials(first: string): string {
+  return first
+    .split(' ')
+    .filter(Boolean)
+    .map((p) => `${p[0]}.`)
+    .join(' ');
+}
+
+function formatAuthors(authors: Publication['authors']): string {
+  return authors
+    .map((a) => `${a.last}, ${formatInitials(a.first)}`)
+    .join('; ');
+}
+---
+<ol class="mt-8 max-w-prose text-sm text-ink-muted space-y-2 list-decimal pl-6">
+  {refs.map((r) => (
+    <li id={`ref-${r.id}`} class="scroll-mt-20">
+      {formatAuthors(r.authors)}
+      {' '}({r.year}).{' '}
+      <span class="text-ink">{r.title}</span>.
+      {r.venue && <span> {r.venue}.</span>}
+    </li>
+  ))}
+</ol>

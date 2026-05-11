@@ -11,6 +11,7 @@ dist/
 
 # Generated bibliography data (regenerated from references.bib at build time)
 src/data/publications.json
+src/data/cited-refs.json
 
 # Personal working files (contain PII like phone/DOB) — keep local
 old_cvs/
