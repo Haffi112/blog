@@ -182,120 +182,87 @@ git commit -m "Initialize Astro 5 project"
 
 ---
 
-## Task 3: Tailwind config + design tokens
+## Task 3: Tailwind 4 CSS-first config + design tokens
 
-**Goal:** Wire up Tailwind 4 with the project's design tokens. After this task, classes like `text-ink bg-bg accent-primary` work.
+**Goal:** Wire up Tailwind 4 with the project's design tokens using the CSS-first `@theme` directive. After this task, utilities like `bg-bg text-ink border-rule font-serif max-w-prose` work; `data-theme="dark"` flips the colors.
+
+**Tailwind 4 note:** Tailwind 4 does NOT use `tailwind.config.{js,mjs,ts}`. Configuration lives in CSS via `@import "tailwindcss"; @theme { ... }`. The Vite plugin (set up in Task 2) auto-detects content paths. Source: https://tailwindcss.com/docs/installation/using-vite
 
 **Files:**
-- Create: `tailwind.config.mjs`
-- Create: `src/styles/tokens.css`
-- Create: `src/styles/base.css`
+- Create: `src/styles/global.css` (single global stylesheet — replaces the old `tokens.css` + `base.css` split)
 
-**Step 1: Create `tailwind.config.mjs`**
-
-```js
-/** @type {import('tailwindcss').Config} */
-export default {
-  content: ['./src/**/*.{astro,html,md,mdx,ts,tsx}'],
-  darkMode: ['class', '[data-theme="dark"]'],
-  theme: {
-    extend: {
-      colors: {
-        bg: 'var(--bg)',
-        'bg-elev': 'var(--bg-elev)',
-        ink: 'var(--ink)',
-        'ink-muted': 'var(--ink-muted)',
-        rule: 'var(--rule)',
-        'accent-primary': 'var(--accent-primary)',
-        'accent-primary-soft': 'var(--accent-primary-soft)',
-        'accent-warm': 'var(--accent-warm)',
-        'accent-warm-soft': 'var(--accent-warm-soft)',
-        'accent-energy': 'var(--accent-energy)'
-      },
-      fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        serif: ['"Source Serif 4"', 'Georgia', 'serif'],
-        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace']
-      },
-      maxWidth: {
-        page: '1120px',
-        prose: '680px',
-        pubs: '75ch'
-      },
-      fontSize: {
-        display: ['3rem', { lineHeight: '1.15', letterSpacing: '-0.02em' }]
-      }
-    }
-  },
-  plugins: []
-};
-```
-
-**Step 2: Create `src/styles/tokens.css`**
+**Step 1: Create `src/styles/global.css`**
 
 ```css
+@import "tailwindcss";
+
+/* Dark mode: trigger on [data-theme="dark"] anywhere in the ancestor chain. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* --- Design tokens (light mode defaults) ---
+   Defined inside @theme so Tailwind generates utilities (bg-bg, text-ink,
+   max-w-prose, font-serif, etc.) AND exposes them as CSS custom properties
+   we can read in arbitrary CSS via var(--color-bg) etc. */
+@theme {
+  /* Colors */
+  --color-bg: #FAFAF6;
+  --color-bg-elev: #FFFFFF;
+  --color-ink: #1A1418;
+  --color-ink-muted: #5A5560;
+  --color-rule: #E8E4E2;
+  --color-accent-primary: #5B3A78;
+  --color-accent-primary-soft: #F2EBF9;
+  --color-accent-warm: #C58A2A;
+  --color-accent-warm-soft: #F8F1DD;
+  --color-accent-energy: #C45A2A;
+
+  /* Fonts */
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-serif: "Source Serif 4", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Layout widths (drive max-w-page, max-w-prose, max-w-pubs utilities) */
+  --width-page: 1120px;
+  --width-prose: 680px;
+  --width-pubs: 75ch;
+
+  /* Custom font size: drives text-display utility */
+  --text-display: 3rem;
+  --text-display--line-height: 1.15;
+  --text-display--letter-spacing: -0.02em;
+}
+
+/* --- Dark mode overrides ---
+   Override the @theme tokens at runtime when [data-theme="dark"] is set.
+   Tailwind's generated utilities reference var(--color-…) so they pick up
+   these overrides automatically. */
+[data-theme="dark"] {
+  --color-bg: #131013;
+  --color-bg-elev: #1A171C;
+  --color-ink: #EDE9E3;
+  --color-ink-muted: #8A8389;
+  --color-rule: #292528;
+  --color-accent-primary: #B79BDF;
+  --color-accent-primary-soft: #2A1F37;
+  --color-accent-warm: #E5C46E;
+  --color-accent-warm-soft: #2E2716;
+  --color-accent-energy: #E58A5E;
+}
+
+/* --- Non-Tailwind custom properties (motion, used in transition declarations) --- */
 :root {
-  --bg: #FAFAF6;
-  --bg-elev: #FFFFFF;
-  --ink: #1A1418;
-  --ink-muted: #5A5560;
-  --rule: #E8E4E2;
-  --accent-primary: #5B3A78;
-  --accent-primary-soft: #F2EBF9;
-  --accent-warm: #C58A2A;
-  --accent-warm-soft: #F8F1DD;
-  --accent-energy: #C45A2A;
-
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
-  --space-24: 6rem;
-
   --motion-fast: 150ms;
   --motion-base: 200ms;
   --motion-slow: 400ms;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-[data-theme='dark'] {
-  --bg: #131013;
-  --bg-elev: #1A171C;
-  --ink: #EDE9E3;
-  --ink-muted: #8A8389;
-  --rule: #292528;
-  --accent-primary: #B79BDF;
-  --accent-primary-soft: #2A1F37;
-  --accent-warm: #E5C46E;
-  --accent-warm-soft: #2E2716;
-  --accent-energy: #E58A5E;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-  }
-}
-```
-
-**Step 3: Create `src/styles/base.css`**
-
-```css
-@import './tokens.css';
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+/* --- Base layer --- */
 @layer base {
   html {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -305,22 +272,18 @@ export default {
   }
 
   ::selection {
-    background: var(--accent-primary-soft);
-    color: var(--accent-primary);
+    background: var(--color-accent-primary-soft);
+    color: var(--color-accent-primary);
   }
 
   a {
-    color: var(--accent-primary);
+    color: var(--color-accent-primary);
     text-decoration: none;
     transition: color var(--motion-fast) var(--ease-out);
   }
-
-  a:hover {
-    color: var(--accent-warm);
-  }
-
+  a:hover { color: var(--color-accent-warm); }
   a:focus-visible {
-    outline: 2px solid var(--accent-primary);
+    outline: 2px solid var(--color-accent-primary);
     outline-offset: 2px;
     border-radius: 2px;
   }
@@ -332,22 +295,37 @@ export default {
   }
 }
 
+/* --- Components --- */
 @layer components {
   .prose-body {
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: var(--font-serif);
     font-size: 1.0625rem;
     line-height: 1.55;
-    color: var(--ink);
+    color: var(--color-ink);
+  }
+}
+
+/* --- Reduced motion --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }
 ```
 
-**Step 4: Commit**
+**Step 2: Verify the build pipeline compiles the CSS**
+
+The Vite plugin (already wired in `astro.config.mjs` from Task 2) picks up CSS imported by Astro layouts/pages. We'll import it from `BaseLayout` in Task 8. For a quick smoke test now, create a temporary `src/pages/_test.astro` if needed and run `npx astro check`. Otherwise, defer the visual test to Task 11 when the home page lands.
+
+**Step 3: Commit**
 
 ```bash
-git add tailwind.config.mjs src/styles/
-git commit -m "Design tokens, Tailwind config, base styles"
+git add src/styles/global.css
+git commit -m "Design tokens via Tailwind 4 @theme; dark mode via @custom-variant"
 ```
+
+**Note for later tasks:** subsequent components and pages import this file (`import '~/styles/global.css'` from `BaseLayout.astro`). Class names like `bg-bg`, `text-ink-muted`, `border-rule`, `max-w-prose`, `font-serif`, `text-display` all work because they're auto-generated from the `@theme` tokens.
 
 ---
 
@@ -1052,7 +1030,7 @@ const year = new Date().getFullYear();
 
 ```astro
 ---
-import '~/styles/base.css';
+import '~/styles/global.css';
 import Nav from './Nav.astro';
 import Footer from './Footer.astro';
 import ThemeToggle from './ThemeToggle.astro';
