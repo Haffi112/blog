@@ -1766,11 +1766,21 @@ set -euo pipefail
 echo "→ Building Astro site"
 npm run build
 
-# Mirror dist/ into the deploy repo (preserving its .git)
+# Mirror dist/ into the deploy repo, preserving:
+#   - .git (deploy repo's own history)
+#   - CNAME (if present)
+#   - 2016/, simulations/, public/, assets/, atom.xml — old URLs that
+#     Phase 3 will replace with Astro-rendered equivalents. Keep them
+#     alive in the meantime so external links don't break.
 echo "→ Syncing dist/ into haffi112.github.io/"
 rsync -a --delete \
   --exclude='.git/' \
   --exclude='CNAME' \
+  --exclude='2016/' \
+  --exclude='simulations/' \
+  --exclude='public/' \
+  --exclude='assets/' \
+  --exclude='atom.xml' \
   dist/ haffi112.github.io/
 
 # Commit and push the deploy repo
@@ -1874,6 +1884,10 @@ After GitHub Pages picks up the push (usually 30s to a few minutes), visit https
 - [ ] `/cv.pdf` resolves directly
 - [ ] Theme toggle works
 - [ ] No 404s in the network panel
+- [ ] Old URLs still resolve (verifying the rsync excludes worked):
+  - https://haffi112.github.io/simulations/
+  - https://haffi112.github.io/2016/03/27/bootstrap-percolation/
+  - https://haffi112.github.io/2016/05/15/lif-neuron/
 
 **Step 3: If anything is broken**
 
@@ -1910,7 +1924,7 @@ After all 17 tasks, the live site has:
 
 - No `/research/`, `/teaching/`, `/group/`, `/blog/`, `/simulations/`. Old Jekyll-generated copies of `/about/` and `/simulations/` in the deploy repo are *overwritten* by the rsync `--delete`. If the old `/simulations/` and old blog posts are important to preserve as live URLs through the Phase 2-3 gap, we add an exclusion to the rsync or pre-copy them out before deploying.
 
-**Risk to flag before Task 17:** the existing `haffi112.github.io` repo currently serves `/simulations/`, `/2016/03/27/bootstrap-percolation/`, etc. Phase 1's rsync `--delete` will *remove* those URLs from the live site. If keeping those URLs alive between Phase 1 and Phase 3 matters, add to Task 15's rsync: `--exclude='2016/' --exclude='simulations/' --exclude='_bibliography/'`. This is an explicit author decision before Task 17 runs.
+**Old-URL preservation policy (decided 2026-05-11):** Task 15's rsync excludes `2016/`, `simulations/`, `public/`, `assets/`, and `atom.xml`. After Phase 1 deploys, those URLs keep serving the Lanyon-era versions until Phase 3 replaces them with Astro-rendered equivalents. Task 17 should verify that a sampling of those old URLs still resolves after deploy (e.g., `/simulations/`, `/2016/03/27/bootstrap-percolation/`).
 
 ---
 
