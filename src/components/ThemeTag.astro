@@ -1,0 +1,44 @@
+---
+import type { Theme } from '~/data/publications.schema';
+
+interface Props {
+  theme?: Theme;
+  size?: 'sm' | 'md';
+}
+
+const { theme, size = 'sm' } = Astro.props;
+
+const config: Record<Theme, { label: string; tone: string }> = {
+  'nlp-is': {
+    label: 'NLP for Icelandic & Germanic',
+    tone: 'bg-accent-warm-soft text-accent-warm'
+  },
+  'cv-nat': {
+    label: 'Computer Vision · Natural Sciences',
+    tone: 'bg-orange-50 text-accent-energy dark:bg-orange-950/30'
+  },
+  'clinical-ai': {
+    label: 'Clinical AI',
+    tone: 'bg-accent-warm-soft text-accent-warm'
+  },
+  genetics: {
+    label: 'Genetics',
+    tone: 'bg-bg text-ink-muted border border-rule'
+  },
+  'comp-neuro': {
+    label: 'Computational Neuroscience',
+    tone: 'bg-accent-primary-soft text-accent-primary'
+  }
+};
+
+const c = theme ? config[theme] : null;
+---
+{c && (
+  <span
+    class:list={[
+      'inline-flex items-center rounded-full font-medium',
+      size === 'sm' ? 'text-xs px-2.5 py-0.5' : 'text-sm px-3 py-1',
+      c.tone
+    ]}
+  >{c.label}</span>
+)}

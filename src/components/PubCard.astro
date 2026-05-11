@@ -1,0 +1,61 @@
+---
+import type { Publication } from '~/data/publications.schema';
+import { formatAuthor, isYou } from '~/lib/format-authors';
+import ThemeTag from './ThemeTag.astro';
+
+interface Props {
+  pub: Publication;
+  variant?: 'selected' | 'list';
+}
+
+const { pub, variant = 'list' } = Astro.props;
+
+const linkOrder: Array<{ key: keyof Publication['links']; label: string }> = [
+  { key: 'doi', label: 'DOI' },
+  { key: 'arxiv', label: 'arXiv' },
+  { key: 'pdf', label: 'PDF' },
+  { key: 'code', label: 'Code' },
+  { key: 'huggingface', label: 'Hugging Face' },
+  { key: 'dataset', label: 'Dataset' }
+];
+
+const links = linkOrder.filter((l) => pub.links?.[l.key]);
+---
+<article class:list={[
+  'py-5 border-t border-rule first:border-t-0',
+  variant === 'selected' && 'bg-bg-elev rounded-xl border border-rule p-6 mb-3'
+]}>
+  <div class="flex items-center gap-3 mb-2">
+    <ThemeTag theme={pub.theme} />
+    {variant === 'selected' && (
+      <span class="text-xs uppercase tracking-wide text-accent-warm">Selected</span>
+    )}
+  </div>
+  <h3 class="text-lg md:text-xl font-semibold text-ink leading-snug">
+    {pub.title}
+  </h3>
+  <p class="mt-1 text-sm text-ink-muted">
+    {pub.authors.map((a, i) => (
+      <Fragment>
+        {isYou(a)
+          ? <strong class="text-ink">{formatAuthor(a)}</strong>
+          : formatAuthor(a)}
+        {i < pub.authors.length - 1 ? ', ' : ''}
+      </Fragment>
+    ))}
+    {pub.venue && <span class="text-ink-muted"> · {pub.venue}</span>}
+    {pub.year ? <span class="text-ink-muted"> · {pub.year}</span> : null}
+  </p>
+  {pub.summary && (
+    <p class="mt-2 text-ink prose-body max-w-prose">{pub.summary}</p>
+  )}
+  {links.length > 0 && (
+    <ul class="mt-3 flex flex-wrap gap-3 text-sm">
+      {links.map((l) => (
+        <li>
+          <a href={pub.links[l.key]}>{l.label} →</a>
+        </li>
+      ))}
+    </ul>
+  )}
+</article>

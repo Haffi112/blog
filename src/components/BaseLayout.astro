@@ -1,0 +1,48 @@
+---
+import '~/styles/global.css';
+import Nav from './Nav.astro';
+import Footer from './Footer.astro';
+import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} · Hafsteinn Einarsson</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preconnect" href="https://rsms.me" />
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    <script is:inline>
+      // No-FOUC theme init: must run before paint.
+      (() => {
+        const saved = localStorage.getItem('theme');
+        const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved ?? (sysDark ? 'dark' : 'light');
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+  </head>
+  <body class="bg-bg text-ink">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:bg-bg-elev focus:p-2 focus:border focus:border-accent-primary">Skip to content</a>
+    <Nav>
+      <ThemeToggle slot="end" />
+    </Nav>
+    <main id="main"><slot /></main>
+    <Footer />
+  </body>
+</html>

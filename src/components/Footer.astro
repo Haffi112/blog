@@ -1,0 +1,21 @@
+---
+const profileLinks = [
+  { href: 'https://scholar.google.com/citations?user=BVPxKzgAAAAJ', label: 'Scholar' },
+  { href: 'https://orcid.org/0000-0001-5072-3678', label: 'ORCID' },
+  { href: 'https://github.com/Haffi112', label: 'GitHub' },
+  { href: 'https://www.linkedin.com/in/hafsteinn-einarsson-619a3711', label: 'LinkedIn' },
+  { href: 'https://twitter.com/hafsteinn', label: 'X' },
+  { href: '/atom.xml', label: 'RSS' }
+];
+const year = new Date().getFullYear();
+---
+<footer class="border-t border-rule mt-24">
+  <div class="max-w-page mx-auto px-6 py-8 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between text-sm text-ink-muted">
+    <span>© {year} Hafsteinn Einarsson</span>
+    <ul class="flex flex-wrap gap-4">
+      {profileLinks.map((l) => (
+        <li><a href={l.href}>{l.label}</a></li>
+      ))}
+    </ul>
+  </div>
+</footer>
