@@ -1,0 +1,22 @@
+---
+import BaseLayout from '~/components/BaseLayout.astro';
+---
+<BaseLayout title="CV" description="Curriculum Vitae — Hafsteinn Einarsson.">
+  <section class="max-w-page mx-auto px-6 py-12">
+    <div class="flex items-baseline justify-between mb-4">
+      <h1 class="text-3xl font-semibold text-ink">Curriculum Vitae</h1>
+      <a href="/cv.pdf" download class="text-sm">Download PDF ↓</a>
+    </div>
+    <object
+      data="/cv.pdf"
+      type="application/pdf"
+      class="w-full h-[80vh] border border-rule rounded"
+      aria-label="Hafsteinn Einarsson's CV"
+    >
+      <p class="prose-body p-6">
+        Your browser cannot display the embedded PDF.
+        <a href="/cv.pdf">Download the CV here.</a>
+      </p>
+    </object>
+  </section>
+</BaseLayout>
