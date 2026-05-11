@@ -55,7 +55,7 @@ const lastBuild = new Date();
       {themeOrder.map((t) => (
         byTheme[t].length > 0 && (
           <section class="mt-10">
-            <h3 class="text-xl font-semibold text-ink mb-2">{themeLabels[t]}</h3>
+            <h3 id={t} class="text-xl font-semibold text-ink mb-2 scroll-mt-20">{themeLabels[t]}</h3>
             {byTheme[t].map((p) => <PubCard pub={p} variant="list" />)}
           </section>
         )
