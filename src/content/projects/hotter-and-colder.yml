@@ -1,0 +1,12 @@
+name: Hotter and Colder
+summary: |
+  An Icelandic sentiment corpus of blog comments annotated with nuanced
+  labels for sentiment, emotions, toxicity, sarcasm, hate speech,
+  sympathy, and related categories. Distributed via the University of
+  Iceland, with the companion methodology paper at NoDaLiDa /
+  Baltic-HLT 2025.
+tags:
+  - nlp-is
+  - dataset
+  - sentiment
+status: maintenance

@@ -1,0 +1,13 @@
+name: FoQA
+summary: |
+  The first dedicated question-answering dataset for Faroese, with
+  extractive and generative variants. Built through translation and
+  adaptation of existing QA benchmarks combined with native-speaker
+  validation, and accompanied by baseline evaluations of multilingual
+  and Faroese-tuned language models. Released alongside the
+  RESOURCEFUL 2025 paper.
+tags:
+  - nlp-is
+  - dataset
+  - qa
+status: active
