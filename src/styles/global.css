@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+/* Dark mode: trigger on [data-theme="dark"] anywhere in the ancestor chain. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* --- Design tokens (light mode defaults) ---
+   Defined inside @theme so Tailwind generates utilities (bg-bg, text-ink,
+   max-w-prose, font-serif, etc.) AND exposes them as CSS custom properties
+   we can read in arbitrary CSS via var(--color-bg) etc. */
+@theme {
+  /* Colors */
+  --color-bg: #FAFAF6;
+  --color-bg-elev: #FFFFFF;
+  --color-ink: #1A1418;
+  --color-ink-muted: #5A5560;
+  --color-rule: #E8E4E2;
+  --color-accent-primary: #5B3A78;
+  --color-accent-primary-soft: #F2EBF9;
+  --color-accent-warm: #C58A2A;
+  --color-accent-warm-soft: #F8F1DD;
+  --color-accent-energy: #C45A2A;
+
+  /* Fonts */
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-serif: "Source Serif 4", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Layout widths (drive max-w-page, max-w-prose, max-w-pubs utilities) */
+  --width-page: 1120px;
+  --width-prose: 680px;
+  --width-pubs: 75ch;
+
+  /* Custom font size: drives text-display utility */
+  --text-display: 3rem;
+  --text-display--line-height: 1.15;
+  --text-display--letter-spacing: -0.02em;
+}
+
+/* --- Dark mode overrides ---
+   Override the @theme tokens at runtime when [data-theme="dark"] is set.
+   Tailwind's generated utilities reference var(--color-…) so they pick up
+   these overrides automatically. */
+[data-theme="dark"] {
+  --color-bg: #131013;
+  --color-bg-elev: #1A171C;
+  --color-ink: #EDE9E3;
+  --color-ink-muted: #8A8389;
+  --color-rule: #292528;
+  --color-accent-primary: #B79BDF;
+  --color-accent-primary-soft: #2A1F37;
+  --color-accent-warm: #E5C46E;
+  --color-accent-warm-soft: #2E2716;
+  --color-accent-energy: #E58A5E;
+}
+
+/* --- Non-Tailwind custom properties (motion, used in transition declarations) --- */
+:root {
+  --motion-fast: 150ms;
+  --motion-base: 200ms;
+  --motion-slow: 400ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* --- Base layer --- */
+@layer base {
+  html {
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100dvh;
+  }
+
+  ::selection {
+    background: var(--color-accent-primary-soft);
+    color: var(--color-accent-primary);
+  }
+
+  a {
+    color: var(--color-accent-primary);
+    text-decoration: none;
+    transition: color var(--motion-fast) var(--ease-out);
+  }
+  a:hover { color: var(--color-accent-warm); }
+  a:focus-visible {
+    outline: 2px solid var(--color-accent-primary);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  h1, h2, h3, h4 {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+  }
+}
+
+/* --- Components --- */
+@layer components {
+  .prose-body {
+    font-family: var(--font-serif);
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-ink);
+  }
+}
+
+/* --- Reduced motion --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
