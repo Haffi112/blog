@@ -1,0 +1,65 @@
+---
+import BaseLayout from '~/components/BaseLayout.astro';
+import PubCard from '~/components/PubCard.astro';
+import pubsData from '~/data/publications.json';
+import type { Publication, Theme } from '~/data/publications.schema';
+
+const all = pubsData as unknown as Publication[];
+const selected = all.filter((p) => p.selected);
+
+const themeOrder: Theme[] = ['nlp-is', 'cv-nat', 'clinical-ai', 'genetics', 'comp-neuro'];
+
+const themeLabels: Record<Theme, string> = {
+  'nlp-is': 'NLP for Icelandic and Germanic languages',
+  'cv-nat': 'Computer vision for natural sciences',
+  'clinical-ai': 'Clinical AI and cardiology',
+  genetics: 'Human genetics and computational biology',
+  'comp-neuro': 'Computational neuroscience'
+};
+
+const byTheme: Record<Theme, Publication[]> = {
+  'nlp-is': [],
+  'cv-nat': [],
+  'clinical-ai': [],
+  genetics: [],
+  'comp-neuro': []
+};
+for (const p of all) {
+  if (p.theme) byTheme[p.theme].push(p);
+}
+// Within each theme entries are already sorted by year desc (parse-bib).
+
+const lastBuild = new Date();
+---
+<BaseLayout
+  title="Publications"
+  description="Publications by Hafsteinn Einarsson — themed list with summaries and links."
+>
+  <section class="max-w-page mx-auto px-6 py-12">
+    <h1 class="text-display font-semibold tracking-tight text-ink">Publications</h1>
+    <p class="mt-3 text-ink-muted text-sm">
+      {all.length} publications · last updated {lastBuild.toISOString().slice(0, 10)} ·
+      <a href="https://orcid.org/0000-0001-5072-3678">ORCID</a> ·
+      <a href="https://scholar.google.com/citations?user=BVPxKzgAAAAJ">Google Scholar</a>
+    </p>
+
+    {selected.length > 0 && (
+      <section class="mt-12 max-w-pubs">
+        <h2 class="text-2xl font-semibold text-ink mb-4">Selected</h2>
+        {selected.map((p) => <PubCard pub={p} variant="selected" />)}
+      </section>
+    )}
+
+    <section class="mt-16 max-w-pubs">
+      <h2 class="text-2xl font-semibold text-ink">All publications</h2>
+      {themeOrder.map((t) => (
+        byTheme[t].length > 0 && (
+          <section class="mt-10">
+            <h3 class="text-xl font-semibold text-ink mb-2">{themeLabels[t]}</h3>
+            {byTheme[t].map((p) => <PubCard pub={p} variant="list" />)}
+          </section>
+        )
+      ))}
+    </section>
+  </section>
+</BaseLayout>
