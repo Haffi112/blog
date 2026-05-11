@@ -1,0 +1,25 @@
+---
+import BaseLayout from '~/components/BaseLayout.astro';
+
+const sims = [
+  { href: '/simulations/standard-percolation.html', label: 'Synchronous bootstrap percolation' },
+  { href: '/simulations/dscaling.html', label: 'Local homeostatic plasticity' },
+  { href: '/simulations/izhikevich_neuron.html', label: 'NMDA enhanced, conductance based Izhikevich neuron' },
+  { href: '/simulations/dice_parser.html', label: 'Dice parser' }
+];
+---
+<BaseLayout title="Simulations">
+  <section class="max-w-page mx-auto px-6 py-12">
+    <h1 class="text-display font-semibold tracking-tight text-ink">Simulations</h1>
+    <p class="mt-3 prose-body max-w-prose">
+      Standalone interactive simulations from my PhD years. Most use <a href="https://d3js.org/">d3.js</a> for the visuals. Feel free to use them for educational purposes; the code lives in <a href="https://github.com/Haffi112/blog">the GitHub repo</a>.
+    </p>
+    <ul class="mt-8 max-w-prose">
+      {sims.map((s) => (
+        <li class="py-3 border-t border-rule first:border-t-0">
+          <a href={s.href}>{s.label} →</a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>
