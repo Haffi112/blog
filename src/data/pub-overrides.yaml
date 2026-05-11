@@ -1,0 +1,9 @@
+# Bibliography overrides keyed by bibtex citation id.
+# Schema per entry (all fields optional):
+#   theme: nlp-is | cv-nat | clinical-ai | genetics | comp-neuro
+#   summary: 1-2 sentence summary (3-4 for selected)
+#   selected: boolean (featured at top of publications page)
+#   links: { doi, arxiv, pdf, code, huggingface, dataset }
+#   notes: free text, e.g. "corresponding author"
+#
+# Task 7 will populate this file with entries for all 72 bibtex ids.
