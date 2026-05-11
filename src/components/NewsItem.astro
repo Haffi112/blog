@@ -1,0 +1,20 @@
+---
+interface Props {
+  date: Date;
+  text: string;
+  link?: string;
+  newest?: boolean;
+}
+
+const { date, text, link, newest = false } = Astro.props;
+const formatted = date.toISOString().slice(0, 7); // YYYY-MM
+---
+<li class="flex gap-4 py-2 border-t border-rule first:border-t-0">
+  <span class="font-mono text-xs text-ink-muted shrink-0 w-16 mt-1 flex items-center gap-1.5">
+    {newest && <span class="inline-block w-1.5 h-1.5 rounded-full bg-accent-energy" aria-hidden />}
+    {formatted}
+  </span>
+  <p class="text-ink">
+    {link ? <a href={link}>{text}</a> : text}
+  </p>
+</li>
