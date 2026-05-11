@@ -1717,82 +1717,134 @@ git commit -m "CV view page with embedded PDF"
 
 ---
 
-## Task 15: Update deploy.sh
+## Task 15: GitHub Actions deploy + local build script (revised)
 
-**Goal:** Replace the Jekyll-era deploy.sh with the Astro equivalent.
+**Goal:** Set up CI-driven deployment via GitHub Actions to the *separate* `Haffi112/haffi112.github.io` repo. Replace the Jekyll-era `deploy.sh` with a thin "local build only" helper.
+
+**Why this changed from the original plan:** The local `haffi112.github.io/` subdirectory has no `.git` of its own — the live site at `https://haffi112.github.io/` is served from a separate `Haffi112/haffi112.github.io` repo on GitHub. The user has chosen GitHub Actions over a local push script. The 2018-era `deploy.sh` hasn't actually shipped a deploy in 8 years.
 
 **Files:**
-- Modify: `deploy.sh`
+- Create: `.github/workflows/deploy.yml`
+- Rewrite: `deploy.sh` (local build helper only)
 
-**Step 1: Snapshot the current deploy repo before risk**
+**Step 1: Create `.github/workflows/deploy.yml`**
 
-```bash
-cd haffi112.github.io
-git tag pre-astro-snapshot
-git push origin pre-astro-snapshot
-cd ..
+```yaml
+name: Deploy site
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-haffi112-github-io
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Astro site
+        run: npm run build
+
+      - name: Deploy to Haffi112/haffi112.github.io
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          deploy_key: ${{ secrets.PAGES_DEPLOY_KEY }}
+          external_repository: Haffi112/haffi112.github.io
+          publish_branch: master
+          publish_dir: ./dist
+          # keep_files: true preserves legacy paths in the target repo that
+          # our build doesn't produce yet (2016/, simulations/, public/,
+          # assets/, atom.xml). Files we DO produce (index.html, about/,
+          # publications/, cv/) overwrite the old Lanyon versions. Phase 3
+          # ports the legacy paths and we can drop keep_files.
+          keep_files: true
+          commit_message: "Deploy: ${{ github.sha }}"
+          user_name: "github-actions[bot]"
+          user_email: "github-actions[bot]@users.noreply.github.com"
 ```
-Now if Phase 1 deploy goes sideways the previous live site is recoverable.
 
-**Step 2: Rewrite `deploy.sh`**
+**Step 2: Rewrite `deploy.sh` as a local helper**
 
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Build the Astro site
+# Local helper. Deploys are normally driven by .github/workflows/deploy.yml
+# on push to master. Use this script when you want to build locally for a
+# quick preview without pushing.
+
 echo "→ Building Astro site"
 npm run build
 
-# Mirror dist/ into the deploy repo, preserving:
-#   - .git (deploy repo's own history)
-#   - CNAME (if present)
-#   - 2016/, simulations/, public/, assets/, atom.xml — old URLs that
-#     Phase 3 will replace with Astro-rendered equivalents. Keep them
-#     alive in the meantime so external links don't break.
-echo "→ Syncing dist/ into haffi112.github.io/"
-rsync -a --delete \
-  --exclude='.git/' \
-  --exclude='CNAME' \
-  --exclude='2016/' \
-  --exclude='simulations/' \
-  --exclude='public/' \
-  --exclude='assets/' \
-  --exclude='atom.xml' \
-  dist/ haffi112.github.io/
-
-# Commit and push the deploy repo
-cd haffi112.github.io
-echo "→ Committing deploy"
-git add -A
-if git diff --staged --quiet; then
-  echo "  No changes to deploy"
-else
-  git commit -m "Deploy."
-  git push
-fi
+echo
+echo "Build output is in ./dist/"
+echo "To preview locally: npm run preview"
+echo
+echo "To trigger a real deploy, push to master."
+echo "The GitHub Actions workflow at .github/workflows/deploy.yml will"
+echo "build and push to Haffi112/haffi112.github.io."
 ```
 
-Make it executable:
+Make it executable: `chmod +x deploy.sh`
+
+**Step 3: User steps to enable the deploy** (not done by the implementer; the user runs these via the GitHub web UI):
+
+A one-time setup:
+
+1. **Generate a deploy keypair locally** (the implementer can do this step):
+   ```bash
+   ssh-keygen -t ed25519 -C "haffi112.github.io deploy key" -f /tmp/pages-deploy-key -N ""
+   ```
+   This creates `/tmp/pages-deploy-key` (private) and `/tmp/pages-deploy-key.pub` (public).
+
+2. **In the GitHub web UI:**
+   - Go to `Haffi112/haffi112.github.io` → Settings → Deploy keys → Add deploy key.
+     - Title: `Pages deploy from blog`
+     - Key: paste the contents of `/tmp/pages-deploy-key.pub`
+     - **Check "Allow write access"**
+   - Go to `Haffi112/blog` → Settings → Secrets and variables → Actions → New repository secret.
+     - Name: `PAGES_DEPLOY_KEY`
+     - Value: paste the **private** key (contents of `/tmp/pages-deploy-key`, including the `-----BEGIN ...` and `-----END ...` lines)
+
+3. **Delete the local keypair**:
+   ```bash
+   rm /tmp/pages-deploy-key /tmp/pages-deploy-key.pub
+   ```
+
+After this one-time setup, every push to `master` (or manual workflow dispatch) deploys.
+
+**Step 4: Test a clean build locally**
 
 ```bash
-chmod +x deploy.sh
-```
-
-**Step 3: Test a dry-run build only**
-
-```bash
-npm run build
-# Check dist/ contains: index.html, about/index.html, publications/index.html,
-# cv/index.html, cv.pdf, img/hafsteinn.png, _astro/<css and js>.
+rm -rf dist .astro
+./deploy.sh
 ls dist/
 ```
+Expect: `index.html`, `about/index.html`, `publications/index.html`, `cv/index.html`, `cv.pdf`, `img/hafsteinn.png`, `_astro/` (the bundled CSS).
 
-**Step 4: Commit (don't deploy yet)**
+**Step 5: Commit**
 
 ```bash
-git add deploy.sh
-git commit -m "Astro deploy script"
+git add .github/workflows/deploy.yml deploy.sh
+git commit -m "GitHub Actions deploy to Haffi112/haffi112.github.io + local build helper"
 ```
 
 ---
@@ -1842,14 +1894,21 @@ git tag phase-1-ready
 
 ## Task 17: First deploy
 
-**Goal:** Push the new site to `haffi112.github.io` and verify it's live.
+**Goal:** Trigger the first Actions-driven deploy to `Haffi112/haffi112.github.io` and verify it's live.
 
-**Step 1: Deploy**
+**Pre-flight (the user has already done these per Task 15's Step 3):**
+- Deploy key on `Haffi112/haffi112.github.io` with write access
+- `PAGES_DEPLOY_KEY` secret on `Haffi112/blog`
+
+**Step 1: Merge phase-1-astro to master, then push**
 
 ```bash
-./deploy.sh
+git checkout master
+git merge --no-ff phase-1-astro -m "Merge Phase 1: website refresh foundation"
+git push origin master
 ```
-Expected output: build succeeds, rsync reports the changes, commit message `Deploy.`, push succeeds.
+This triggers `.github/workflows/deploy.yml`. Watch the run at
+`https://github.com/Haffi112/blog/actions`.
 
 **Step 2: Verify**
 
@@ -1869,14 +1928,14 @@ After GitHub Pages picks up the push (usually 30s to a few minutes), visit https
 
 **Step 3: If anything is broken**
 
-- Roll back: `cd haffi112.github.io && git reset --hard pre-astro-snapshot && git push --force-with-lease`
-- Investigate locally, redeploy.
+- The Action's commit is on `Haffi112/haffi112.github.io@master`. Revert by going there and resetting to the previous SHA, or `git revert` the deploy commit.
+- Investigate locally with `npm run build && npm run preview`, fix, push again.
 
-**Step 4: Push the source repo**
+**Step 4: Tag the source repo**
 
 ```bash
-git push origin master
-git push origin phase-1-ready
+git tag phase-1-shipped
+git push origin phase-1-shipped
 ```
 
 ---
