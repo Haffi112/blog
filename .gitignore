@@ -1,8 +1,6 @@
 _site/
 .DS_Store
 .sass-cache/
-public/js/vis.map
-public/js/vis.min.js
 
 # Astro / Node
 node_modules/
