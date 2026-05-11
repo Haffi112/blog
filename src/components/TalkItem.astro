@@ -1,0 +1,23 @@
+---
+interface Props {
+  date: Date;
+  title: string;
+  venue: string;
+  location?: string;
+  type: 'invited' | 'keynote' | 'outreach' | 'workshop';
+  link?: string;
+}
+const { date, title, venue, location, type, link } = Astro.props;
+const year = date.getFullYear();
+---
+<li class="flex gap-4 py-3 border-t border-rule first:border-t-0">
+  <span class="font-mono text-xs text-ink-muted shrink-0 w-12 mt-1">{year}</span>
+  <div>
+    <p class="text-ink">
+      {link ? <a href={link}>{title}</a> : title}
+    </p>
+    <p class="text-sm text-ink-muted">
+      {venue}{location && <Fragment>, {location}</Fragment>} · {type}
+    </p>
+  </div>
+</li>

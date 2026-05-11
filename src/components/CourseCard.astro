@@ -1,0 +1,32 @@
+---
+import Prose from './Prose.astro';
+
+interface Props {
+  title: string;
+  level: 'ba' | 'msc' | 'phd' | 'mixed';
+  language: 'english' | 'icelandic' | 'mixed';
+  description: string;
+  syllabus?: string;
+}
+const { title, level, language, description, syllabus } = Astro.props;
+
+const levelLabel: Record<Props['level'], string> = {
+  ba: 'BA',
+  msc: 'MSc',
+  phd: 'PhD',
+  mixed: 'BA / MSc'
+};
+const languageLabel: Record<Props['language'], string> = {
+  english: 'English',
+  icelandic: 'Icelandic',
+  mixed: 'Mixed'
+};
+---
+<article class="py-5 border-t border-rule first:border-t-0">
+  <h3 class="text-lg font-semibold text-ink">{title}</h3>
+  <p class="mt-1 text-sm text-ink-muted">
+    {levelLabel[level]} · {languageLabel[language]}
+    {syllabus && <Fragment> · <a href={syllabus}>Syllabus</a></Fragment>}
+  </p>
+  <p class="mt-2 prose-body max-w-prose text-ink">{description}</p>
+</article>

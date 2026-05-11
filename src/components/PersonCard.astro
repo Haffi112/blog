@@ -1,0 +1,20 @@
+---
+interface Props {
+  name: string;
+  role: string;        // human-readable label, e.g. "PhD candidate" or "MSc 2025"
+  title?: string;      // dissertation / thesis title
+  link?: string;       // personal page, ORCID, etc.
+  nowAt?: string;      // for alumni: "Now PhD student at X"
+}
+const { name, role, title, link, nowAt } = Astro.props;
+---
+<article class="py-4 border-t border-rule first:border-t-0">
+  <div class="flex flex-col gap-1">
+    <p class="font-medium text-ink">
+      {link ? <a href={link}>{name}</a> : name}
+    </p>
+    <p class="text-sm text-ink-muted">{role}</p>
+    {title && <p class="text-sm text-ink">{title}</p>}
+    {nowAt && <p class="text-xs text-ink-muted italic">{nowAt}</p>}
+  </div>
+</article>

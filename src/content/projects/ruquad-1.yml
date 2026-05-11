@@ -1,0 +1,10 @@
+name: RUQuAD-1
+summary: |
+  The Reykjavik University Question-Answering Dataset for Icelandic, a
+  SQuAD-style reading-comprehension benchmark collected through the
+  GameQA mobile platform. Distributed via the University of Iceland.
+tags:
+  - nlp-is
+  - dataset
+  - qa
+status: maintenance

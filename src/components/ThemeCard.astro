@@ -1,0 +1,18 @@
+---
+import type { Theme } from '~/data/publications.schema';
+
+interface Props {
+  theme: Theme;
+  title: string;
+  body: string;
+  anchor: string; // matching id on the publications page, e.g. "nlp-is"
+}
+const { title, body, anchor } = Astro.props;
+---
+<article class="bg-bg-elev border border-rule rounded-xl p-6">
+  <h3 class="text-xl font-semibold text-ink">{title}</h3>
+  <p class="mt-2 prose-body max-w-prose">{body}</p>
+  <p class="mt-3 text-sm">
+    <a href={`/publications/#${anchor}`}>Related publications →</a>
+  </p>
+</article>

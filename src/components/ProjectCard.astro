@@ -1,0 +1,43 @@
+---
+interface Props {
+  name: string;
+  summary: string;
+  links?: {
+    repo?: string;
+    huggingface?: string;
+    site?: string;
+    dataset?: string;
+  };
+  tags?: string[];
+  status: 'active' | 'maintenance' | 'archived';
+}
+const { name, summary, links = {}, tags = [], status } = Astro.props;
+
+const linkOrder: Array<{ key: keyof NonNullable<Props['links']>; label: string }> = [
+  { key: 'huggingface', label: 'Hugging Face' },
+  { key: 'repo', label: 'Code' },
+  { key: 'dataset', label: 'Dataset' },
+  { key: 'site', label: 'Site' }
+];
+const visibleLinks = linkOrder.filter((l) => links[l.key]);
+
+const statusTone: Record<Props['status'], string> = {
+  active: 'text-accent-energy',
+  maintenance: 'text-ink-muted',
+  archived: 'text-ink-muted'
+};
+---
+<article class="py-5 border-t border-rule first:border-t-0">
+  <div class="flex items-baseline gap-3">
+    <h3 class="text-lg font-semibold text-ink">{name}</h3>
+    <span class:list={['text-xs uppercase tracking-wide', statusTone[status]]}>{status}</span>
+  </div>
+  <p class="mt-2 prose-body max-w-prose text-ink">{summary}</p>
+  {visibleLinks.length > 0 && (
+    <ul class="mt-3 flex flex-wrap gap-3 text-sm">
+      {visibleLinks.map((l) => (
+        <li><a href={links[l.key]}>{l.label} →</a></li>
+      ))}
+    </ul>
+  )}
+</article>

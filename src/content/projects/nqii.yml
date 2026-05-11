@@ -1,0 +1,11 @@
+name: NQiI - Natural Questions in Icelandic
+summary: |
+  An open-domain question-answering dataset for Icelandic, adapted from
+  the English Natural Questions benchmark. Released in two versions
+  (v1.0 at LREC 2022 and an updated v1.1) and distributed through the
+  University of Iceland for evaluating Icelandic QA systems.
+tags:
+  - nlp-is
+  - dataset
+  - qa
+status: maintenance
