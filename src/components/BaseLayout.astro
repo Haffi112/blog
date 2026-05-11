@@ -3,6 +3,11 @@ import '~/styles/global.css';
 import Nav from './Nav.astro';
 import Footer from './Footer.astro';
 import ThemeToggle from './ThemeToggle.astro';
+// Preload latin subsets of the two fonts that render above-the-fold body text,
+// so the browser starts fetching them in parallel with the HTML parse and we
+// avoid a layout shift when they swap in.
+import interLatinUrl from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import serifLatinUrl from '@fontsource-variable/source-serif-4/files/source-serif-4-latin-wght-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -65,7 +70,9 @@ const fullTitle = `${title} · Hafsteinn Einarsson`;
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageURL} />
 
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="preload" as="font" type="font/woff2" href={interLatinUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={serifLatinUrl} crossorigin />
     <link rel="apple-touch-icon" href="/apple-touch-icon-precomposed.png" />
     <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml" />
     <script is:inline>

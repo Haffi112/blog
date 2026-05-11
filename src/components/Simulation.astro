@@ -19,6 +19,6 @@ const { scripts, styles = [], needsJquery = true, label = 'Interactive simulatio
   <slot />
 </div>
 {needsJquery && (
-  <script is:inline src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script is:inline defer src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 )}
-{scripts.map((src) => <script is:inline src={src}></script>)}
+{scripts.map((src) => <script is:inline defer src={src}></script>)}

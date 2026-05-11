@@ -10,7 +10,11 @@ export default defineConfig({
   site: 'https://haffi112.github.io',
   trailingSlash: 'always',
   build: {
-    format: 'directory'
+    format: 'directory',
+    // Inline small stylesheets to eliminate render-blocking CSS requests.
+    // The global CSS bundle is ~17 KB; "auto" inlines anything under ~4 KB,
+    // so we lift the threshold via "always" — Astro will deduplicate.
+    inlineStylesheets: 'always'
   },
   integrations: [
     mdx({
