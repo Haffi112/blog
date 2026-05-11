@@ -1,5 +1,8 @@
-@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/source-serif-4";
+@import "@fontsource-variable/jetbrains-mono";
 @import "katex/dist/katex.min.css";
+@import "tailwindcss";
 
 /* Dark mode: trigger on [data-theme="dark"] anywhere in the ancestor chain. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
@@ -22,9 +25,9 @@
   --color-accent-energy: #C45A2A;
 
   /* Fonts */
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-serif: "Source Serif 4", Georgia, serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
+  --font-serif: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
 
   /* Layout widths (drive max-w-page, max-w-prose, max-w-pubs utilities) */
   --width-page: 1120px;
