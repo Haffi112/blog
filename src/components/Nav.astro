@@ -1,0 +1,34 @@
+---
+const items = [
+  { href: '/research/', label: 'Research' },
+  { href: '/publications/', label: 'Publications' },
+  { href: '/teaching/', label: 'Teaching' },
+  { href: '/group/', label: 'Group' },
+  { href: '/blog/', label: 'Blog' },
+  { href: '/about/', label: 'About' }
+];
+const here = Astro.url.pathname;
+const isActive = (href: string) =>
+  here === href || (href !== '/' && here.startsWith(href));
+---
+<header class="sticky top-0 z-20 bg-bg/80 backdrop-blur-md border-b border-rule">
+  <nav class="max-w-page mx-auto px-6 h-14 flex items-center justify-between">
+    <a href="/" class="font-semibold tracking-tight text-ink">Hafsteinn Einarsson</a>
+    <ul class="hidden md:flex items-center gap-6 text-sm">
+      {items.map((it) => (
+        <li>
+          <a
+            href={it.href}
+            class:list={[
+              'transition-colors',
+              isActive(it.href) ? 'text-accent-warm' : 'text-ink-muted hover:text-ink'
+            ]}
+          >{it.label}</a>
+        </li>
+      ))}
+    </ul>
+    <div class="flex items-center gap-2">
+      <slot name="end" />
+    </div>
+  </nav>
+</header>
