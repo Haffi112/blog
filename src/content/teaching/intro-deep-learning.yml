@@ -1,0 +1,10 @@
+title: Introduction to Deep Learning
+level: msc
+language: english
+semesters: []
+description: |
+  Master's introduction to deep learning: from the basics of
+  feed-forward networks and back-propagation through modern
+  architectures, with a focus on practical implementation in PyTorch.
+  Includes coverage of convolutional networks, recurrent and attention
+  models, and the basics of training large models. Taught in English.
