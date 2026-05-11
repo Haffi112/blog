@@ -23,7 +23,7 @@ const languageLabel: Record<Props['language'], string> = {
 };
 ---
 <article class="py-5 border-t border-rule first:border-t-0">
-  <h3 class="text-lg font-semibold text-ink">{title}</h3>
+  <h2 class="text-lg font-semibold text-ink">{title}</h2>
   <p class="mt-1 text-sm text-ink-muted">
     {levelLabel[level]} · {languageLabel[language]}
     {syllabus && <Fragment> · <a href={syllabus}>Syllabus</a></Fragment>}

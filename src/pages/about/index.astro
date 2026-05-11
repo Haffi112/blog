@@ -1,11 +1,13 @@
 ---
 import BaseLayout from '~/components/BaseLayout.astro';
+import JsonLdPerson from '~/components/JsonLdPerson.astro';
 import Prose from '~/components/Prose.astro';
 ---
 <BaseLayout
   title="About"
   description="About Hafsteinn Einarsson — research, group, and contact."
 >
+  <JsonLdPerson slot="head" />
   <section class="max-w-page mx-auto px-6 py-12">
     <h1 class="text-display font-semibold tracking-tight text-ink">About</h1>
     <div class="mt-8 max-w-prose">

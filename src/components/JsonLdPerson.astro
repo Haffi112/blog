@@ -1,0 +1,41 @@
+---
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Hafsteinn Einarsson',
+  jobTitle: 'Associate Professor of Computer Science',
+  affiliation: [
+    {
+      '@type': 'Organization',
+      name: 'University of Iceland',
+      url: 'https://www.hi.is/'
+    },
+    {
+      '@type': 'Organization',
+      name: 'deCODE genetics',
+      url: 'https://www.decode.com/'
+    }
+  ],
+  url: 'https://haffi112.github.io/',
+  image: 'https://haffi112.github.io/img/hafsteinn.png',
+  sameAs: [
+    'https://orcid.org/0000-0001-5072-3678',
+    'https://github.com/Haffi112',
+    'https://scholar.google.com/citations?user=BVPxKzgAAAAJ',
+    'https://www.linkedin.com/in/hafsteinn-einarsson-619a3711',
+    'https://twitter.com/hafsteinn'
+  ],
+  alumniOf: {
+    '@type': 'CollegeOrUniversity',
+    name: 'ETH Zurich'
+  },
+  knowsAbout: [
+    'Natural Language Processing',
+    'Computational Neuroscience',
+    'Low-resource language modelling',
+    'Icelandic language',
+    'Machine learning for natural sciences'
+  ]
+};
+---
+<script type="application/ld+json" set:html={JSON.stringify(personJsonLd)}></script>

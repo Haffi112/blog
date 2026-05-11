@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '~/components/BaseLayout.astro';
+import JsonLdPerson from '~/components/JsonLdPerson.astro';
 import Hero from '~/components/Hero.astro';
 import NewsItem from '~/components/NewsItem.astro';
 import PubCard from '~/components/PubCard.astro';
@@ -19,7 +20,8 @@ const selected = pubs.filter((p) => p.selected).slice(0, 3);
   title="Home"
   description="Hafsteinn Einarsson — Associate Professor at the University of Iceland and Research Scientist at deCODE genetics."
 >
-  <Hero photoSrc="/img/hafsteinn.png" />
+  <JsonLdPerson slot="head" />
+  <Hero />
 
   <section class="max-w-page mx-auto px-6 py-12">
     <div class="flex items-baseline justify-between">

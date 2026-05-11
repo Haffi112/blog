@@ -6,11 +6,17 @@ interface Props {
   title: string;
   date: Date;
   cited?: string[];
+  description?: string;
 }
 
-const { title, date, cited = [] } = Astro.props;
+const { title, date, cited = [], description } = Astro.props;
 ---
-<BaseLayout title={title}>
+<BaseLayout
+  title={title}
+  description={description}
+  ogType="article"
+  publishedTime={date}
+>
   <article class="max-w-page mx-auto px-6 py-12">
     <header class="max-w-prose">
       <p class="text-sm text-ink-muted font-mono">{date.toISOString().slice(0, 10)}</p>

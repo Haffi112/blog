@@ -1,5 +1,8 @@
-@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/source-serif-4";
+@import "@fontsource-variable/jetbrains-mono";
 @import "katex/dist/katex.min.css";
+@import "tailwindcss";
 
 /* Dark mode: trigger on [data-theme="dark"] anywhere in the ancestor chain. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
@@ -17,14 +20,14 @@
   --color-rule: #E8E4E2;
   --color-accent-primary: #5B3A78;
   --color-accent-primary-soft: #F2EBF9;
-  --color-accent-warm: #C58A2A;
+  --color-accent-warm: #8E5E0F;
   --color-accent-warm-soft: #F8F1DD;
-  --color-accent-energy: #C45A2A;
+  --color-accent-energy: #A84A1F;
 
   /* Fonts */
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-serif: "Source Serif 4", Georgia, serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
+  --font-serif: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
 
   /* Layout widths (drive max-w-page, max-w-prose, max-w-pubs utilities) */
   --width-page: 1120px;
@@ -107,6 +110,17 @@
     font-size: 1.0625rem;
     line-height: 1.55;
     color: var(--color-ink);
+  }
+
+  /* Inline prose links are distinguishable by underline as well as colour,
+     to satisfy WCAG 1.4.1 "Use of color" and axe link-in-text-block. */
+  .prose-body a {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .prose-body a:hover {
+    text-decoration-thickness: 2px;
   }
 }
 

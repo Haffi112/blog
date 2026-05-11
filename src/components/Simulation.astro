@@ -3,15 +3,22 @@ interface Props {
   scripts: string[]; // public-relative paths, e.g. ['/js/vis.min.js', '/js/bootstrap_percolation_visjs.js']
   styles?: string[]; // public-relative paths
   needsJquery?: boolean;
+  /** Accessible name for the scrollable region. */
+  label?: string;
 }
 
-const { scripts, styles = [], needsJquery = true } = Astro.props;
+const { scripts, styles = [], needsJquery = true, label = 'Interactive simulation' } = Astro.props;
 ---
 {styles.map((href) => <link rel="stylesheet" href={href} />)}
-<div class="my-8 border border-rule rounded-xl bg-bg-elev p-4 overflow-x-auto">
+<div
+  class="my-8 border border-rule rounded-xl bg-bg-elev p-4 overflow-x-auto focus-visible:outline-2 focus-visible:outline-accent-primary focus-visible:outline-offset-2"
+  role="region"
+  aria-label={label}
+  tabindex="0"
+>
   <slot />
 </div>
 {needsJquery && (
-  <script is:inline src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script is:inline defer src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 )}
-{scripts.map((src) => <script is:inline src={src}></script>)}
+{scripts.map((src) => <script is:inline defer src={src}></script>)}
