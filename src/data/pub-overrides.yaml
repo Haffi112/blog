@@ -6,4 +6,582 @@
 #   links: { doi, arxiv, pdf, code, huggingface, dataset }
 #   notes: free text, e.g. "corresponding author"
 #
-# Task 7 will populate this file with entries for all 72 bibtex ids.
+# Task 7 populates this file with entries for all 72 bibtex ids.
+
+# === Computational neuroscience and probabilistic combinatorics (PhD-era) ===
+
+einarsson2014high:
+  theme: comp-neuro
+  summary: |
+    A high-capacity model for one-shot associative learning in cortical
+    networks, showing how sparse-coding regimes extend the classical
+    Hopfield capacity bound. Published in Frontiers in Computational
+    Neuroscience.
+
+einarsson2017model:
+  theme: comp-neuro
+  summary: |
+    Proposes a model of fast Hebbian spike-latency normalization, in
+    which timing-dependent plasticity rapidly equalises spike latencies
+    across a population. Frontiers in Computational Neuroscience.
+
+weissenberger2017long:
+  theme: comp-neuro
+  summary: |
+    Shows that long synfire chains can emerge from spike-timing dependent
+    plasticity modulated by population activity, providing a mechanistic
+    account of stable sequence representations. International Journal of
+    Neural Systems.
+
+einarsson2017fast:
+  theme: comp-neuro
+  summary: |
+    PhD thesis (ETH Zurich) on the fast emergence of neural structures.
+    Develops mathematical models of how cortical assemblies, synfire
+    chains, and other functional structures can self-organise rapidly
+    from spiking dynamics and local plasticity rules.
+
+matheus2018hippocampal:
+  theme: comp-neuro
+  summary: |
+    Presents a hippocampal model for behavioral time acquisition and
+    fast bidirectional replay of spatio-temporal memory sequences.
+    Frontiers in Neuroscience.
+
+einarsson2018linear:
+  theme: comp-neuro
+  summary: |
+    Analyses the (1+1) evolutionary algorithm on the linear hidden subset
+    problem with scheduled and adaptive mutation rates. GECCO 2018
+    proceedings.
+
+weissenberger2018origin:
+  theme: comp-neuro
+  summary: |
+    Investigates the origin of lognormal network synchrony in CA1,
+    relating heavy-tailed firing distributions to recurrent network
+    structure. Hippocampus journal.
+
+einarsson2019bootstrap:
+  theme: comp-neuro
+  selected: true
+  summary: |
+    Studies bootstrap percolation on random graphs in the presence of
+    inhibitory vertices, a generalisation of the classical activation
+    cascade model motivated by cortical excitation-inhibition balance.
+    Introduces a probabilistic framework that captures how the addition
+    of inhibition shifts the activation threshold and the size of the
+    final active set. Published in Random Structures & Algorithms, a
+    premier journal in probabilistic combinatorics; one of the key
+    results of the author's PhD.
+  links:
+    doi: https://doi.org/10.1002/rsa.20882
+    arxiv: https://arxiv.org/abs/1410.3291
+
+lengler2016connectivity:
+  theme: comp-neuro
+  summary: |
+    Establishes connectivity thresholds for bounded-size rules in random
+    graph processes, a contribution to the theory of Achlioptas-style
+    edge-selection processes. Annals of Applied Probability.
+
+porterhippocam:
+  theme: comp-neuro
+  summary: |
+    Conference contribution related to hippocampal modelling
+    (collaboration with the Hippocam consortium).
+
+# === Icelandic and Faroese NLP / language models ===
+
+snaebjarnarson2022natural:
+  theme: nlp-is
+  summary: |
+    Introduces Natural Questions in Icelandic (NQiI), an open-domain
+    question answering dataset adapted from the English Natural
+    Questions benchmark. Published at LREC 2022.
+  links:
+    pdf: https://aclanthology.org/2022.lrec-1.477/
+
+snaebjarnarson2022nqii:
+  theme: nlp-is
+  summary: |
+    NQiI v1.1 dataset release - an updated version of the Icelandic
+    Natural Questions QA dataset with additional annotations. Distributed
+    via the University of Iceland.
+
+snaebjarnarson2022icelandic:
+  theme: nlp-is
+  summary: |
+    Icelandic WinoGrande v1.0 - an Icelandic adaptation of the WinoGrande
+    commonsense reasoning benchmark, intended for evaluating Icelandic
+    language models. Released by Miðeind ehf.
+
+snaebjarnarson2022warm:
+  theme: nlp-is
+  selected: true
+  summary: |
+    Foundational paper for the Icelandic language-model line at the
+    University of Iceland / Miðeind. Demonstrates that warm-starting a
+    Transformer encoder from multilingual weights and continuing
+    pre-training on a carefully cleaned Icelandic web corpus yields
+    strong downstream performance with far less compute than training
+    from scratch. The cleaned crawl and the IceBERT model released
+    alongside the paper became the basis for much of the subsequent
+    Icelandic NLP work in this collection. LREC 2022.
+  links:
+    pdf: https://aclanthology.org/2022.lrec-1.464/
+
+fridhriksdottir2022mim:
+  theme: nlp-is
+  summary: |
+    Release of MIM-GOLD-EL (version 22.01), an entity-linking corpus for
+    Icelandic built on top of the MIM-GOLD named-entity collection.
+    University of Iceland.
+
+snaebjarnarson2022cross:
+  theme: nlp-is
+  summary: |
+    Uses cross-lingual question answering as a stepping stone for
+    monolingual open-domain QA in Icelandic, showing that English
+    retrieval+QA pipelines can be adapted with limited Icelandic
+    supervision. Workshop on Multilingual Information Access (MIA).
+
+fridhriksdottir2022fridhriksdottir:
+  theme: nlp-is
+  summary: |
+    Master's-style write-up of "Bootstrapping Icelandic Knowledge Graph
+    Data" (University of Amsterdam), a precursor to the ESSLLI
+    proceedings paper of the same title.
+
+fridhriksdottir2022fictionary:
+  theme: nlp-is
+  summary: |
+    Proposes fictionary-style games as a low-cost mechanism for
+    crowdsourcing language resources, with experiments on Icelandic.
+    Workshop on Novel Incentives in Data Collection at LREC 2022.
+
+steinunn2022building:
+  theme: nlp-is
+  summary: |
+    Describes the construction of an Icelandic entity-linking corpus,
+    detailing annotation guidelines and inter-annotator agreement.
+    Dataset Creation for Lower-Resourced Languages workshop at LREC 2022.
+
+sigurdhardottir2023otolith:
+  theme: cv-nat
+  selected: true
+  summary: |
+    Few-shot computer-vision method for fish-age determination from
+    otolith images. The pipeline combines a lightweight feature
+    extractor with a few-shot classifier, achieving accuracy comparable
+    to expert age readings while requiring only a handful of labelled
+    examples per age class. Demonstrated on Atlantic cod otoliths and
+    designed to lower the cost of routine stock-assessment work at
+    fisheries laboratories. Published in Ecological Informatics.
+  links:
+    doi: https://doi.org/10.1016/j.ecoinf.2023.102046
+
+davidhsson2023efficient:
+  theme: cv-nat
+  summary: |
+    Develops gait-classification models for five-gaited Icelandic horses
+    using mobile-phone inertial sensors, focused on data-efficient
+    training and on-device inference. Published in Animals (MDPI).
+
+hamedpour2023analyzing:
+  theme: cv-nat
+  summary: |
+    Conference abstract (EGU General Assembly 2023) analysing the effect
+    of soil-warming duration on subarctic grasslands using high-resolution
+    multispectral imagery from the ForHot experimental site in Iceland.
+
+sverrisson2023abstractive:
+  theme: nlp-is
+  summary: |
+    Abstractive text summarization for Icelandic, exploring fine-tuning
+    of multilingual sequence-to-sequence models on a constructed
+    Icelandic news summarization corpus. NoDaLiDa 2023.
+
+fridhriksdottir2023effect:
+  theme: nlp-is
+  summary: |
+    Studies how different input encodings affect relation-triplet
+    identification, with experiments comparing flat-text and
+    structure-aware representations. NoDaLiDa 2023.
+
+skarphedinsson2023gameqa:
+  theme: nlp-is
+  summary: |
+    Demos GameQA, a gamified mobile-app platform for collecting
+    multiple-domain question-answering datasets from crowd participants.
+    EACL 2023 System Demonstrations.
+
+skarphedhinsson2022reykjavik:
+  theme: nlp-is
+  summary: |
+    Release of RUQuAD-1 (version 22.02), the Reykjavik University
+    Question-Answering Dataset for Icelandic - a SQuAD-style reading
+    comprehension dataset collected through the GameQA mobile platform.
+
+agnarsson2023epidemiology:
+  theme: clinical-ai
+  summary: |
+    Conference abstract (European Heart Journal supplement) on the
+    epidemiology of acute heart failure admissions in Iceland, examining
+    phenotype distribution and prognostic implications using national
+    registry data.
+
+einarsson2024application:
+  theme: nlp-is
+  selected: true
+  summary: |
+    Studies the use of ChatGPT for automated problem reframing in
+    academic settings, where the same underlying task is rewritten as a
+    series of alternative problem statements to support student
+    learning and assessment design. Reports on prompting strategies,
+    quality control, and human evaluation across multiple academic
+    domains. First-author paper in Computers and Education: Artificial
+    Intelligence; one of the early systematic studies of generative AI
+    in higher-education problem authoring.
+  links:
+    doi: https://doi.org/10.1016/j.caeai.2024.100194
+
+eggertsson2023effective:
+  theme: nlp-is
+  summary: |
+    Examines effective entity disambiguation for low-resource languages
+    through an Icelandic case study, comparing retrieval-based and
+    encoder-based approaches. IEEE/WIC WI-IAT 2023.
+
+thorolfsdottir2024variants:
+  theme: genetics
+  summary: |
+    deCODE-style genome-wide association study linking variants at the
+    interleukin 1 gene locus to pericarditis risk. JAMA Cardiology 2024.
+
+arnardottir2024icelandic:
+  theme: nlp-is
+  summary: |
+    Adapts the GPT-SW3 family of generative language models for
+    Icelandic spell- and grammar-checking, including dataset construction
+    and a fine-tuning protocol. Released by Miðeind ehf.
+
+fridhriksdottir2024gendered:
+  theme: nlp-is
+  selected: true
+  summary: |
+    Investigates whether observed gender bias in Icelandic language
+    models reflects grammatical gender or socially ingrained bias.
+    Designs probing tasks that disentangle grammatical agreement from
+    stereotypical role associations, and evaluates several open-source
+    Icelandic LMs (including the IceBERT and GPT-SW3 lines). Finds
+    consistent stereotype-aligned bias beyond what grammar predicts.
+    LREC-COLING 2024.
+  links:
+    pdf: https://aclanthology.org/2024.lrec-main.671/
+
+debess2024good:
+  theme: nlp-is
+  summary: |
+    Evaluates GPT-4 for Faroese sentiment analysis on a public news
+    corpus, comparing prompting strategies and human judgement.
+    LREC-COLING 2024.
+
+arnardottir2024beyond:
+  theme: nlp-is
+  summary: |
+    Proposes a contextual evaluation methodology for emerging spell- and
+    grammar-checkers that goes beyond fixed error categories, applied to
+    Icelandic systems. SIGUL workshop at LREC-COLING 2024.
+
+fridhriksdottir2024ice:
+  theme: nlp-is
+  summary: |
+    Introduces Ice and Fire, a dataset of Icelandic blog comments
+    annotated for sentiment, emotions, toxicity, sarcasm, hate speech,
+    sympathy, and related labels. Workshop on Threat, Aggression &
+    Cyberbullying at LREC-COLING 2024.
+
+hauksson2024applications:
+  theme: clinical-ai
+  selected: true
+  summary: |
+    Applies BERT-style models to automate ICD-10 clinical coding in
+    Icelandic hospital records, treating coding as a hierarchical
+    multi-label classification problem. Combines an Icelandic clinical
+    pre-training corpus with multi-task fine-tuning and reports
+    substantial improvements over rule-based and shallow-classifier
+    baselines. The work was awarded the University of Iceland Science
+    Award. Published in Findings of NAACL 2024.
+  links:
+    pdf: https://aclanthology.org/2024.findings-naacl.124/
+
+ingimarsdottir2024icelandic:
+  theme: clinical-ai
+  summary: |
+    Describes the Icelandic Heart Failure Registry as a nationwide tool
+    for assessing heart-failure care and tracking treatment
+    interventions. ESC Heart Failure.
+
+saldarriaga2024diagnostic:
+  theme: clinical-ai
+  summary: |
+    Co-authored international survey of diagnostic and therapeutic
+    practice for heart failure with preserved ejection fraction (HFpEF),
+    contributing the Icelandic Heart Failure Registry data. Current
+    Problems in Cardiology / EJHF (a related conference abstract shares
+    the same citation key).
+
+guidetti2025differences:
+  theme: clinical-ai
+  summary: |
+    Co-authored international survey on differences in HFpEF management
+    between care providers, contributing the Icelandic Heart Failure
+    Registry data. European Journal of Heart Failure.
+
+sigurdhardottir2024sequence:
+  theme: cv-nat
+  summary: |
+    Multispectral-imaging pipeline for sequence segmentation of nematode
+    parasites in Atlantic cod fillets, intended for industrial quality
+    control. Foods (MDPI).
+
+simonsen2024human:
+  theme: nlp-is
+  summary: |
+    Human-centred analysis of GPT-4 translations between Faroese and
+    English, evaluating news and blog texts with native speakers.
+    EAMT 2024.
+
+ingimarsdottir2025diagnostic:
+  theme: clinical-ai
+  summary: |
+    Journal version of the international HFpEF practice survey, with
+    the Icelandic Heart Failure Registry providing one of the national
+    data contributions. ESC Heart Failure.
+
+einarsson2024icelandic:
+  theme: nlp-is
+  summary: |
+    Release of the Icelandic Sentiment Corpus "Hotter and Colder",
+    annotated for nuanced sentiment and adjacent labels in Icelandic
+    blog comments. Distributed via the University of Iceland.
+
+einarsson2024sequence:
+  theme: genetics
+  selected: true
+  summary: |
+    deCODE-led genome-wide study (Nature Communications 2024) showing
+    that sequence variants associated with body mass index influence
+    downstream disease risk primarily through BMI itself, rather than
+    via independent pleiotropic effects. Uses Mendelian-randomisation
+    and stratified-association analyses across the Icelandic
+    population. Among the few Nature Communications papers in the
+    collection.
+  links:
+    doi: https://doi.org/10.1038/s41467-024-53568-9
+
+kristjansdottir2024improving:
+  theme: nlp-is
+  summary: |
+    Improves phrase-structure parsing for Icelandic with neural
+    architectures and additional training data. University of Iceland
+    technical report / preprint.
+
+gunnthorsdottir2025factors:
+  theme: clinical-ai
+  summary: |
+    Survey study of factors that cardiac healthcare providers believe
+    influence medication adherence in heart-failure patients. Clinical
+    Pharmacology & Therapeutics.
+
+bergmann2025unravelling:
+  theme: clinical-ai
+  summary: |
+    Nationwide epidemiological study of ATTR cardiac amyloidosis in
+    Iceland, leveraging the Icelandic Heart Failure Registry to estimate
+    prevalence and characterise the patient population. Cardiology
+    journal (Karger).
+
+simonsen2025foqa:
+  theme: nlp-is
+  selected: true
+  summary: |
+    Introduces FoQA, the first dedicated question-answering dataset for
+    Faroese, with extractive and generative variants. The dataset is
+    constructed via translation and adaptation of existing QA
+    benchmarks combined with native-speaker validation, and is
+    accompanied by baseline evaluations of multilingual and Faroese-
+    tuned language models. Establishes a reference benchmark for
+    Faroese reading comprehension. RESOURCEFUL 2025 (NoDaLiDa
+    co-located workshop).
+  links:
+    pdf: https://aclanthology.org/2025.resourceful-1.7/
+
+fridhriksdottir2025hotter:
+  theme: nlp-is
+  summary: |
+    Companion paper for the Hotter and Colder Icelandic sentiment
+    dataset, describing the annotation methodology for sentiment,
+    emotions, and bias in Icelandic blog comments. NoDaLiDa / Baltic-HLT
+    2025.
+
+hauksdottir2024real:
+  theme: clinical-ai
+  summary: |
+    Conference abstract (EJHF) evaluating real-life medication
+    optimisation in heart-failure patients across different phenotypes,
+    using the Icelandic Heart Failure Registry.
+
+gunnarsson2023acute:
+  theme: clinical-ai
+  summary: |
+    Conference abstract (ESC Heart Failure 2023) on causes and outcomes
+    of acute heart failure stratified by chronic kidney disease stage
+    and heart-failure phenotype, using the Icelandic Heart Failure
+    Registry.
+
+ingimarsdottir2024diagnostic:
+  theme: clinical-ai
+  summary: |
+    Conference abstract (EJHF) of the international HFpEF practice
+    survey contributing Icelandic registry data.
+
+gunnthorsdottir2024factors:
+  theme: clinical-ai
+  summary: |
+    Conference abstract (EJHF) on factors believed by cardiac care
+    professionals to influence medication adherence in heart failure
+    patients.
+
+hrolfsdottir2025multispectral:
+  theme: cv-nat
+  summary: |
+    Uses multispectral imaging to evaluate physicochemical, antioxidant,
+    and sensory properties of the brown algae Alaria esculenta and
+    Saccharina latissima. Algal Research.
+
+einarsson2025proceedings:
+  theme: nlp-is
+  summary: |
+    Edited proceedings of the 1st Workshop on Nordic-Baltic Responsible
+    Evaluation and Alignment of Language Models (NB-REAL 2025),
+    co-located with NoDaLiDa/Baltic-HLT 2025.
+
+scalvini2025rethinking:
+  theme: nlp-is
+  summary: |
+    Argues that fine-tuned multilingual NMT models remain surprisingly
+    competitive with large LLMs on low-resource translation, with
+    experiments on Faroese. NoDaLiDa / Baltic-HLT 2025.
+
+arnardottir2025wikiqa:
+  theme: nlp-is
+  summary: |
+    Introduces WikiQA-IS, an LLM-assisted benchmark for evaluating
+    Icelandic cultural knowledge in language models, with automated
+    evaluation protocols. RESOURCEFUL 2025.
+
+scalvini2025prompt:
+  theme: nlp-is
+  summary: |
+    Shows that prompt engineering yields measurable improvements in
+    Faroese machine translation, but that automatic metrics fail to
+    capture them - human evaluation is required. NoDaLiDa / Baltic-HLT
+    2025.
+
+sigurdhardottir2025multispectral:
+  theme: cv-nat
+  summary: |
+    Multispectral-imaging method for predicting freshness of whole
+    Atlantic cod, validated against sensory, chemical, and microbiological
+    reference analyses. Applied Food Research.
+
+einarsson2022bootstrapping:
+  theme: nlp-is
+  summary: |
+    Proposes bootstrapping techniques for building Icelandic knowledge-
+    graph data from text, presented at the ESSLLI 2022 student session.
+
+hamedpour2022drought:
+  theme: cv-nat
+  summary: |
+    Conference paper analysing drought response in a geothermally warmed
+    subarctic grassland using multispectral drone imagery, from the
+    ForHot site in Iceland. 16th International Circumpolar Remote
+    Sensing Symposium.
+
+einarsson2025mazeeval:
+  theme: nlp-is
+  summary: |
+    MazeEval is a benchmark for testing sequential decision-making in
+    language models through navigation tasks in procedurally generated
+    mazes. Single-author preprint.
+  links:
+    arxiv: https://arxiv.org/abs/2507.20395
+
+da2025temporal:
+  theme: cv-nat
+  summary: |
+    Aggregates temporal vision-language features for high-accuracy fish
+    classification in automated underwater monitoring streams.
+    Ecological Informatics.
+
+fridhriksdottirdetecting:
+  theme: nlp-is
+  summary: |
+    Frames detection of biased language in Icelandic as a named-entity
+    recognition task, with annotations targeting socially responsible
+    text analysis. Workshop on Socially Responsible Language Modelling
+    Research.
+
+chang2025global:
+  theme: nlp-is
+  summary: |
+    Co-authored contribution (Icelandic subset) to Global PIQA, a
+    physical-commonsense reasoning benchmark spanning 100+ languages
+    and cultures. arXiv preprint.
+  links:
+    arxiv: https://arxiv.org/abs/2510.24081
+
+gudjonsson2025survival:
+  theme: clinical-ai
+  summary: |
+    Conference abstract (European Heart Journal supplement) examining
+    the survival impact of amiodarone therapy in heart-failure patients
+    using the Icelandic Heart Failure Registry.
+
+einarsson2025variant:
+  theme: genetics
+  summary: |
+    deCODE-led study linking a variant at a taste-receptor locus to
+    changes in the use of insomnia medication. Biological Psychiatry
+    Global Open Science.
+
+schram2025teachers:
+  theme: nlp-is
+  summary: |
+    Survey study of teachers' attitudes and perceptions of AI usefulness
+    in academia, asking how universities should respond to a changing
+    educational landscape. ICERI 2025 proceedings.
+
+schram2025askoranir:
+  theme: nlp-is
+  summary: |
+    Icelandic-language companion to the ICERI 2025 paper - a preliminary
+    study of University of Iceland teachers' attitudes and experience
+    with generative AI in higher education. Menntakvika 2025.
+
+ingimarsdottir2026impact:
+  theme: clinical-ai
+  summary: |
+    International survey of how country income level affects HFpEF
+    management practice, with the Icelandic Heart Failure Registry as
+    one of the national data sources. ESC Heart Failure.
+
+myhre2026enhancing:
+  theme: clinical-ai
+  summary: |
+    Nordic-cohort study of how national heart-failure registries can
+    enhance guideline-directed care, with contributions from the
+    Icelandic Heart Failure Registry. European Journal of Heart Failure.
