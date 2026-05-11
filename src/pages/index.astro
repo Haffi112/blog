@@ -1,0 +1,49 @@
+---
+import BaseLayout from '~/components/BaseLayout.astro';
+import Hero from '~/components/Hero.astro';
+import NewsItem from '~/components/NewsItem.astro';
+import PubCard from '~/components/PubCard.astro';
+import { getCollection } from 'astro:content';
+import pubsData from '~/data/publications.json';
+import type { Publication } from '~/data/publications.schema';
+
+const news = (await getCollection('news'))
+  .map((n) => ({ ...n.data, id: n.id }))
+  .sort((a, b) => b.date.getTime() - a.date.getTime())
+  .slice(0, 5);
+
+const pubs = pubsData as unknown as Publication[];
+const selected = pubs.filter((p) => p.selected).slice(0, 3);
+---
+<BaseLayout
+  title="Home"
+  description="Hafsteinn Einarsson — Associate Professor at the University of Iceland and Research Scientist at deCODE genetics."
+>
+  <Hero photoSrc="/img/hafsteinn.png" />
+
+  <section class="max-w-page mx-auto px-6 py-12">
+    <div class="flex items-baseline justify-between">
+      <h2 class="text-2xl font-semibold text-ink">News</h2>
+    </div>
+    <ul class="mt-4 max-w-prose">
+      {news.map((n, i) => (
+        <NewsItem
+          date={n.date}
+          text={n.text}
+          link={n.link}
+          newest={i === 0}
+        />
+      ))}
+    </ul>
+  </section>
+
+  <section class="max-w-page mx-auto px-6 py-12">
+    <div class="flex items-baseline justify-between">
+      <h2 class="text-2xl font-semibold text-ink">Selected publications</h2>
+      <a href="/publications/" class="text-sm">All publications →</a>
+    </div>
+    <div class="mt-4">
+      {selected.map((p) => <PubCard pub={p} variant="selected" />)}
+    </div>
+  </section>
+</BaseLayout>
