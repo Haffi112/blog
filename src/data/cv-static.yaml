@@ -1,0 +1,204 @@
+# Static CV data — not displayed on the site, used by scripts/generate-cv.ts
+# to build cv.pdf (short) and cv-long.pdf (long).
+#
+# To update: edit this file, then run `npm run cv` to regenerate.
+# Site content (publications, students, talks, projects, teaching) is read
+# from the live collections — DO NOT duplicate it here.
+
+contact:
+  name: Hafsteinn Einarsson
+  email: hafsteinne@hi.is
+  orcid: 0000-0001-5072-3678
+  website: https://haffi112.github.io/
+  scholar: https://scholar.google.com/citations?user=QH69Qk8AAAAJ&hl=en
+  github: https://github.com/Haffi112
+  nationality: Icelandic
+
+research_statement: |
+  My PhD at ETH Zurich centred on mathematical models of neural systems,
+  drawing on probability theory, distributed computing, and differential
+  equations. After a postdoc in systems neuroscience and two years as a
+  data scientist in banking, I joined the University of Iceland in 2020
+  and built a research group on natural-language processing for
+  low-resource languages, with a focus on Icelandic and other
+  North-Germanic languages. My group has contributed Icelandic language
+  models, methods for automated clinical coding, gender-bias evaluation
+  for morphologically gendered languages, sentiment annotation for
+  Icelandic blog comments, and machine-translation resources for Faroese.
+
+current_positions:
+  - title: Associate Professor in Computer Science
+    institution: University of Iceland
+    department: Faculty of Industrial Engineering, Mechanical Engineering and Computer Science
+    start: 2020
+    end: present
+    location: Iceland
+  - title: Research Scientist
+    institution: deCODE genetics
+    start: 2021
+    end: present
+    location: Iceland
+
+previous_positions:
+  - title: Co-founder
+    institution: KatlaCode
+    start: 2024
+    end: present
+    location: Iceland
+  - title: Co-founder
+    institution: Prescriby
+    start: 2019
+    end: 2023
+    location: Iceland
+  - title: Data Scientist
+    institution: Íslandsbanki
+    start: 2018
+    end: 2020
+    location: Iceland
+  - title: Postdoctoral Researcher
+    institution: Institute of Neuroinformatics, ETH Zurich
+    start: 2017
+    end: 2018
+    location: Switzerland
+
+education:
+  - degree: PhD in Computer Science
+    institution: ETH Zurich
+    year: 2017
+    location: Switzerland
+    thesis: "Fast Emergence of Neural Structures"
+    advisor: "Prof. Angelika Steger"
+  - degree: MSc in Computer Science
+    institution: ETH Zurich
+    year: 2013
+    location: Switzerland
+  - degree: BSc in Mathematics
+    institution: University of Iceland
+    year: 2011
+    location: Iceland
+
+awards_and_grants:
+  - year: 2026
+    title: Vísindi og velferð
+    description: Grant for developing an app for science literacy
+    amount: "700k ISK"
+  - year: 2026
+    title: Microsoft Lingua
+    description: Grant for developing LLM red-teaming datasets for Icelandic
+    funder: Microsoft
+    amount: "50k USD"
+  - year: 2024
+    title: Science Award, University of Iceland
+    description: Best overall science work and best in health science (for ICD-10 coding using Icelandic BERT models)
+  - year: 2023
+    end_year: present
+    title: TrustLLM
+    description: EU-funded project on language models for Germanic languages
+    funder: Horizon Europe
+  - year: 2022
+    title: Neologism platform for Icelandic
+    funder: University of Iceland
+    amount: "4M ISK"
+  - year: 2021
+    title: Incentive Award, University of Iceland
+    description: For QA models for Icelandic (supervised student project)
+  - year: 2020
+    end_year: 2021
+    title: Sproti and Vöxtur
+    description: Awarded to Prescriby for digital product development
+    funder: Icelandic Centre for Research (Rannís)
+    amount: "90M ISK total"
+  - year: 2020
+    title: Digital literacy course development
+    funder: University of Iceland
+    amount: "3M ISK"
+  - year: 2017
+    title: Early Postdoc Mobility Fellowship (declined)
+    funder: Swiss National Science Foundation
+  - year: 2010
+    title: Summer Undergraduate Research Fellowship (SURF)
+    funder: California Institute of Technology
+
+service:
+  reviewing:
+    - venue: ACL Rolling Review
+      years: "2024"
+    - venue: Animals
+      years: "2023"
+    - venue: Sensors
+      years: "2023"
+    - venue: Applied Sciences
+      years: "2023"
+    - venue: LREC workshops
+      years: "2022"
+    - venue: NeurIPS workshops
+      years: "2021"
+    - venue: Machine Learning (Springer)
+      years: "2020–2021"
+    - venue: COSYNE
+      years: "2018"
+    - venue: Hippocampus
+      years: "2018"
+    - venue: SIROCCO
+      years: "2017"
+  roles:
+    - role: President
+      organization: Association of Computer Scientists in Iceland
+      start: 2020
+      end: present
+    - role: Committee member
+      organization: SKÝ committee on data applications
+      start: 2019
+      end: 2020
+    - role: Board member, vice-president, president
+      organization: VMI (Association of scientific staff, CS Department, ETH Zurich)
+      start: 2013
+      end: 2016
+
+outreach:
+  - title: AI and ethics
+    venue: UNESCO forum on AI and Ethics
+    year: 2023
+  - title: AI in teaching
+    venue: Icelandic teaching academy conference
+    year: 2023
+  - title: AI in higher education
+    venue: University of Akureyri teaching conference
+    year: 2023
+  - title: AI keynote
+    venue: UTmessan (Icelandic IT conference)
+    year: 2022
+  - title: AI keynote
+    venue: UTmessan
+    year: 2021
+  - title: Interview on AI
+    venue: RÚV (Icelandic National Broadcasting Service)
+    year: 2021
+  - title: Judge
+    venue: First Lego League
+    year: 2023
+  - title: Judge
+    venue: First Lego League
+    year: 2024
+  - title: Judge
+    venue: First Lego League
+    year: 2025
+  - title: Mentor
+    venue: Nordic Open Data and AI Hackathon
+    year: 2022
+  - title: Judge
+    venue: Icelandic environmental Datathon
+    year: 2020
+
+collaborations:
+  academic:
+    - "Marine and Freshwater Research Institute of Iceland (otolith age reading, fish species classification)"
+    - "TrustLLM partners (Faroese, German and other European groups)"
+    - "University of Copenhagen"
+    - "ETH Zurich"
+    - "deCODE genetics"
+    - "Faculty of Food Science, University of Iceland"
+    - "Landspítali (Icelandic National Hospital) — clinical coding and heart-failure pharmacotherapy"
+  industry:
+    - "VideometerLab — multispectral image analysis for nematode detection"
+    - "Horseday — horse gait detection from smartphone recordings"

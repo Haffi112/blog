@@ -40,7 +40,7 @@ const lastBuild = new Date();
     <p class="mt-3 text-ink-muted text-sm">
       {all.length} publications · last updated {lastBuild.toISOString().slice(0, 10)} ·
       <a href="https://orcid.org/0000-0001-5072-3678" class="underline underline-offset-2 decoration-1 hover:decoration-2">ORCID</a> ·
-      <a href="https://scholar.google.com/citations?user=BVPxKzgAAAAJ" class="underline underline-offset-2 decoration-1 hover:decoration-2">Google Scholar</a>
+      <a href="https://scholar.google.com/citations?user=QH69Qk8AAAAJ&hl=en" class="underline underline-offset-2 decoration-1 hover:decoration-2">Google Scholar</a>
     </p>
 
     <details class="mt-4 text-sm text-ink-muted max-w-prose">
@@ -55,13 +55,13 @@ const lastBuild = new Date();
     </details>
 
     {selected.length > 0 && (
-      <section class="mt-12 max-w-pubs">
+      <section class="mt-12 max-w-prose">
         <h2 class="text-2xl font-semibold text-ink mb-4">Selected</h2>
         {selected.map((p) => <PubCard pub={p} variant="selected" />)}
       </section>
     )}
 
-    <section class="mt-16 max-w-pubs">
+    <section class="mt-16 max-w-prose">
       <h2 class="text-2xl font-semibold text-ink">All publications</h2>
       {themeOrder.map((t) => (
         byTheme[t].length > 0 && (

@@ -47,7 +47,7 @@ const links = linkOrder.filter((l) => pub.links?.[l.key]);
     {pub.year ? <span class="text-ink-muted"> · {pub.year}</span> : null}
   </p>
   {pub.summary && (
-    <p class="mt-2 text-ink prose-body max-w-prose">{pub.summary}</p>
+    <p class="mt-2 text-ink prose-body">{pub.summary}</p>
   )}
   {links.length > 0 && (
     <ul class="mt-3 flex flex-wrap gap-3 text-sm">

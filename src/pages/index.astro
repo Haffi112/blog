@@ -23,11 +23,11 @@ const selected = pubs.filter((p) => p.selected).slice(0, 3);
   <JsonLdPerson slot="head" />
   <Hero />
 
-  <section class="max-w-page mx-auto px-6 py-12">
+  <section class="max-w-prose mx-auto px-6 py-12">
     <div class="flex items-baseline justify-between">
       <h2 class="text-2xl font-semibold text-ink">News</h2>
     </div>
-    <ul class="mt-4 max-w-prose">
+    <ul class="mt-4">
       {news.map((n, i) => (
         <NewsItem
           date={n.date}
@@ -39,7 +39,7 @@ const selected = pubs.filter((p) => p.selected).slice(0, 3);
     </ul>
   </section>
 
-  <section class="max-w-page mx-auto px-6 py-12">
+  <section class="max-w-prose mx-auto px-6 py-12">
     <div class="flex items-baseline justify-between">
       <h2 class="text-2xl font-semibold text-ink">Selected publications</h2>
       <a href="/publications/" class="text-sm">All publications →</a>

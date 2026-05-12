@@ -11,6 +11,9 @@ dist/
 src/data/publications.json
 src/data/cited-refs.json
 
+# Generated CV data (regenerated from site sources by npm run cv)
+cv/data.typ
+
 # Personal working files (contain PII like phone/DOB) — keep local
 old_cvs/
 personal_images/
