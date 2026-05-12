@@ -17,16 +17,16 @@ const { title, date, cited = [], description } = Astro.props;
   ogType="article"
   publishedTime={date}
 >
-  <article class="max-w-page mx-auto px-6 py-12">
-    <header class="max-w-prose">
+  <article class="max-w-prose mx-auto px-6 py-12">
+    <header>
       <p class="text-sm text-ink-muted font-mono">{date.toISOString().slice(0, 10)}</p>
       <h1 class="mt-2 text-4xl font-semibold tracking-tight text-ink leading-tight">{title}</h1>
     </header>
-    <div class="mt-10 prose-body max-w-prose [&>p]:my-5 [&>h2]:mt-12 [&>h2]:mb-3 [&>h2]:text-2xl [&>h2]:font-semibold [&>h3]:mt-8 [&>h3]:mb-2 [&>h3]:text-xl [&>h3]:font-semibold [&>ul]:my-4 [&>ul]:pl-6 [&>ul>li]:list-disc [&>ol]:my-4 [&>ol]:pl-6 [&>ol>li]:list-decimal [&>blockquote]:border-l-4 [&>blockquote]:border-rule [&>blockquote]:pl-4 [&>blockquote]:italic [&>blockquote]:text-ink-muted">
+    <div class="mt-10 prose-body [&>p]:my-5 [&>h2]:mt-12 [&>h2]:mb-3 [&>h2]:text-2xl [&>h2]:font-semibold [&>h3]:mt-8 [&>h3]:mb-2 [&>h3]:text-xl [&>h3]:font-semibold [&>ul]:my-4 [&>ul]:pl-6 [&>ul>li]:list-disc [&>ol]:my-4 [&>ol]:pl-6 [&>ol>li]:list-decimal [&>blockquote]:border-l-4 [&>blockquote]:border-rule [&>blockquote]:pl-4 [&>blockquote]:italic [&>blockquote]:text-ink-muted">
       <slot />
     </div>
     {cited.length > 0 && (
-      <section class="mt-16 max-w-prose">
+      <section class="mt-16">
         <h2 class="text-xl font-semibold text-ink">References</h2>
         <Bibliography keys={cited} />
       </section>
