@@ -16,6 +16,14 @@ export default defineConfig({
     // so we lift the threshold via "always" — Astro will deduplicate.
     inlineStylesheets: 'always'
   },
+  // /blog/ is stuck in GitHub Pages cache serving a Lanyon-era file from
+  // 2016. The new index lives at /writing/. If Pages ever invalidates the
+  // /blog/ cache, this redirect will kick in. Until then, anyone hitting
+  // /blog/ gets the stale page, but no in-site link points there.
+  redirects: {
+    '/blog': '/writing/',
+    '/blog/': '/writing/'
+  },
   integrations: [
     mdx({
       remarkPlugins: [remarkMath],
