@@ -110,7 +110,7 @@ interface Student {
 
 interface Course {
   title: string;
-  level: 'ba' | 'msc' | 'phd' | 'mixed';
+  level: 'bsc' | 'msc' | 'phd' | 'mixed';
   language: 'english' | 'icelandic' | 'mixed';
   description: string;
   semesters: string[];
@@ -161,7 +161,7 @@ function main() {
     .sort((a, b) => (b.endYear ?? 0) - (a.endYear ?? 0));
 
   // Sort courses: MSc/PhD first
-  const levelOrder: Record<string, number> = { phd: 0, msc: 1, mixed: 2, ba: 3 };
+  const levelOrder: Record<string, number> = { phd: 0, msc: 1, mixed: 2, bsc: 3 };
   courses.sort((a, b) => (levelOrder[a.level] ?? 9) - (levelOrder[b.level] ?? 9));
 
   // Sort talks by year desc

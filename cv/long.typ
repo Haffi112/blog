@@ -87,7 +87,7 @@
 ]
 #v(0.4em)
 #for t in data.teaching [
-  #entry([#upper(t.level)])[
+  #entry([#{ if t.level == "bsc" { "BSc" } else if t.level == "msc" { "MSc" } else if t.level == "phd" { "PhD" } else if t.level == "mixed" { "BSc / MSc" } else { upper(t.level) } }])[
     *#t.title* — #t.description
   ]
 ]

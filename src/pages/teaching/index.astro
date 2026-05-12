@@ -4,12 +4,12 @@ import CourseCard from '~/components/CourseCard.astro';
 import { getCollection } from 'astro:content';
 
 const courses = (await getCollection('teaching')).map((c) => c.data);
-// Sort: MSc/PhD before BA; within group, alphabetic
+// Sort: MSc/PhD before BSc; within group, alphabetic
 const levelOrder: Record<typeof courses[number]['level'], number> = {
   phd: 0,
   msc: 1,
   mixed: 2,
-  ba: 3
+  bsc: 3
 };
 courses.sort((a, b) =>
   levelOrder[a.level] - levelOrder[b.level] || a.title.localeCompare(b.title)

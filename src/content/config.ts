@@ -72,7 +72,7 @@ const teaching = defineCollection({
   type: 'data',
   schema: z.object({
     title: z.string(),
-    level: z.enum(['ba', 'msc', 'phd', 'mixed']).default('mixed'),
+    level: z.enum(['bsc', 'msc', 'phd', 'mixed']).default('mixed'),
     language: z.enum(['english', 'icelandic', 'mixed']).default('english'),
     semesters: z.array(z.string()).default([]),
     description: z.string(),

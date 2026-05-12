@@ -3,7 +3,7 @@ import Prose from './Prose.astro';
 
 interface Props {
   title: string;
-  level: 'ba' | 'msc' | 'phd' | 'mixed';
+  level: 'bsc' | 'msc' | 'phd' | 'mixed';
   language: 'english' | 'icelandic' | 'mixed';
   description: string;
   syllabus?: string;
@@ -11,10 +11,10 @@ interface Props {
 const { title, level, language, description, syllabus } = Astro.props;
 
 const levelLabel: Record<Props['level'], string> = {
-  ba: 'BA',
+  bsc: 'BSc',
   msc: 'MSc',
   phd: 'PhD',
-  mixed: 'BA / MSc'
+  mixed: 'BSc / MSc'
 };
 const languageLabel: Record<Props['language'], string> = {
   english: 'English',
