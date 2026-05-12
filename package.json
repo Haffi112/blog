@@ -5,9 +5,10 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run parse-bib && astro build",
+    "build": "npm run parse-bib && npm run cv && astro build",
     "preview": "astro preview",
     "parse-bib": "tsx scripts/parse-bib.ts",
+    "cv": "tsx scripts/generate-cv.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
