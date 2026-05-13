@@ -106,12 +106,8 @@ blog/
 ├─ tailwind.config.mjs         (kept minimal; Tailwind 4 config lives in CSS)
 ├─ tsconfig.json
 ├─ vitest.config.ts
+├─ deploy.sh                   Local build helper (Actions does the real deploy)
 └─ package.json
-
-# Legacy (Jekyll-era, no longer used by the build):
-├─ _config.yml, _layouts/, _includes/, _posts/, _drafts/
-├─ about.md, index.html, simulations.md, atom.xml, 404.html, assets/
-└─ deploy.sh                   Local build helper (Actions does the real deploy)
 ```
 
 A few files are local-only (gitignored): `old_cvs/`, `personal_images/`, `dist/`, `node_modules/`, `.astro/`, `src/data/publications.json`, `src/data/cited-refs.json`, `cv/data.typ`.
@@ -371,9 +367,9 @@ The four-phase migration is documented under `docs/plans/`:
 4. `docs/plans/2026-05-11-website-refresh-phase-3.md` — Blog migration
 5. `docs/plans/2026-05-11-website-refresh-phase-4.md` — SEO / a11y / performance
 
-The Jekyll source (`_config.yml`, `_layouts/`, `_posts/`, etc.) is
-preserved at the repo root for reference but is no longer used by the
-build. It can be deleted in a future cleanup.
+The original Jekyll source (Lanyon theme: `_config.yml`, `_layouts/`,
+`_posts/`, etc.) was removed from the repo root after the migration
+was verified live. The full history is preserved in git.
 
 ---
 
