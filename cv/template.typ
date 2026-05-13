@@ -1,14 +1,9 @@
 // Shared CV template — styling mirrors haffi112.github.io.
 // Used by cv/short.typ and cv/long.typ.
+//
+// All colours are imported from theme.typ — edit that file to reskin.
 
-// Brand palette (matches src/styles/global.css)
-#let primary = rgb("#5B3A78")        // aubergine
-#let primary-soft = rgb("#F2EBF9")
-#let secondary = rgb("#8E5E0F")      // gold
-#let energy = rgb("#A84A1F")         // burnt orange
-#let ink = rgb("#1A1418")
-#let muted = rgb("#5A5560")
-#let rule = rgb("#E8E4E2")
+#import "theme.typ": *
 
 // --- Helpers ---
 
@@ -40,7 +35,7 @@
       columns: (3.2cm, 1fr),
       column-gutter: 0.55cm,
       align: (left + top, left + top),
-      text(size: 9pt, fill: muted, font: ("JetBrains Mono", "Menlo", "Courier New"))[#date],
+      text(size: 9pt, fill: date-fill, font: ("JetBrains Mono", "Menlo", "Courier New"))[#date],
       body,
     )
   ]
@@ -48,6 +43,30 @@
 
 #let plain-entry(body) = {
   block(below: 0.5em, breakable: false)[#body]
+}
+
+// Small coloured pill used in date columns when we want a label instead of a
+// date (course levels, project statuses, talk types).
+#let pill(label, fill: muted) = {
+  text(
+    size: 8.5pt,
+    weight: "medium",
+    fill: fill,
+    font: ("JetBrains Mono", "Menlo", "Courier New"),
+  )[#label]
+}
+
+// Render an MSc alumnus' nowAt line. When the destination contains "PhD" we
+// flag it visually with a coloured arrow + accent fill so it pops in the
+// "Master's theses completed" list.
+#let now-at(nowAt) = {
+  if nowAt == none { return }
+  let is-phd = nowAt.contains("PhD") or nowAt.contains("doctoral") or nowAt.contains("Doctoral")
+  if is-phd {
+    text(fill: phd-track-fill, weight: "medium")[ → #nowAt]
+  } else {
+    text(fill: muted)[ · #nowAt]
+  }
 }
 
 // --- Page setup wrapper ---
@@ -123,6 +142,9 @@
   }
 }
 
+// Format an author. When the author is the CV owner (Einarsson, H. by default)
+// we render the name semibold and in the self-name-fill colour so the reader
+// can spot Hafsteinn at a glance in long author lists.
 #let _bold-self(a, last-name: "Einarsson", first-initial: "H") = {
   let initials = if a.first == "" {
     ""
@@ -131,7 +153,7 @@
   }
   let formatted = if initials == "" { a.last } else { a.last + ", " + initials }
   if a.last == last-name and (a.first == "" or a.first.starts-with(first-initial)) {
-    strong[#formatted]
+    text(weight: "semibold", fill: self-name-fill)[#formatted]
   } else {
     formatted
   }
@@ -141,4 +163,37 @@
   let authors = pub.authors.map(a => _bold-self(a)).join(", ")
   let year-text = if pub.year == 0 { "n.d." } else { str(pub.year) }
   [#authors (#year-text). #strong[#pub.title]. _#pub.venue._]
+}
+
+// --- Badge helpers exposed to long.typ / short.typ ---
+
+#let course-level-label(level) = {
+  if level == "bsc" {
+    pill("BSc", fill: badge-bsc)
+  } else if level == "msc" {
+    pill("MSc", fill: badge-msc)
+  } else if level == "phd" {
+    pill("PhD", fill: badge-phd)
+  } else if level == "mixed" {
+    pill("BSc / MSc", fill: badge-mixed)
+  } else {
+    pill(upper(level), fill: muted)
+  }
+}
+
+#let project-status-label(status) = {
+  let fill = if status == "active" { status-active }
+             else if status == "maintenance" { status-maintenance }
+             else if status == "archived" { status-archived }
+             else { muted }
+  pill(status, fill: fill)
+}
+
+#let talk-type-label(t) = {
+  let fill = if t == "invited" { type-invited }
+             else if t == "keynote" { type-keynote }
+             else if t == "workshop" { type-workshop }
+             else if t == "outreach" { type-outreach }
+             else { muted }
+  pill(t, fill: fill)
 }

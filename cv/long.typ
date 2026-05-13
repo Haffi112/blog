@@ -77,7 +77,7 @@
 ]
 #for s in data.alumni_msc [
   #entry([#str(s.endYear)])[
-    *#s.name*#if s.at("title", default: none) != none [ — #s.title]#if s.at("nowAt", default: none) != none [#text(fill: muted)[ · #s.nowAt]]
+    *#s.name*#if s.at("title", default: none) != none [ — #s.title]#now-at(s.at("nowAt", default: none))
   ]
 ]
 #v(0.4em)
@@ -96,14 +96,14 @@
 ]
 #v(0.4em)
 #for t in data.teaching [
-  #entry([#{ if t.level == "bsc" { "BSc" } else if t.level == "msc" { "MSc" } else if t.level == "phd" { "PhD" } else if t.level == "mixed" { "BSc / MSc" } else { upper(t.level) } }])[
+  #entry(course-level-label(t.level))[
     *#t.title* — #t.description
   ]
 ]
 
 #section-title("Open-source Projects")
 #for p in data.projects [
-  #entry([#p.status])[
+  #entry(project-status-label(p.status))[
     *#p.name* — #p.summary
   ]
 ]
@@ -111,7 +111,7 @@
 #section-title("Talks and Outreach")
 #for t in data.talks [
   #entry([#str(t.year)])[
-    *#t.title*, #t.venue#if t.at("location", default: none) != none [, #t.location]
+    *#t.title*, #t.venue#if t.at("location", default: none) != none [, #t.location]#if t.at("type", default: none) != none [#h(0.4em)#talk-type-label(t.type)]
   ]
 ]
 
