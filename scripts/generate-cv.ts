@@ -197,6 +197,7 @@ function main() {
     awards: staticData.awards_and_grants,
     service: staticData.service,
     outreach: staticData.outreach,
+    media_appearances: staticData.media_appearances ?? [],
     collaborations: staticData.collaborations,
 
     phd_main,

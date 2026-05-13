@@ -125,6 +125,18 @@
   ]
 ]
 
+#section-title("Media Appearances")
+#text(size: 8.5pt, fill: muted)[
+  Selected interviews, opinion pieces and broadcast appearances on AI, language technology, and research. Titles are in Icelandic with English translations underneath. Linked entries open the original story.
+]
+#v(0.4em)
+#for m in data.media_appearances [
+  #entry([#m.date])[
+    *#link(m.url)[#m.title_is]* \
+    #text(fill: muted)[#emph[#m.title_en] · #m.outlet#if m.type != "article" [ · #m.type]]
+  ]
+]
+
 #section-title("Collaborations")
 #plain-entry[*Academic*]
 #for c in data.collaborations.academic [

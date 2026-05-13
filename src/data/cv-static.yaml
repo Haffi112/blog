@@ -190,6 +190,134 @@ outreach:
     venue: Icelandic environmental Datathon
     year: 2020
 
+media_appearances:
+  - date: 2026-05-03
+    title_is: "Gervigreindin gæti haft áhrif á ESB-atkvæðagreiðsluna"
+    title_en: "AI could influence the EU referendum vote"
+    outlet: "Vísir"
+    type: article
+    url: "https://www.visir.is/g/20262877598d/gervigreindin-gaeti-haft-a-hrif-a-esb-atkvaedagreidsluna"
+  - date: 2026-04-15
+    title_is: "Kokkakonur, krakkfaraldur, Auddi Blö og gervigreindarmisskilningur"
+    title_en: "Female chefs, a kratom epidemic, Auddi Blö, and AI misconceptions"
+    outlet: "RÚV (Morgunútvarpið)"
+    type: radio
+    url: "https://www.ruv.is/utvarp/spila/morgunutvarpid/23822/bilic7"
+  - date: 2026-04-08
+    title_is: "Gífurlegir hagsmunir í húfi ef tæknin kemst í rangar hendur"
+    title_en: "Enormous interests at stake if the technology falls into the wrong hands"
+    outlet: "Vísir"
+    type: article
+    url: "https://www.visir.is/g/20262866281d/gifur-legir-hags-munir-i-hufi-ef-taeknin-kemst-i-rangar-hendur"
+  - date: 2026-02-12
+    title_is: "Er skynsamlegt að fækka þeim sem læra íslensku?"
+    title_en: "Is it sensible to reduce the number of people learning Icelandic?"
+    outlet: "Vísir"
+    type: opinion
+    url: "https://www.visir.is/g/20262842395d/er-skyn-sam-legt-ad-faekka-theim-sem-laera-is-lensku-"
+  - date: 2025-12-16
+    title_is: "Hefur þú sokkið í gervigreindarfen?"
+    title_en: "Have you sunk into the AI swamp?"
+    outlet: "Vísir (Bítið)"
+    type: podcast
+    url: "https://www.visir.is/k/8c00d615-796f-4b6d-91e0-0c162009358a-1765874624724/hefur-thu-sokkid-i-gervigreindarfen-"
+  - date: 2025-11-23
+    title_is: "Stærsti þjófnaður allra tíma"
+    title_en: "The largest theft of all time"
+    outlet: "RÚV"
+    type: article
+    url: "https://www.ruv.is/frettir/innlent/2025-11-23-staersti-thjofnadur-allra-tima-459558"
+  - date: 2025-11-01
+    title_is: "Getur gervigreindarsmjaður leitt til gervigreindargeðrofs?"
+    title_en: "Can AI sycophancy lead to AI-induced psychosis?"
+    outlet: "Vísir"
+    type: article
+    url: "https://www.visir.is/g/20252797136d/getur-gervigreindarsmjadur-leitt-til-gervigreindargedrofs-"
+  - date: 2025-09-26
+    title_is: "Dauðakaffi, hvað býr að baki gervigreind? og það nýjasta úr heimi konungsfjölskyldna"
+    title_en: "Death cafés, what is behind AI?, and the latest from the royal families"
+    outlet: "RÚV (Samfélagið)"
+    type: radio
+    url: "https://www.ruv.is/utvarp/spila/samfelagid/23617/b718c2"
+  - date: 2025-09-24
+    title_is: "Bein útsending: Gervigreind og vísindamiðlun"
+    title_en: "Live broadcast: AI and science communication"
+    outlet: "Vísir"
+    type: livestream
+    url: "https://www.visir.is/g/20252779177d/bein-utsending-gervigreind-og-visindamidlun"
+  - date: 2025-09-14
+    title_is: "Veit um fjögur sjálfsvíg tengd gervigreind"
+    title_en: "Aware of four suicides linked to AI"
+    outlet: "Vísir"
+    type: article
+    url: "https://www.visir.is/g/20252775406d/veit-um-fjogur-sjalfs-vig-tengd-gervi-greind"
+  - date: 2025-07-31
+    title_is: "Óheppilegt ef fölsk mynd varpar sök á saklausan mann"
+    title_en: "Unfortunate if a fake image casts blame on an innocent person"
+    outlet: "Vísir"
+    type: article
+    url: "https://www.visir.is/g/20252757377d/o-heppi-legt-ef-folsk-mynd-varpar-sok-a-sak-lausan-mann"
+  - date: 2025-07-28
+    title_is: "Styttist í háþróuð gervigreindarsvindl á íslensku"
+    title_en: "Sophisticated AI scams in Icelandic are imminent"
+    outlet: "Vísir"
+    type: article
+    url: "https://www.visir.is/g/20252756082d/styttist-i-ha-throud-gervi-greindar-svindl-a-is-lensku"
+  - date: 2025-05-07
+    title_is: "Kapphlaup gervigreindarinnar, Sérsveitin, velsæld o.fl."
+    title_en: "The AI race, the special forces, well-being and more"
+    outlet: "RÚV (Morgunútvarpið)"
+    type: radio
+    url: "https://www.ruv.is/utvarp/spila/morgunutvarpid/23822/b7q93h"
+  - date: 2025-02-02
+    title_is: "Vatnsnotkun gervigreindar áætluð allt að 6,6 milljarðar rúmmetra árið 2027"
+    title_en: "AI water usage projected at up to 6.6 billion cubic metres by 2027"
+    outlet: "RÚV"
+    type: article
+    url: "https://www.ruv.is/frettir/innlent/2025-02-02-vatnsnotkun-gervigreindar-aaetlud-allt-ad-66-milljardar-rummetra-arid-2027-434576"
+  - date: 2024-10-03
+    title_is: "Af fordómum gervigreindar, Gísla Marteini og því sem þú getur gert til að hafa áhrif!"
+    title_en: "On AI prejudice, Gísli Marteinn, and what you can do to make an impact"
+    outlet: "Vísir"
+    type: opinion
+    url: "https://www.visir.is/g/20242629659d/af-for-domum-gervi-greindar-gisla-marteini-og-thvi-sem-thu-getur-gert-til-ad-hafa-a-hrif-"
+  - date: 2024-06-02
+    title_is: "Gegnumlýsing — þankabrot frambjóðanda að loknu forsetakjöri"
+    title_en: "X-ray — reflections of a candidate after the presidential election"
+    outlet: "Vísir"
+    type: opinion
+    url: "https://www.visir.is/g/20242579477d/f/skodanir"
+  - date: 2024-05-21
+    title_is: "Geta kóðað sjúkraskýrslur á íslensku"
+    title_en: "Can code medical records in Icelandic"
+    outlet: "Morgunblaðið (mbl.is)"
+    type: article
+    url: "https://www.mbl.is/frettir/innlent/2024/05/21/geta_kodad_sjukraskyrslur_a_islensku/"
+  - date: 2024-02-25
+    title_is: "Sora-tæknin gerir myndbönd af öllu mögulegu mögulegt"
+    title_en: "Sora technology makes videos of nearly anything possible"
+    outlet: "Vísir"
+    type: article
+    url: "https://www.visir.is/g/20242533189d/sora-taeknin-gerir-mynd-bond-af-ollu-mogu-legu-mogu-leg"
+  - date: 2023-11-10
+    title_is: "200 milljóna styrkur til að þróa gervigreindarmállíkan"
+    title_en: "200 million ISK grant to develop an AI language model"
+    outlet: "RÚV"
+    type: article
+    url: "https://www.ruv.is/frettir/innlent/2023-11-10-200-milljona-styrkur-til-ad-throa-gervigreindarmallikan-396224"
+  - date: 2023-06-18
+    title_is: "Gervigreind, verðbólga og úkraínskur kjúklingur í Sprengisandi"
+    title_en: "AI, inflation and Ukrainian chicken on Sprengisandur"
+    outlet: "Vísir"
+    type: article
+    url: "https://www.visir.is/g/20232429213d/f/f/skodanir"
+  - date: 2023-05-02
+    title_is: "Verðum að grípa inn í áður en gervigreindin tekur völdin"
+    title_en: "We must intervene before AI takes over"
+    outlet: "Vísir"
+    type: article
+    url: "https://www.visir.is/g/20232409837d/verdum-ad-gripa-inn-i-adur-en-gervigreindin-tekur-voldin"
+
 collaborations:
   academic:
     - "Marine and Freshwater Research Institute of Iceland (otolith age reading, fish species classification)"
