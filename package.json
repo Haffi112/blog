@@ -23,6 +23,7 @@
     "@retorquere/bibtex-parser": "^9.0.4",
     "@tailwindcss/vite": "^4.0.0",
     "astro": "^5.0.0",
+    "daisyui": "^5.5.19",
     "js-yaml": "^4.1.1",
     "katex": "^0.16.45",
     "rehype-katex": "^7.0.1",

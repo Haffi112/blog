@@ -79,11 +79,21 @@ const fullTitle = `${title} · Hafsteinn Einarsson`;
       // No-FOUC theme init: must run before paint.
       // Mirror the ids in src/styles/global.css and ThemeToggle.astro.
       (() => {
-        const VALID = new Set(['aubergine', 'dark', 'nordic', 'sunset', 'mono', 'reader']);
+        const VALID = new Set([
+          'reader', 'light', 'dark', 'corporate', 'business', 'nord',
+          'autumn', 'winter', 'lofi', 'pastel', 'cupcake', 'bumblebee',
+          'emerald', 'garden', 'forest', 'aqua', 'fantasy', 'cmyk',
+          'lemonade', 'acid', 'retro', 'valentine', 'caramellatte',
+          'silk', 'coffee', 'luxury', 'wireframe', 'black', 'dim',
+          'night', 'sunset', 'synthwave', 'cyberpunk', 'halloween',
+          'dracula', 'abyss'
+        ]);
+        // Migrate names from the pre-daisyUI custom theme set.
+        const MIGRATE = { aubergine: 'light', nordic: 'nord', mono: 'black' };
         let saved = localStorage.getItem('theme');
-        if (saved === 'light') saved = 'aubergine'; // migrate pre-multi-theme value
+        if (saved && MIGRATE[saved]) saved = MIGRATE[saved];
         const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = saved && VALID.has(saved) ? saved : (sysDark ? 'dark' : 'aubergine');
+        const theme = saved && VALID.has(saved) ? saved : (sysDark ? 'dark' : 'light');
         document.documentElement.dataset.theme = theme;
       })();
     </script>

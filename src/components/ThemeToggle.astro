@@ -1,21 +1,53 @@
 ---
-// Five-theme switcher rendered in the navbar.
+// 36-theme switcher: 35 daisyUI built-ins + the custom Reader theme.
 //
-// Each theme entry below maps to a `[data-theme="<id>"]` block in
-// src/styles/global.css. To add a sixth theme, append an entry here AND a
-// corresponding CSS variable block in global.css — nothing else needs to
-// change.
+// Swatches are determined at runtime by probing `--color-primary` on a
+// hidden <div data-theme=...> element — no hardcoded hex values to drift
+// out of sync with daisyUI updates.
 //
-// The early-init script lives in BaseLayout's <head> to avoid FOUC; this
-// component owns the dropdown UI and the click-to-apply behaviour.
+// To add a new theme:
+//   1. Append a `@plugin "daisyui/theme" { name: "myname"; ... }` block in
+//      src/styles/global.css (or enable a daisyUI built-in there).
+//   2. Append { id: 'myname', label: 'My Name' } to THEMES below.
+//   3. Append the id to the VALID set in BaseLayout's no-FOUC script.
 
 const THEMES = [
-  { id: 'aubergine', label: 'Aubergine', swatch: '#5B3A78', bg: '#FAFAF6' },
-  { id: 'dark',      label: 'Dark',      swatch: '#B79BDF', bg: '#131013' },
-  { id: 'nordic',    label: 'Nordic',    swatch: '#2E5C8A', bg: '#F4F6FA' },
-  { id: 'sunset',    label: 'Sunset',    swatch: '#B14F47', bg: '#FFF6EE' },
-  { id: 'mono',      label: 'Mono',      swatch: '#0A0A0A', bg: '#FFFFFF' },
-  { id: 'reader',    label: 'Reader',    swatch: '#234E70', bg: '#FBF8F1', note: 'OpenDyslexic font, larger body, italics → bold' }
+  { id: 'reader',       label: 'Reader',       note: 'OpenDyslexic, large body, italics → bold' },
+  { id: 'light',        label: 'Light' },
+  { id: 'dark',         label: 'Dark' },
+  { id: 'corporate',    label: 'Corporate' },
+  { id: 'business',     label: 'Business' },
+  { id: 'nord',         label: 'Nord' },
+  { id: 'autumn',       label: 'Autumn' },
+  { id: 'winter',       label: 'Winter' },
+  { id: 'lofi',         label: 'Lofi' },
+  { id: 'pastel',       label: 'Pastel' },
+  { id: 'cupcake',      label: 'Cupcake' },
+  { id: 'bumblebee',    label: 'Bumblebee' },
+  { id: 'emerald',      label: 'Emerald' },
+  { id: 'garden',       label: 'Garden' },
+  { id: 'forest',       label: 'Forest' },
+  { id: 'aqua',         label: 'Aqua' },
+  { id: 'fantasy',      label: 'Fantasy' },
+  { id: 'cmyk',         label: 'CMYK' },
+  { id: 'lemonade',     label: 'Lemonade' },
+  { id: 'acid',         label: 'Acid' },
+  { id: 'retro',        label: 'Retro' },
+  { id: 'valentine',    label: 'Valentine' },
+  { id: 'caramellatte', label: 'Caramellatte' },
+  { id: 'silk',         label: 'Silk' },
+  { id: 'coffee',       label: 'Coffee' },
+  { id: 'luxury',       label: 'Luxury' },
+  { id: 'wireframe',    label: 'Wireframe' },
+  { id: 'black',        label: 'Black' },
+  { id: 'dim',          label: 'Dim' },
+  { id: 'night',        label: 'Night' },
+  { id: 'sunset',       label: 'Sunset' },
+  { id: 'synthwave',    label: 'Synthwave' },
+  { id: 'cyberpunk',    label: 'Cyberpunk' },
+  { id: 'halloween',    label: 'Halloween' },
+  { id: 'dracula',      label: 'Dracula' },
+  { id: 'abyss',        label: 'Abyss' }
 ] as const;
 ---
 <div class="relative" data-theme-switcher>
@@ -27,14 +59,13 @@ const THEMES = [
     aria-label="Switch theme"
     class="flex items-center gap-2 px-2.5 py-1.5 rounded-full text-sm text-ink-muted hover:text-ink hover:bg-accent-primary-soft border border-rule transition-colors"
   >
-    {/* Current-theme dot — JS swaps the inline background on theme change. */}
     <span
       data-theme-dot
       class="w-3 h-3 rounded-full border border-rule shrink-0"
-      style="background:#5B3A78"
+      style="background:#888"
       aria-hidden="true"
     ></span>
-    <span class="hidden sm:inline" data-theme-label>Aubergine</span>
+    <span class="hidden sm:inline" data-theme-label>Light</span>
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <polyline points="6 9 12 15 18 9"></polyline>
     </svg>
@@ -44,7 +75,7 @@ const THEMES = [
     id="theme-switcher-menu"
     role="menu"
     aria-labelledby="theme-switcher-button"
-    class="hidden absolute right-0 mt-2 w-56 origin-top-right bg-bg-elev border border-rule rounded-lg shadow-lg z-30 p-1"
+    class="hidden absolute right-0 mt-2 w-64 max-h-[28rem] overflow-y-auto origin-top-right bg-bg-elev border border-rule rounded-lg shadow-lg z-30 p-1"
   >
     {THEMES.map((t) => (
       <button
@@ -55,8 +86,8 @@ const THEMES = [
         class="w-full flex items-start gap-3 px-3 py-2 rounded-md text-sm text-ink hover:bg-accent-primary-soft cursor-pointer transition-colors"
       >
         <span
+          data-theme-swatch={t.id}
           class="w-4 h-4 mt-0.5 rounded-full border border-rule shrink-0"
-          style={`background:${t.swatch}`}
           aria-hidden="true"
         ></span>
         <span class="flex-1 text-left">
@@ -86,14 +117,36 @@ const THEMES = [
     const themeById = Object.fromEntries(THEMES.map((t) => [t.id, t]));
     const valid = new Set(THEMES.map((t) => t.id));
 
-    /* Migrate legacy "light" -> "aubergine" so existing visitors don't see
-       a snapped reset on first load after the multi-theme upgrade. */
+    /* Migrate legacy theme names so returning visitors don't snap-reset. */
     const stored = localStorage.getItem('theme');
-    if (stored === 'light') localStorage.setItem('theme', 'aubergine');
+    const MIGRATE = { aubergine: 'light', nordic: 'nord', mono: 'black' };
+    if (stored && MIGRATE[stored]) {
+      localStorage.setItem('theme', MIGRATE[stored]);
+      if (root.dataset.theme === stored) root.dataset.theme = MIGRATE[stored];
+    }
+
+    /* Probe `--color-primary` for each theme by briefly setting data-theme on
+       an off-screen <div>. Runs once at mount; results cached into a map. */
+    const probe = document.createElement('div');
+    probe.style.cssText = 'position:absolute;left:-9999px;width:0;height:0;';
+    document.body.appendChild(probe);
+    const swatches = {};
+    for (const t of THEMES) {
+      probe.dataset.theme = t.id;
+      const v = getComputedStyle(probe).getPropertyValue('--color-primary').trim();
+      swatches[t.id] = v || '#888';
+    }
+    probe.remove();
+
+    /* Paint every swatch dot in the menu now that we have the values. */
+    document.querySelectorAll('[data-theme-swatch]').forEach((el) => {
+      const id = el.dataset.themeSwatch;
+      if (swatches[id]) el.style.background = swatches[id];
+    });
 
     const current = () => {
-      const t = root.dataset.theme || 'aubergine';
-      return valid.has(t) ? t : 'aubergine';
+      const t = root.dataset.theme || 'light';
+      return valid.has(t) ? t : 'light';
     };
 
     const apply = (id) => {
@@ -108,7 +161,7 @@ const THEMES = [
       const t = themeById[id];
       const dot = wrap.querySelector('[data-theme-dot]');
       const label = wrap.querySelector('[data-theme-label]');
-      if (dot) dot.style.background = t.swatch;
+      if (dot && swatches[id]) dot.style.background = swatches[id];
       if (label) label.textContent = t.label;
     };
 
@@ -121,6 +174,9 @@ const THEMES = [
     const open = () => {
       menu.classList.remove('hidden');
       btn.setAttribute('aria-expanded', 'true');
+      /* Scroll the active option into view inside the menu. */
+      const active = menu.querySelector(`[data-theme-option="${current()}"]`);
+      if (active) active.scrollIntoView({ block: 'nearest' });
     };
     const close = () => {
       menu.classList.add('hidden');
@@ -148,8 +204,6 @@ const THEMES = [
       if (e.key === 'Escape') close();
     });
 
-    /* Paint to the current theme on load so the button & checkmark agree
-       with the early-init script that set <html data-theme>. */
     paintButton(current());
     paintMenu(current());
   })();

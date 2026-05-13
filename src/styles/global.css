@@ -6,55 +6,80 @@
 @import "katex/dist/katex.min.css";
 @import "tailwindcss";
 
-/* --- Theme system ----------------------------------------------------------
-   Six themes, swappable from the navbar. The default (no [data-theme]) is
-   Aubergine; any other theme adds a `[data-theme="<name>"]` selector that
-   overrides the @theme tokens. Tailwind 4 generates the utilities
-   (bg-bg, text-ink, border-rule, text-accent-primary, rounded-card,
-   text-prose, font-prose, …) and reads them through var(--…) at runtime,
-   so an attribute swap on <html> re-skins everything atomically.
+/* daisyUI v5 — ship every built-in theme (~35) and add the user's custom
+   "reader" theme below. */
+@plugin "daisyui" {
+  themes: all;
+}
+@plugin "daisyui/theme" {
+  name: "reader";
+  default: false;
+  prefersdark: false;
+  color-scheme: light;
+  --color-base-100: oklch(98% 0.02 80);
+  --color-base-200: oklch(100% 0 0);
+  --color-base-300: oklch(86% 0.04 75);
+  --color-base-content: oklch(20% 0.02 60);
+  --color-primary: oklch(45% 0.10 240);
+  --color-primary-content: oklch(98% 0 0);
+  --color-secondary: oklch(50% 0.12 70);
+  --color-secondary-content: oklch(98% 0 0);
+  --color-accent: oklch(45% 0.16 30);
+  --color-accent-content: oklch(98% 0 0);
+  --color-neutral: oklch(40% 0.02 70);
+  --color-neutral-content: oklch(98% 0 0);
+  --color-info: oklch(60% 0.10 220);
+  --color-success: oklch(55% 0.10 160);
+  --color-warning: oklch(70% 0.14 70);
+  --color-error: oklch(55% 0.18 25);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
 
-   The themes differ along three axes, not just colour:
-     - Palette (bg, ink, accents)
-     - Typography (font family, body size, line-height, italics handling)
-     - Shape (card corner radius, border weight)
+/* --- Custom tokens layered on top of daisyUI -------------------------------
+   We alias every utility our markup uses (bg-bg, text-ink, border-rule,
+   text-accent-primary, font-prose, rounded-card …) to a daisyUI token, so
+   when daisyUI re-skins via [data-theme] our utilities follow automatically.
 
-   To add a new theme:
-     1. Add a `[data-theme="myname"] { … }` block below.
-     2. Add an entry to THEMES in src/components/ThemeToggle.astro.
-     3. Add the id to the VALID set in BaseLayout's no-FOUC script.
+   This is the bridge that lets all existing Astro components keep their
+   class names while gaining 35 new palettes.
 --------------------------------------------------------------------------- */
-
-/* Trigger `dark:*` Tailwind variants when the dark theme is active. */
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
-
-/* --- Aubergine (default) -------------------------------------------------- */
 @theme {
-  /* Colors */
-  --color-bg: #FAFAF6;
-  --color-bg-elev: #FFFFFF;
-  --color-ink: #1A1418;
-  --color-ink-muted: #5A5560;
-  --color-rule: #E8E4E2;
-  --color-accent-primary: #5B3A78;
-  --color-accent-primary-soft: #F2EBF9;
-  --color-accent-warm: #8E5E0F;
-  --color-accent-warm-soft: #F8F1DD;
-  --color-accent-energy: #A84A1F;
+  /* Surface + ink (mapped to daisyUI's base + content scale) */
+  --color-bg: var(--color-base-100);
+  --color-bg-elev: var(--color-base-200);
+  --color-ink: var(--color-base-content);
+  --color-ink-muted: color-mix(in oklch, var(--color-base-content) 65%, var(--color-base-100));
+  --color-rule: var(--color-base-300);
 
-  /* Fonts (Tailwind 4 generates font-sans, font-serif, font-mono, font-prose) */
+  /* Accents (mapped to daisyUI's primary/secondary/accent) */
+  --color-accent-primary: var(--color-primary);
+  --color-accent-primary-soft: color-mix(in oklch, var(--color-primary) 14%, var(--color-base-100));
+  --color-accent-warm: var(--color-secondary);
+  --color-accent-warm-soft: color-mix(in oklch, var(--color-secondary) 14%, var(--color-base-100));
+  --color-accent-energy: var(--color-accent);
+
+  /* Fonts — tied to the @theme so themes can override --font-prose and the
+     .prose-body component will reflow with the new family. */
   --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
   --font-serif: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
   --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
   --font-prose: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
 
-  /* Prose sizing (consumed by .prose-body) */
+  /* Prose sizing — also per-theme overridable */
   --prose-size: 1.0625rem;
   --prose-leading: 1.55;
   --prose-weight: 400;
 
-  /* Card shape (drives Tailwind's `rounded-card` utility) */
-  --radius-card: 0.75rem;
+  /* Card radius — uses daisyUI's --radius-box when defined by the theme so
+     cards naturally pick up each daisyUI theme's corner style. */
+  --radius-card: var(--radius-box, 0.75rem);
   --border-card: 1px;
 
   /* Layout widths (drive max-w-page, max-w-prose, max-w-pubs utilities) */
@@ -68,119 +93,41 @@
   --text-display--letter-spacing: -0.02em;
 }
 
-/* --- Dark ------------------------------------------------------------------
-   Aubergine inverted; ink-on-bg flipped, accents lifted to remain legible.
-   Typography unchanged from default. */
-[data-theme="dark"] {
-  --color-bg: #131013;
-  --color-bg-elev: #1A171C;
-  --color-ink: #EDE9E3;
-  --color-ink-muted: #8A8389;
-  --color-rule: #292528;
-  --color-accent-primary: #B79BDF;
-  --color-accent-primary-soft: #2A1F37;
-  --color-accent-warm: #E5C46E;
-  --color-accent-warm-soft: #2E2716;
-  --color-accent-energy: #E58A5E;
+/* daisyUI sets data-theme on <html>; we use the same hook to fire `dark:*`
+   Tailwind variants for the "dark" theme (and any user variants we add). */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* --- Typography overlays on top of daisyUI palettes ------------------------
+   daisyUI varies palette per theme but not typography. Layer a few
+   personality overlays so adjacent themes don't all look the same:
+     - wireframe / black / luxury → serif everywhere (newspaper feel)
+     - cupcake / valentine / garden / pastel → spacious leading
+     - reader → OpenDyslexic + bold accents replace italics
+--------------------------------------------------------------------------- */
+[data-theme="wireframe"],
+[data-theme="black"],
+[data-theme="luxury"] {
+  --font-sans: var(--font-serif);
+  --font-prose: var(--font-serif);
 }
 
-/* --- Nordic ----------------------------------------------------------------
-   Crisp library-card aesthetic. Sans-serif body, tighter leading,
-   sharper card corners. */
-[data-theme="nordic"] {
-  --color-bg: #F4F6FA;
-  --color-bg-elev: #FFFFFF;
-  --color-ink: #1B2333;
-  --color-ink-muted: #5A6678;
-  --color-rule: #D9DFE8;
-  --color-accent-primary: #2E5C8A;
-  --color-accent-primary-soft: #E3ECF6;
-  --color-accent-warm: #486A82;
-  --color-accent-warm-soft: #E7ECF1;
-  --color-accent-energy: #B14B4B;
-
-  /* Sans body, tighter copy */
-  --font-prose: "Inter Variable", "Inter", system-ui, sans-serif;
-  --prose-size: 1rem;
-  --prose-leading: 1.5;
-  --prose-weight: 400;
-  --radius-card: 0.25rem;
-}
-
-/* --- Sunset ----------------------------------------------------------------
-   Warm, spacious, loose leading. Larger rounded cards. */
-[data-theme="sunset"] {
-  --color-bg: #FFF6EE;
-  --color-bg-elev: #FFFFFF;
-  --color-ink: #2D1F1A;
-  --color-ink-muted: #7A5E54;
-  --color-rule: #F3DDCC;
-  --color-accent-primary: #B14F47;
-  --color-accent-primary-soft: #FFE3D6;
-  --color-accent-warm: #DC8845;
-  --color-accent-warm-soft: #FFEAD3;
-  --color-accent-energy: #9D3A6E;
-
-  --prose-size: 1.125rem;
+[data-theme="cupcake"],
+[data-theme="valentine"],
+[data-theme="garden"],
+[data-theme="pastel"],
+[data-theme="caramellatte"] {
   --prose-leading: 1.72;
-  --radius-card: 1.25rem;
+  --prose-size: 1.125rem;
 }
 
-/* --- Mono ------------------------------------------------------------------
-   Newspaper. Serif everywhere (including nav), sharp corners, thicker
-   rules, no colour accent — emphasis comes from weight and rules. */
-[data-theme="mono"] {
-  --color-bg: #FFFFFF;
-  --color-bg-elev: #FAFAFA;
-  --color-ink: #0A0A0A;
-  --color-ink-muted: #525252;
-  --color-rule: #C8C8C8;
-  --color-accent-primary: #0A0A0A;
-  --color-accent-primary-soft: #EFEFEF;
-  --color-accent-warm: #404040;
-  --color-accent-warm-soft: #E8E8E8;
-  --color-accent-energy: #1A1A1A;
-
-  /* Serif for nav and headings too */
-  --font-sans: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
-  --font-prose: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
-  --prose-size: 1.0625rem;
-  --prose-leading: 1.5;
-  --radius-card: 0;
-  --border-card: 1.5px;
-}
-
-/* --- Reader (dyslexia-friendly) -------------------------------------------
-   OpenDyslexic font (OFL, free open alternative to commercial Dyslexie
-   Font) throughout. Cream off-white background to reduce contrast glare,
-   larger body, generous line-height. Italics — known to be harder for
-   dyslexic readers — are converted to bold accent colour. Rules near the
-   bottom of the file enforce these. */
 [data-theme="reader"] {
-  --color-bg: #FBF8F1;
-  --color-bg-elev: #FFFFFF;
-  --color-ink: #161310;
-  --color-ink-muted: #5A5043;
-  --color-rule: #DDD3C0;
-  --color-accent-primary: #234E70;        /* high-contrast blue */
-  --color-accent-primary-soft: #E0EBF5;
-  --color-accent-warm: #8A4F00;           /* deep amber */
-  --color-accent-warm-soft: #F4E7D0;
-  --color-accent-energy: #963227;         /* deep red */
-
   --font-sans: "OpenDyslexic", "Comic Sans MS", system-ui, sans-serif;
   --font-prose: "OpenDyslexic", "Comic Sans MS", system-ui, sans-serif;
   --prose-size: 1.125rem;
   --prose-leading: 1.85;
-  --prose-weight: 400;
-  --radius-card: 0.5rem;
 }
 
-/* In the reader theme, italic emphasis is replaced by bold-in-accent —
-   recommended by dyslexia-friendly typography guidelines because italics
-   tilt letterforms and reduce legibility. The selector wins because of
-   the [data-theme] specificity (10) > Tailwind utility specificity (10),
-   so it overrides the inline `style: italic` from the show rule. */
+/* Reader-mode italics → bold accent (better for dyslexic readers). */
 [data-theme="reader"] em,
 [data-theme="reader"] i,
 [data-theme="reader"] .italic,
@@ -191,7 +138,6 @@
   color: var(--color-accent-primary);
 }
 
-/* OpenDyslexic looks heavy in the navbar; let it breathe with extra padding. */
 [data-theme="reader"] nav a,
 [data-theme="reader"] nav button {
   letter-spacing: 0.01em;
