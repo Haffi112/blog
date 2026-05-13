@@ -4,13 +4,24 @@
 @import "katex/dist/katex.min.css";
 @import "tailwindcss";
 
-/* Dark mode: trigger on [data-theme="dark"] anywhere in the ancestor chain. */
+/* --- Theme system ----------------------------------------------------------
+   Five themes, swappable from the navbar. The default (no [data-theme]) is
+   Aubergine; any other theme adds a `[data-theme="<name>"]` selector that
+   overrides the @theme tokens. Tailwind 4 generates the utilities (bg-bg,
+   text-ink, border-rule, text-accent-primary, etc.) and reads them through
+   var(--color-…) at runtime, so an attribute swap on <html> re-skins
+   everything atomically.
+
+   To add a new theme:
+     1. Add a `[data-theme="myname"] { … }` block below.
+     2. Add an entry to THEMES in src/components/ThemeToggle.astro.
+   That's it.
+--------------------------------------------------------------------------- */
+
+/* Trigger `dark:*` Tailwind variants when the dark theme is active. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
-/* --- Design tokens (light mode defaults) ---
-   Defined inside @theme so Tailwind generates utilities (bg-bg, text-ink,
-   max-w-prose, font-serif, etc.) AND exposes them as CSS custom properties
-   we can read in arbitrary CSS via var(--color-bg) etc. */
+/* --- Aubergine (default) -------------------------------------------------- */
 @theme {
   /* Colors */
   --color-bg: #FAFAF6;
@@ -40,10 +51,8 @@
   --text-display--letter-spacing: -0.02em;
 }
 
-/* --- Dark mode overrides ---
-   Override the @theme tokens at runtime when [data-theme="dark"] is set.
-   Tailwind's generated utilities reference var(--color-…) so they pick up
-   these overrides automatically. */
+/* --- Dark ------------------------------------------------------------------
+   Aubergine inverted; ink-on-bg flipped, accents lifted to remain legible. */
 [data-theme="dark"] {
   --color-bg: #131013;
   --color-bg-elev: #1A171C;
@@ -55,6 +64,51 @@
   --color-accent-warm: #E5C46E;
   --color-accent-warm-soft: #2E2716;
   --color-accent-energy: #E58A5E;
+}
+
+/* --- Nordic ----------------------------------------------------------------
+   Cool grays + deep blue. Crisp, library-card aesthetic. */
+[data-theme="nordic"] {
+  --color-bg: #F4F6FA;
+  --color-bg-elev: #FFFFFF;
+  --color-ink: #1B2333;
+  --color-ink-muted: #5A6678;
+  --color-rule: #D9DFE8;
+  --color-accent-primary: #2E5C8A;
+  --color-accent-primary-soft: #E3ECF6;
+  --color-accent-warm: #486A82;
+  --color-accent-warm-soft: #E7ECF1;
+  --color-accent-energy: #B14B4B;
+}
+
+/* --- Sunset ----------------------------------------------------------------
+   Warm peach + terracotta + magenta. A sunset over the bay. */
+[data-theme="sunset"] {
+  --color-bg: #FFF6EE;
+  --color-bg-elev: #FFFFFF;
+  --color-ink: #2D1F1A;
+  --color-ink-muted: #7A5E54;
+  --color-rule: #F3DDCC;
+  --color-accent-primary: #B14F47;
+  --color-accent-primary-soft: #FFE3D6;
+  --color-accent-warm: #DC8845;
+  --color-accent-warm-soft: #FFEAD3;
+  --color-accent-energy: #9D3A6E;
+}
+
+/* --- Mono ------------------------------------------------------------------
+   Pure grayscale. The "newspaper" look. Accents are graphite, not colourful. */
+[data-theme="mono"] {
+  --color-bg: #FFFFFF;
+  --color-bg-elev: #FAFAFA;
+  --color-ink: #0A0A0A;
+  --color-ink-muted: #6E6E6E;
+  --color-rule: #E5E5E5;
+  --color-accent-primary: #0A0A0A;
+  --color-accent-primary-soft: #F0F0F0;
+  --color-accent-warm: #404040;
+  --color-accent-warm-soft: #EBEBEB;
+  --color-accent-energy: #1A1A1A;
 }
 
 /* --- Non-Tailwind custom properties (motion, used in transition declarations) --- */
@@ -73,6 +127,12 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+
+    /* Smooth theme transitions — applies to bg/text/border across the doc.
+       Excluded from motion-reduced users via the rule below. */
+    transition:
+      background-color var(--motion-base) var(--ease-out),
+      color var(--motion-base) var(--ease-out);
   }
 
   body {

@@ -77,10 +77,13 @@ const fullTitle = `${title} · Hafsteinn Einarsson`;
     <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml" />
     <script is:inline>
       // No-FOUC theme init: must run before paint.
+      // Mirror the ids in src/styles/global.css and ThemeToggle.astro.
       (() => {
-        const saved = localStorage.getItem('theme');
+        const VALID = new Set(['aubergine', 'dark', 'nordic', 'sunset', 'mono']);
+        let saved = localStorage.getItem('theme');
+        if (saved === 'light') saved = 'aubergine'; // migrate pre-multi-theme value
         const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = saved ?? (sysDark ? 'dark' : 'light');
+        const theme = saved && VALID.has(saved) ? saved : (sysDark ? 'dark' : 'aubergine');
         document.documentElement.dataset.theme = theme;
       })();
     </script>
