@@ -1,21 +1,28 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/source-serif-4";
 @import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource/opendyslexic/latin-400.css";
+@import "@fontsource/opendyslexic/latin-700.css";
 @import "katex/dist/katex.min.css";
 @import "tailwindcss";
 
 /* --- Theme system ----------------------------------------------------------
-   Five themes, swappable from the navbar. The default (no [data-theme]) is
+   Six themes, swappable from the navbar. The default (no [data-theme]) is
    Aubergine; any other theme adds a `[data-theme="<name>"]` selector that
-   overrides the @theme tokens. Tailwind 4 generates the utilities (bg-bg,
-   text-ink, border-rule, text-accent-primary, etc.) and reads them through
-   var(--color-…) at runtime, so an attribute swap on <html> re-skins
-   everything atomically.
+   overrides the @theme tokens. Tailwind 4 generates the utilities
+   (bg-bg, text-ink, border-rule, text-accent-primary, rounded-card,
+   text-prose, font-prose, …) and reads them through var(--…) at runtime,
+   so an attribute swap on <html> re-skins everything atomically.
+
+   The themes differ along three axes, not just colour:
+     - Palette (bg, ink, accents)
+     - Typography (font family, body size, line-height, italics handling)
+     - Shape (card corner radius, border weight)
 
    To add a new theme:
      1. Add a `[data-theme="myname"] { … }` block below.
      2. Add an entry to THEMES in src/components/ThemeToggle.astro.
-   That's it.
+     3. Add the id to the VALID set in BaseLayout's no-FOUC script.
 --------------------------------------------------------------------------- */
 
 /* Trigger `dark:*` Tailwind variants when the dark theme is active. */
@@ -35,10 +42,20 @@
   --color-accent-warm-soft: #F8F1DD;
   --color-accent-energy: #A84A1F;
 
-  /* Fonts */
+  /* Fonts (Tailwind 4 generates font-sans, font-serif, font-mono, font-prose) */
   --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
   --font-serif: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
   --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
+  --font-prose: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
+
+  /* Prose sizing (consumed by .prose-body) */
+  --prose-size: 1.0625rem;
+  --prose-leading: 1.55;
+  --prose-weight: 400;
+
+  /* Card shape (drives Tailwind's `rounded-card` utility) */
+  --radius-card: 0.75rem;
+  --border-card: 1px;
 
   /* Layout widths (drive max-w-page, max-w-prose, max-w-pubs utilities) */
   --width-page: 1120px;
@@ -52,7 +69,8 @@
 }
 
 /* --- Dark ------------------------------------------------------------------
-   Aubergine inverted; ink-on-bg flipped, accents lifted to remain legible. */
+   Aubergine inverted; ink-on-bg flipped, accents lifted to remain legible.
+   Typography unchanged from default. */
 [data-theme="dark"] {
   --color-bg: #131013;
   --color-bg-elev: #1A171C;
@@ -67,7 +85,8 @@
 }
 
 /* --- Nordic ----------------------------------------------------------------
-   Cool grays + deep blue. Crisp, library-card aesthetic. */
+   Crisp library-card aesthetic. Sans-serif body, tighter leading,
+   sharper card corners. */
 [data-theme="nordic"] {
   --color-bg: #F4F6FA;
   --color-bg-elev: #FFFFFF;
@@ -79,10 +98,17 @@
   --color-accent-warm: #486A82;
   --color-accent-warm-soft: #E7ECF1;
   --color-accent-energy: #B14B4B;
+
+  /* Sans body, tighter copy */
+  --font-prose: "Inter Variable", "Inter", system-ui, sans-serif;
+  --prose-size: 1rem;
+  --prose-leading: 1.5;
+  --prose-weight: 400;
+  --radius-card: 0.25rem;
 }
 
 /* --- Sunset ----------------------------------------------------------------
-   Warm peach + terracotta + magenta. A sunset over the bay. */
+   Warm, spacious, loose leading. Larger rounded cards. */
 [data-theme="sunset"] {
   --color-bg: #FFF6EE;
   --color-bg-elev: #FFFFFF;
@@ -94,24 +120,84 @@
   --color-accent-warm: #DC8845;
   --color-accent-warm-soft: #FFEAD3;
   --color-accent-energy: #9D3A6E;
+
+  --prose-size: 1.125rem;
+  --prose-leading: 1.72;
+  --radius-card: 1.25rem;
 }
 
 /* --- Mono ------------------------------------------------------------------
-   Pure grayscale. The "newspaper" look. Accents are graphite, not colourful. */
+   Newspaper. Serif everywhere (including nav), sharp corners, thicker
+   rules, no colour accent — emphasis comes from weight and rules. */
 [data-theme="mono"] {
   --color-bg: #FFFFFF;
   --color-bg-elev: #FAFAFA;
   --color-ink: #0A0A0A;
-  --color-ink-muted: #6E6E6E;
-  --color-rule: #E5E5E5;
+  --color-ink-muted: #525252;
+  --color-rule: #C8C8C8;
   --color-accent-primary: #0A0A0A;
-  --color-accent-primary-soft: #F0F0F0;
+  --color-accent-primary-soft: #EFEFEF;
   --color-accent-warm: #404040;
-  --color-accent-warm-soft: #EBEBEB;
+  --color-accent-warm-soft: #E8E8E8;
   --color-accent-energy: #1A1A1A;
+
+  /* Serif for nav and headings too */
+  --font-sans: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
+  --font-prose: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
+  --prose-size: 1.0625rem;
+  --prose-leading: 1.5;
+  --radius-card: 0;
+  --border-card: 1.5px;
 }
 
-/* --- Non-Tailwind custom properties (motion, used in transition declarations) --- */
+/* --- Reader (dyslexia-friendly) -------------------------------------------
+   OpenDyslexic font (OFL, free open alternative to commercial Dyslexie
+   Font) throughout. Cream off-white background to reduce contrast glare,
+   larger body, generous line-height. Italics — known to be harder for
+   dyslexic readers — are converted to bold accent colour. Rules near the
+   bottom of the file enforce these. */
+[data-theme="reader"] {
+  --color-bg: #FBF8F1;
+  --color-bg-elev: #FFFFFF;
+  --color-ink: #161310;
+  --color-ink-muted: #5A5043;
+  --color-rule: #DDD3C0;
+  --color-accent-primary: #234E70;        /* high-contrast blue */
+  --color-accent-primary-soft: #E0EBF5;
+  --color-accent-warm: #8A4F00;           /* deep amber */
+  --color-accent-warm-soft: #F4E7D0;
+  --color-accent-energy: #963227;         /* deep red */
+
+  --font-sans: "OpenDyslexic", "Comic Sans MS", system-ui, sans-serif;
+  --font-prose: "OpenDyslexic", "Comic Sans MS", system-ui, sans-serif;
+  --prose-size: 1.125rem;
+  --prose-leading: 1.85;
+  --prose-weight: 400;
+  --radius-card: 0.5rem;
+}
+
+/* In the reader theme, italic emphasis is replaced by bold-in-accent —
+   recommended by dyslexia-friendly typography guidelines because italics
+   tilt letterforms and reduce legibility. The selector wins because of
+   the [data-theme] specificity (10) > Tailwind utility specificity (10),
+   so it overrides the inline `style: italic` from the show rule. */
+[data-theme="reader"] em,
+[data-theme="reader"] i,
+[data-theme="reader"] .italic,
+[data-theme="reader"] em *,
+[data-theme="reader"] i * {
+  font-style: normal !important;
+  font-weight: 700;
+  color: var(--color-accent-primary);
+}
+
+/* OpenDyslexic looks heavy in the navbar; let it breathe with extra padding. */
+[data-theme="reader"] nav a,
+[data-theme="reader"] nav button {
+  letter-spacing: 0.01em;
+}
+
+/* --- Non-Tailwind custom properties (motion) --- */
 :root {
   --motion-fast: 150ms;
   --motion-base: 200ms;
@@ -127,9 +213,6 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-
-    /* Smooth theme transitions — applies to bg/text/border across the doc.
-       Excluded from motion-reduced users via the rule below. */
     transition:
       background-color var(--motion-base) var(--ease-out),
       color var(--motion-base) var(--ease-out);
@@ -166,14 +249,13 @@
 /* --- Components --- */
 @layer components {
   .prose-body {
-    font-family: var(--font-serif);
-    font-size: 1.0625rem;
-    line-height: 1.55;
+    font-family: var(--font-prose);
+    font-size: var(--prose-size);
+    line-height: var(--prose-leading);
+    font-weight: var(--prose-weight, 400);
     color: var(--color-ink);
   }
 
-  /* Inline prose links are distinguishable by underline as well as colour,
-     to satisfy WCAG 1.4.1 "Use of color" and axe link-in-text-block. */
   .prose-body a {
     text-decoration: underline;
     text-decoration-thickness: 1px;

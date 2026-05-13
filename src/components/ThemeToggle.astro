@@ -14,7 +14,8 @@ const THEMES = [
   { id: 'dark',      label: 'Dark',      swatch: '#B79BDF', bg: '#131013' },
   { id: 'nordic',    label: 'Nordic',    swatch: '#2E5C8A', bg: '#F4F6FA' },
   { id: 'sunset',    label: 'Sunset',    swatch: '#B14F47', bg: '#FFF6EE' },
-  { id: 'mono',      label: 'Mono',      swatch: '#0A0A0A', bg: '#FFFFFF' }
+  { id: 'mono',      label: 'Mono',      swatch: '#0A0A0A', bg: '#FFFFFF' },
+  { id: 'reader',    label: 'Reader',    swatch: '#234E70', bg: '#FBF8F1', note: 'OpenDyslexic font, larger body, italics → bold' }
 ] as const;
 ---
 <div class="relative" data-theme-switcher>
@@ -43,24 +44,28 @@ const THEMES = [
     id="theme-switcher-menu"
     role="menu"
     aria-labelledby="theme-switcher-button"
-    class="hidden absolute right-0 mt-2 w-44 origin-top-right bg-bg-elev border border-rule rounded-lg shadow-lg z-30 p-1"
+    class="hidden absolute right-0 mt-2 w-56 origin-top-right bg-bg-elev border border-rule rounded-lg shadow-lg z-30 p-1"
   >
     {THEMES.map((t) => (
       <button
         type="button"
         role="menuitemradio"
         data-theme-option={t.id}
-        class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-ink hover:bg-accent-primary-soft cursor-pointer transition-colors"
+        title={t.note ?? t.label}
+        class="w-full flex items-start gap-3 px-3 py-2 rounded-md text-sm text-ink hover:bg-accent-primary-soft cursor-pointer transition-colors"
       >
         <span
-          class="w-4 h-4 rounded-full border border-rule shrink-0"
+          class="w-4 h-4 mt-0.5 rounded-full border border-rule shrink-0"
           style={`background:${t.swatch}`}
           aria-hidden="true"
         ></span>
-        <span class="flex-1 text-left">{t.label}</span>
+        <span class="flex-1 text-left">
+          <span class="block">{t.label}</span>
+          {t.note && <span class="block text-[10px] leading-tight text-ink-muted mt-0.5">{t.note}</span>}
+        </span>
         <svg
           data-theme-check={t.id}
-          class="hidden w-3.5 h-3.5 text-accent-primary"
+          class="hidden w-3.5 h-3.5 mt-0.5 text-accent-primary"
           viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
         >
           <polyline points="20 6 9 17 4 12"></polyline>

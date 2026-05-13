@@ -79,7 +79,7 @@ const fullTitle = `${title} · Hafsteinn Einarsson`;
       // No-FOUC theme init: must run before paint.
       // Mirror the ids in src/styles/global.css and ThemeToggle.astro.
       (() => {
-        const VALID = new Set(['aubergine', 'dark', 'nordic', 'sunset', 'mono']);
+        const VALID = new Set(['aubergine', 'dark', 'nordic', 'sunset', 'mono', 'reader']);
         let saved = localStorage.getItem('theme');
         if (saved === 'light') saved = 'aubergine'; // migrate pre-multi-theme value
         const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
