@@ -17,3 +17,7 @@ cv/data.typ
 # Personal working files (contain PII like phone/DOB) — keep local
 old_cvs/
 personal_images/
+
+# Playwright MCP scratch (visual-regression screenshots, etc.)
+.playwright-mcp/
+theme-*.png
