@@ -2,8 +2,8 @@ title: Analysis of Algorithms
 level: mixed
 language: english
 semesters: []
-description: |
-  Bridge course between the BA and MSc programmes in computer science.
+description: >-
+  Bridge course between the BSc and MSc programmes in computer science.
   Algorithm design and analysis with an emphasis on asymptotic
   complexity, divide-and-conquer, greedy methods, dynamic programming,
   graph algorithms, and the basics of NP-completeness. Taught in English.

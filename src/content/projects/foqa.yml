@@ -1,5 +1,5 @@
 name: FoQA
-summary: |
+summary: >-
   The first dedicated question-answering dataset for Faroese, with
   extractive and generative variants. Built through translation and
   adaptation of existing QA benchmarks combined with native-speaker

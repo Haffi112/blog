@@ -1,5 +1,5 @@
 name: GameQA
-summary: |
+summary: >-
   A gamified mobile-app platform for crowdsourcing multi-domain
   question-answering datasets. Demonstrated at EACL 2023 System
   Demonstrations and used to collect the RUQuAD-1 reading-comprehension

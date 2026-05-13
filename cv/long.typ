@@ -64,6 +64,15 @@
 ]
 #v(0.4em)
 #plain-entry[
+  *Past PhD committees* — #data.phd_committee_alumni_count
+]
+#for s in data.phd_committee_alumni [
+  #entry([#if s.at("endYear", default: none) != none [#str(s.endYear)] else [—]])[
+    *#s.name*#if s.at("title", default: none) != none [ — #s.title]
+  ]
+]
+#v(0.4em)
+#plain-entry[
   *Master's theses completed* — #data.alumni_msc_count
 ]
 #for s in data.alumni_msc [

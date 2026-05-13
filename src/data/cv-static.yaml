@@ -14,7 +14,7 @@ contact:
   github: https://github.com/Haffi112
   nationality: Icelandic
 
-research_statement: |
+research_statement: >-
   My PhD at ETH Zurich centred on mathematical models of neural systems,
   drawing on probability theory, distributed computing, and differential
   equations. After a postdoc in systems neuroscience and two years as a
@@ -30,11 +30,11 @@ current_positions:
   - title: Associate Professor in Computer Science
     institution: University of Iceland
     department: Faculty of Industrial Engineering, Mechanical Engineering and Computer Science
-    start: 2020
+    start: 2024
     end: present
     location: Iceland
   - title: Research Scientist
-    institution: deCODE genetics
+    institution: Amgen deCODE
     start: 2021
     end: present
     location: Iceland
@@ -44,6 +44,11 @@ previous_positions:
     institution: KatlaCode
     start: 2024
     end: present
+    location: Iceland
+  - title: Assistant Professor in Computer Science
+    institution: University of Iceland
+    start: 2020
+    end: 2024
     location: Iceland
   - title: Co-founder
     institution: Prescriby
@@ -122,15 +127,15 @@ awards_and_grants:
 service:
   reviewing:
     - venue: ACL Rolling Review
-      years: "2024"
+      years: "2024–present"
+    - venue: LREC workshops
+      years: "2022–present"
     - venue: Animals
       years: "2023"
     - venue: Sensors
       years: "2023"
     - venue: Applied Sciences
       years: "2023"
-    - venue: LREC workshops
-      years: "2022"
     - venue: NeurIPS workshops
       years: "2021"
     - venue: Machine Learning (Springer)
@@ -142,10 +147,14 @@ service:
     - venue: SIROCCO
       years: "2017"
   roles:
+    - role: Board member
+      organization: Association of Computer Scientists in Iceland
+      start: 2026
+      end: present
     - role: President
       organization: Association of Computer Scientists in Iceland
       start: 2020
-      end: present
+      end: 2026
     - role: Committee member
       organization: SKÝ committee on data applications
       start: 2019
@@ -281,12 +290,6 @@ media_appearances:
     outlet: "Vísir"
     type: opinion
     url: "https://www.visir.is/g/20242629659d/af-for-domum-gervi-greindar-gisla-marteini-og-thvi-sem-thu-getur-gert-til-ad-hafa-a-hrif-"
-  - date: 2024-06-02
-    title_is: "Gegnumlýsing — þankabrot frambjóðanda að loknu forsetakjöri"
-    title_en: "X-ray — reflections of a candidate after the presidential election"
-    outlet: "Vísir"
-    type: opinion
-    url: "https://www.visir.is/g/20242579477d/f/skodanir"
   - date: 2024-05-21
     title_is: "Geta kóðað sjúkraskýrslur á íslensku"
     title_en: "Can code medical records in Icelandic"
@@ -324,7 +327,7 @@ collaborations:
     - "TrustLLM partners (Faroese, German and other European groups)"
     - "University of Copenhagen"
     - "ETH Zurich"
-    - "deCODE genetics"
+    - "Amgen deCODE"
     - "Faculty of Food Science, University of Iceland"
     - "Landspítali (Icelandic National Hospital) — clinical coding and heart-failure pharmacotherapy"
   industry:

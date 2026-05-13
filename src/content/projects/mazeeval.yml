@@ -1,5 +1,5 @@
 name: MazeEval
-summary: |
+summary: >-
   A benchmark for testing sequential decision-making in language models
   through navigation tasks in procedurally generated mazes. Single-author
   preprint with the benchmark released alongside the paper.

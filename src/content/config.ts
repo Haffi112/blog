@@ -59,7 +59,7 @@ const students = defineCollection({
   type: 'data',
   schema: z.object({
     name: z.string(),
-    role: z.enum(['phd-main', 'phd-committee', 'msc', 'alumni-phd', 'alumni-msc']),
+    role: z.enum(['phd-main', 'phd-committee', 'msc', 'alumni-phd', 'alumni-msc', 'alumni-phd-committee']),
     title: z.string().optional(),
     startYear: z.number().int().optional(),
     endYear: z.number().int().optional(),

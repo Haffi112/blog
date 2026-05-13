@@ -1,5 +1,5 @@
 name: IceBERT family
-summary: |
+summary: >-
   A family of Icelandic BERT-style language models pre-trained on the
   Icelandic Crawled Corpus. Released alongside the LREC 2022 paper with
   Miðeind, the IceBERT checkpoints have become the foundation for much

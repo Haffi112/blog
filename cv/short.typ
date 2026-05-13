@@ -55,7 +55,7 @@
   *PhD students (main supervisor)*: #data.phd_main.map(s => s.name).join(", ")
 ]
 #plain-entry[
-  *PhD committee*: #data.phd_committee.map(s => s.name).join(", ")
+  *PhD committee*: #data.phd_committee.map(s => s.name).join(", ")#if data.phd_committee_alumni_count > 0 [, plus #data.phd_committee_alumni_count completed]
 ]
 #plain-entry[
   *Master's theses completed*: #data.alumni_msc_count since 2017, currently supervising #data.msc_current_count.

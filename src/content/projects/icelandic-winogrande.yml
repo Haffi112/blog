@@ -1,5 +1,5 @@
 name: Icelandic WinoGrande
-summary: |
+summary: >-
   An Icelandic adaptation of the WinoGrande commonsense-reasoning
   benchmark, built to evaluate Icelandic language models on pronoun
   disambiguation and world-knowledge tasks. Released by Miðeind ehf.

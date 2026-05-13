@@ -100,7 +100,7 @@ interface Publication {
 
 interface Student {
   name: string;
-  role: 'phd-main' | 'phd-committee' | 'msc' | 'alumni-phd' | 'alumni-msc';
+  role: 'phd-main' | 'phd-committee' | 'msc' | 'alumni-phd' | 'alumni-msc' | 'alumni-phd-committee';
   title?: string;
   startYear?: number;
   endYear?: number;
@@ -155,6 +155,9 @@ function main() {
   // Group students by role
   const phd_main = students.filter((s) => s.role === 'phd-main');
   const phd_committee = students.filter((s) => s.role === 'phd-committee');
+  const phd_committee_alumni = students
+    .filter((s) => s.role === 'alumni-phd-committee')
+    .sort((a, b) => (b.endYear ?? 0) - (a.endYear ?? 0));
   const msc_current = students.filter((s) => s.role === 'msc');
   const alumni_msc = students
     .filter((s) => s.role === 'alumni-msc')
@@ -164,10 +167,10 @@ function main() {
   const levelOrder: Record<string, number> = { phd: 0, msc: 1, mixed: 2, bsc: 3 };
   courses.sort((a, b) => (levelOrder[a.level] ?? 9) - (levelOrder[b.level] ?? 9));
 
-  // Sort talks by year desc
+  // Sort talks by full date desc so entries within a year are chronological
   const talksWithYear = talks
     .map((t) => ({ ...t, year: new Date(t.date).getUTCFullYear() }))
-    .sort((a, b) => b.year - a.year);
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   // Selected publications + by-theme
   const selected_pubs = publications
@@ -202,6 +205,8 @@ function main() {
 
     phd_main,
     phd_committee,
+    phd_committee_alumni,
+    phd_committee_alumni_count: phd_committee_alumni.length,
     msc_current,
     msc_current_count: msc_current.length,
     alumni_msc,

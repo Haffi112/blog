@@ -1,5 +1,5 @@
 name: MIM-GOLD-EL
-summary: |
+summary: >-
   An entity-linking corpus for Icelandic built on top of the MIM-GOLD
   named-entity collection. Released with the University of Iceland and
   introduced at LREC 2022; the companion methodology paper appeared at

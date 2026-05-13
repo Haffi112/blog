@@ -1,5 +1,5 @@
 name: Hotter and Colder
-summary: |
+summary: >-
   An Icelandic sentiment corpus of blog comments annotated with nuanced
   labels for sentiment, emotions, toxicity, sarcasm, hate speech,
   sympathy, and related categories. Distributed via the University of

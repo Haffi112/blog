@@ -1,5 +1,5 @@
 name: RUQuAD-1
-summary: |
+summary: >-
   The Reykjavik University Question-Answering Dataset for Icelandic, a
   SQuAD-style reading-comprehension benchmark collected through the
   GameQA mobile platform. Distributed via the University of Iceland.
