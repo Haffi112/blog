@@ -12,7 +12,6 @@
 //   3. Append the id to the VALID set in BaseLayout's no-FOUC script.
 
 const THEMES = [
-  { id: 'reader',       label: 'Reader',       note: 'OpenDyslexic, large body, italics → bold' },
   { id: 'light',        label: 'Light' },
   { id: 'dark',         label: 'Dark' },
   { id: 'corporate',    label: 'Corporate' },
@@ -47,7 +46,8 @@ const THEMES = [
   { id: 'cyberpunk',    label: 'Cyberpunk' },
   { id: 'halloween',    label: 'Halloween' },
   { id: 'dracula',      label: 'Dracula' },
-  { id: 'abyss',        label: 'Abyss' }
+  { id: 'abyss',        label: 'Abyss' },
+  { id: 'reader',       label: 'Reader',       note: 'OpenDyslexic, large body, italics → bold' }
 ] as const;
 ---
 <div class="relative" data-theme-switcher>
