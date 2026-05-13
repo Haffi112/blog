@@ -78,9 +78,10 @@
   )
   set par(leading: 0.55em, justify: false)
 
-  show link: it => {
-    text(fill: primary)[#it.body]
-  }
+  // Use a `set` rule so the link element survives and its URI annotation
+  // is preserved in the PDF — replacing `it` with plain text would strip
+  // the annotation and leave only coloured non-clickable text.
+  show link: set text(fill: primary)
   show strong: it => text(weight: "semibold", fill: ink)[#it.body]
   show emph: it => text(style: "italic", fill: ink)[#it.body]
 
