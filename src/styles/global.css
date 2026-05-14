@@ -250,47 +250,6 @@
     font-weight: 600;
   }
 
-  /* Footnote popovers (littlefoot). Override the library's CSS variables
-     to match the site's design tokens, and shape the inline button so it
-     reads as a traditional superscript number instead of a chunky pill. */
-  .littlefoot {
-    --button-background-color: transparent;
-    --button-text-color: var(--color-accent-primary);
-    --button-active-background-color: var(--color-accent-primary-soft);
-    --button-active-text-color: var(--color-accent-primary);
-    --button-border-radius: 0.25rem;
-    --button-height: auto;
-    --button-margin: 0 0.05em;
-    --button-padding: 0 0.2em;
-    --button-font-size: 0.7em;
-    --button-font-weight: 600;
-
-    --popover-background-color: var(--color-bg-elev);
-    --popover-text-color: var(--color-ink);
-    --popover-border: 1px solid var(--color-rule);
-    --popover-border-radius: 0.5rem;
-    --popover-shadow: 0 8px 24px -8px rgb(0 0 0 / 0.18), 0 2px 6px -2px rgb(0 0 0 / 0.08);
-    --popover-width: 22em;
-    --popover-max-width: min(22em, 90vw);
-    --popover-horizontal-padding: 1rem;
-    --popover-vertical-padding: 0.75rem;
-    --popover-font-family: var(--font-prose);
-    --popover-font-size: 0.9375rem;
-    --popover-line-height: 1.55;
-    --popover-scroll-indicator-color: var(--color-ink-muted);
-  }
-
-  .littlefoot__button {
-    vertical-align: super;
-    line-height: 1;
-    text-decoration: none;
-  }
-  .littlefoot__button:hover,
-  .littlefoot__button:focus,
-  .littlefoot__button.is-active {
-    text-decoration: none;
-  }
-
   /* Pre-empt the first-paint flash: the GFM-emitted footnote anchor and
      the trailing footnotes section are visible until littlefoot's JS
      runs (which then adds the `littlefoot--print` class to swap them out
@@ -308,6 +267,68 @@
       display: revert;
     }
   }
+}
+
+/* --- Footnote popovers (littlefoot) -----------------------------------
+   Kept OUTSIDE @layer components on purpose: the library's own CSS is
+   imported via the PostLayout `<script>` tag and arrives unlayered, so
+   anything we put inside a layer would lose the cascade. These rules
+   reshape the button from a chunky pill into a small superscripted
+   number and retint the popover with the site's design tokens. */
+.littlefoot {
+  --button-background-color: transparent;
+  --button-text-color: var(--color-accent-primary);
+  --button-active-background-color: transparent;
+  --button-active-text-color: var(--color-accent-primary);
+  --button-border-radius: 0;
+  --button-height: auto;
+  --button-margin: 0;
+  --button-padding: 0 0.05em;
+  --button-font-size: 0.72em;
+  --button-font-weight: 600;
+  --button-transition: color 0.15s ease;
+
+  --popover-background-color: var(--color-bg-elev);
+  --popover-text-color: var(--color-ink);
+  --popover-border: 1px solid var(--color-rule);
+  --popover-border-radius: 0.5rem;
+  --popover-shadow: 0 8px 24px -8px rgb(0 0 0 / 0.18), 0 2px 6px -2px rgb(0 0 0 / 0.08);
+  --popover-width: 22em;
+  --popover-max-width: min(22em, 90vw);
+  --popover-horizontal-padding: 1rem;
+  --popover-vertical-padding: 0.75rem;
+  --popover-font-family: var(--font-prose);
+  --popover-font-size: 0.9375rem;
+  --popover-line-height: 1.55;
+  --popover-scroll-indicator-color: var(--color-ink-muted);
+}
+
+/* Render the marker as a traditional superscripted number. The library
+   hard-codes `display: inline-block; vertical-align: middle` on the
+   button (not behind a CSS variable), so we override those directly. */
+.littlefoot__button {
+  display: inline-block;
+  vertical-align: super;
+  height: auto;
+  line-height: 1;
+  font-family: inherit;
+  font-feature-settings: "tnum";
+  letter-spacing: 0;
+  text-decoration: none;
+  cursor: pointer;
+}
+.littlefoot__button:hover,
+.littlefoot__button:focus,
+.littlefoot__button:active,
+.littlefoot__button.is-active {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+.littlefoot__button:focus-visible {
+  outline: 2px solid var(--color-accent-primary);
+  outline-offset: 2px;
+  border-radius: 0.125rem;
 }
 
 /* --- Reduced motion --- */
