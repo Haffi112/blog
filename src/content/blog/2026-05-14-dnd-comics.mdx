@@ -1,0 +1,222 @@
+---
+title: Turning recorded D&D sessions into comics
+date: 2026-05-14
+excerpt: A small pipeline that records a session on a Zoom H1 Essential, transcribes the Icelandic audio with ElevenLabs, and renders each session as a graphic novel with gpt-image-2 and a set of reference images that keep the cast looking consistent across pages.
+tags:
+  - dnd
+  - comics
+  - claude-code
+  - tooling
+---
+
+I run a homebrew **Birthright** campaign at home, in Icelandic, with two players and a squirrel familiar. A few weeks ago I started turning each session into an English-language graphic novel. The setup is small enough to explain in one post.
+
+## Why a separate recorder
+
+I bought a [Zoom H1 Essential](https://zoomcorp.com/en/us/handheld-recorders/handheld-recorders/h1essential/) and clip it to the table. A phone works too — the audio is fine — but the moment you start using the phone for anything else during the session (looking up a rule, sending a message, opening a map), you bump the mic and rotate it, and the level drops. A dedicated recorder has one job. I press record at the start of the session and forget about it until we're done.
+
+The H1 records to a microSD card as WAV or MP3. I copy a single `combined.mp3` into the session folder and that's the only audio artefact I keep.
+
+## Icelandic speech-to-text that actually works
+
+I run the audio through **ElevenLabs speech-to-text**. Icelandic transcription used to mean either training your own model or living with a 30% word-error rate. ElevenLabs is now close enough that I can read the transcript and follow the session without playing the audio back. Proper nouns get mangled — Birthright race names like `rjúfi` or `anúri` come out as nonsense, and our PCs' names rotate through three or four spellings — but the structure of every scene is intact.
+
+The transcript is a **hint**, not ground truth. I was at the session; my memory is the source. The transcript exists so I don't have to scrub through two hours of audio to remember who cast which spell in which room.
+
+## From transcript to comic script
+
+This is the part where Claude Code does the work. The pipeline is:
+
+1. **Read the whole transcript.** Most of it is out-of-character chitchat (politics, gym talk, who's getting coffee). Cut all of that. What remains is the in-character story.
+2. **Propose a page outline.** A numbered list of pages with one line each. I sign off before any page is drafted.
+3. **Draft pages one at a time.** Each page is a panel-by-panel breakdown with dialogue, captions, sound effects, and — where appropriate — a chibi doodle of the DM in the margin. I review and correct each page before the next is written.
+4. **Generate the art.** A single Python entry point reads the script, attaches the right reference images, and calls `gpt-image-2` for each page.
+
+The reason for the per-page cadence is that the transcript loses **attribution**. It almost never says "Bjarki cast Fireball" — it says "*fireball*" and someone laughs. I'm the one who remembers it was Bjarki and not Skarpheðinn. Per-page review is how those misattributions get caught early, before they propagate into a generated image I'd have to throw away.
+
+## Reference images keep the cast consistent
+
+`gpt-image-2` draws good panels but has no memory between calls. Consistency comes from the reference images attached to each page-generation request. Every PC and every recurring NPC gets a **character design sheet**: a full-body neutral pose on a plain background, with the name labelled at the top and small arrows pointing to signature gear.
+
+<figure>
+  <img src="/img/dnd/ref-party.png" alt="The party lineup reference: Skarpheðinn, Bjarki with the squirrel Pú on his shoulder, and Brand, drawn as a labelled design sheet." />
+  <figcaption>The <code>_party</code> ref: a labelled lineup of the three PCs plus Pú the squirrel. This single image is attached to every page that contains the full party, instead of attaching three individual refs and hitting the model's input cap.</figcaption>
+</figure>
+
+<figure>
+  <img src="/img/dnd/ref-bjarki.png" alt="Character design sheet for Bjarki — full-body view, head turnarounds, and callouts to signature gear." />
+  <figcaption>An individual PC ref. Multiple face angles plus a full body give the model enough information to draw the same person in any pose without drifting.</figcaption>
+</figure>
+
+NPCs get the same treatment. Below is Blámi, a stone gargoyle who guards a mausoleum door in the campus crypts.
+
+<figure>
+  <img src="/img/dnd/ref-blami.png" alt="Reference sheet for Blámi, a blue stone gargoyle with bat-like wings." />
+  <figcaption>Blámi the gargoyle. The colour and silhouette stay locked across every page he appears on because his ref is attached to those pages.</figcaption>
+</figure>
+
+The page generator decides which refs to attach by reading the comic script. Each page declares its cast (`CHARACTERS_ON_PAGE: _party`, `NPCS_ON_PAGE: blami`) and the script picks the right PNGs off disk. When a character picks up a visible item or takes a visible wound that lasts for several pages, I generate an **alternate** ref (e.g. `bjarki_wounded`) anchored on the canonical one, and switch the script over to the alt slug for as long as the state lasts. The original ref is never overwritten, so flashbacks and callback panels still work.
+
+## What the pages look like
+
+A quiet establishing page from session four. The party is camped inside the door of a magical dungeon that closes once every six days. Pú the squirrel sits on Bjarki's shoulder. The yellow caption gives the scene-setter, the parchment box with a d20 icon is the DM-narrator voice, and the chibi doodle in the corner is the in-session DM commentary, drawn outside the panel border.
+
+<figure>
+  <img src="/img/dnd/page-01.png" alt="Comic page: three adventurers and a squirrel sit by lanternlight inside a dungeon. Captions establish that they are on day two of four." />
+  <figcaption>Page 1 of the 5 May session. Four distinct text elements — speech bubble, yellow caption box, parchment DM-narration box, and the blue-pen chibi DM doodle — each have their own visual treatment, defined once in a style guide and prepended automatically to every prompt.</figcaption>
+</figure>
+
+A louder page from the same session — Skarpheðinn throws an alchemical fire-flask into a chamber full of giant spiders, the DM whispers "There were two. There is one." in the margin, and the panel layout gets to breathe.
+
+<figure>
+  <img src="/img/dnd/page-08.png" alt="Comic page: a character throws a flask of alchemical fire into a spider-filled chamber. Large FWOOOM! sound effect." />
+  <figcaption>Sound effects are integrated into the art. The big middle panel is deliberately wider than the others — when the page outline gives a beat its own page, I give the loudest panel most of the real estate.</figcaption>
+</figure>
+
+A puzzle page near the end. The party reaches a chamber full of mirror-objects and works out that the dungeon's parting gift is whichever ordinary-looking thing pairs with one of the silver replicas.
+
+<figure>
+  <img src="/img/dnd/page-12.png" alt="Comic page: party studies mirror objects in a vault, including a silver dog statue. Pú the squirrel watches from Bjarki's shoulder." />
+  <figcaption>Page-to-page continuity is enforced by attaching the previous one or two already-generated pages as additional references when generating each new page. The model is told to use them <em>only</em> for lighting and lettering style, never for layout or composition.</figcaption>
+</figure>
+
+## Where it breaks, and what I do about it
+
+A few honest failure modes.
+
+- **Moderation flags fire on warlock-class language.** "Pact," "patron," "Hex," and especially "Hex + a photo of a real person as input" will get a page blocked. I rewrite to "old mentor," "old bargain," "summoned blade." Anatomical pierce-through framing (sword *through* a head) also blocks; a clean across-body strike with a "no gore, no blood" qualifier does not.
+- **Similar-looking PCs swap.** Two bearded men in cloaks will rotate identities between panels unless every panel declares which PC is *in this frame* with a one-line visual reminder. I had to add `CHARACTERS IN FRAME` as a per-panel field.
+- **The DM never appears inside a panel.** I tried it once and it looked wrong — the DM is the storyteller, not someone in the scene. He lives in margin doodles and parchment narration boxes only. The chibi ref attaches automatically to any page whose prompt mentions a margin doodle.
+- **Variable Typst fonts and OpenAI's MPO photos.** Two unrelated annoyances. Variable TTFs confuse Typst inside `set text`; iPhone photos are MPO format and rejected by the API. Both have one-line workarounds: static fonts; convert to PNG before upload.
+
+## The skill, if you want to try this yourself
+
+This is the distilled version of my project's `CLAUDE.md`. Save it as `SKILL.md` in a Claude Code skill folder, point it at a directory laid out like the one below, and you have a working pipeline for your own campaign.
+
+````markdown
+---
+name: session-to-comic
+description: Turn a recorded TTRPG session into a graphic-novel comic. Use when a new YYYY_MM_DD/ folder appears with a script.txt transcript. Reconciles cast, drafts a page-by-page script with per-page approval, and generates final pages with gpt-image-2.
+---
+
+# Session-to-comic pipeline
+
+## Project layout
+
+```
+project/
+├── characters/<slug>/profile.md       # PCs and DM, with REF_LABELS section
+├── characters/<slug>/refs/ref_main.png
+├── characters/_party/refs/ref_main.png  # composed group lineup
+├── npcs/<slug>/profile.md             # in-world recurring NPCs
+├── npcs/<slug>/refs/ref_main.png
+├── world/style_guide.md               # canonical visual style + lettering spec
+├── generate_image.py                  # CLI: character | npc | chibi | page
+└── YYYY_MM_DD/
+    ├── script.txt                     # raw STT (the only required input)
+    ├── comic_script.txt               # produced by this skill
+    └── pages/page_NN.png              # produced by this skill
+```
+
+## Working principles — read first
+
+The user was actually present at the session. The transcript is noisy and
+loses attribution and location. The user's memory is authoritative; the
+transcript is a hint.
+
+- **Ask, don't invent.** When the transcript is ambiguous about who, where,
+  what, or how — ask one short question before resolving the ambiguity.
+- **Be explicit about what you are leaving out.** In every page outline,
+  list in-character beats you are deliberately omitting (out-of-character
+  chitchat doesn't count).
+- **Get per-page approval before drafting the next page** by default. Offer
+  the user the option to switch to "draft all the way through" once page 1
+  is approved.
+- **Surface uncertainty as a question, not a guess.**
+
+## Workflow
+
+1. **Read the entire transcript.** Identify only the in-character story beats.
+2. **Reconcile cast state.** Update each PC's `profile.md` for new items,
+   visible wounds, session changelog. Regenerate any ref whose appearance
+   changed, then regenerate the `_party` group ref.
+3. **Identify and create new NPCs.** Any named NPC with more than a passing
+   mention gets `npcs/<slug>/profile.md` with a REF_LABELS section, plus a
+   generated ref.
+4. **Write `comic_script.txt`.**
+   - **Gate 4a:** propose a page outline (numbered list, one line per page,
+     plus list of omitted beats). Wait for approval.
+   - **Gate 4b:** ask whether to draft page-by-page or all the way through.
+     Default to page-by-page for page 1, then offer the choice.
+   - Each panel declares `CHARACTERS IN FRAME` with a one-line visual
+     reminder per character. Without this, similar-looking PCs swap
+     identities between panels.
+5. **Final review.** Present the full `comic_script.txt` and any new refs.
+   Wait for an explicit "go ahead, generate" — per-page drafting approval
+   does not imply image-generation approval.
+6. **Generate every page** in script order (not parallel), so each page can
+   chain the previous one or two as continuity references. Run in the
+   background, monitor for errors, retry moderation failures with the
+   substitutions below.
+
+## Page format
+
+```
+=== PAGE N ===
+CHARACTERS_ON_PAGE: _party
+NPCS_ON_PAGE: <slug>, <slug>
+
+PROMPT: <one-sentence framing for the whole page>
+
+PANEL N (size, position):
+  CHARACTERS IN FRAME: <slug (visual reminder)>, <slug (visual reminder)>
+  SCENE: <action and composition>
+  CAPTION: "<terse scene-setting, yellow box>"
+  DM NARRATION: "<world-lore narrator voice, parchment box>"
+  CHARACTER_NAME: "<dialogue, speech bubble>"
+  SFX: "<sound effect, integrated into art>"
+
+DM MARGIN DOODLE (between panels X and Y): "<chibi DM + handwriting>"
+```
+
+## Moderation substitutions (apply before the first attempt)
+
+| Don't write | Use instead |
+|---|---|
+| Molotov, firebomb, rag-wick | "alchemical fire-flask," "alchemical fuse" |
+| Patron, pact, Hex, Invoke Doom | "old mentor," "old bargain," "three new spells" |
+| Pact weapon | "summoned blade" |
+| Anatomical pierce-through (sword through head, etc.) | Clean stylized across-body strike; add "no gore, no blood, no anatomical detail of the strike itself" |
+
+When a real photo is attached as character-ref input, frame the prompt as
+"an artist's character design sheet for a tabletop role-playing game" and
+treat the photo as "loose inspiration." Never combine a real photo with
+warlock-class language in the same prompt.
+
+## Commands
+
+```bash
+python3 generate_image.py character --name <slug> [--force]
+python3 generate_image.py npc       --name <slug> [--force]
+python3 generate_image.py chibi     --name <slug> [--force]
+python3 generate_image.py character --name _party --force
+python3 generate_image.py page      --session YYYY_MM_DD --page N [--force]
+```
+````
+
+The `generate_image.py` script itself is short — about 600 lines of Python that prepends the style guide, picks ref images off disk based on the page's declared cast, and posts to the OpenAI Images API. I'll publish it as a small standalone repo once I've sanded a few rough edges off.
+
+## How to cite this
+
+If this writeup helps you set up something similar and you want to acknowledge it somewhere:
+
+```bibtex
+@misc{einarsson2026dndcomics,
+  author       = {Einarsson, Hafsteinn},
+  title        = {Turning recorded {D\&D} sessions into comics},
+  year         = {2026},
+  month        = may,
+  howpublished = {Blog post},
+  url          = {https://haffi112.github.io/2026/05/14/dnd-comics/}
+}
+```
