@@ -47,6 +47,12 @@ const { title, date, cited = [], description } = Astro.props;
       activateOnHover: true,
       hoverDelay: 250,
       dismissOnUnhover: true,
+      // GFM (via remark-gfm) emits anchors like
+      // `<a href="#user-content-fn-attribution" data-footnote-ref>`.
+      // Littlefoot's default pattern requires `#fn` immediately after
+      // the hash and so silently rejects every GFM footnote on the
+      // page. Loosen it to match the `fn-` infix anywhere in the href.
+      anchorPattern: /(?:user-content-)?fn[:\-_\d]/i,
       buttonTemplate: `
         <button
           aria-controls="fncontent:<% id %>"
