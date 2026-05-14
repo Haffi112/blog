@@ -5,6 +5,22 @@ import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import expressiveCode from 'astro-expressive-code';
+import rehypeExpressiveCode from 'rehype-expressive-code';
+
+const ecOptions = {
+  themes: ['github-dark'],
+  defaultProps: {
+    wrap: true,
+    preserveIndent: true
+  },
+  styleOverrides: {
+    borderRadius: '0.5rem',
+    codeFontFamily: '"JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace',
+    codeFontSize: '0.875rem',
+    codeLineHeight: '1.6'
+  }
+};
 
 export default defineConfig({
   site: 'https://haffi112.github.io',
@@ -25,9 +41,13 @@ export default defineConfig({
     '/blog/': '/writing/'
   },
   integrations: [
+    // expressive-code must come before mdx() so it pre-processes fenced
+    // code blocks inside .mdx files. Wrap is enabled so long lines (e.g.
+    // BibTeX URLs, frontmatter descriptions) wrap instead of overflowing.
+    expressiveCode(ecOptions),
     mdx({
       remarkPlugins: [remarkMath],
-      rehypePlugins: [rehypeKatex]
+      rehypePlugins: [rehypeKatex, [rehypeExpressiveCode, ecOptions]]
     }),
     sitemap()
   ],

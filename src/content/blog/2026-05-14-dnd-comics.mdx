@@ -9,68 +9,66 @@ tags:
   - tooling
 ---
 
-I run a homebrew **Birthright** campaign at home, in Icelandic, with two players and a squirrel familiar. A few weeks ago I started turning each session into an English-language graphic novel. The setup is small enough to explain in one post.
+I play in a homebrew **Birthright** campaign in Icelandic, alongside two other players and a squirrel familiar. A few weeks ago I started turning each session into an English-language graphic novel. The setup is small enough to explain in one post.
 
 ## Why a separate recorder
 
-I bought a [Zoom H1 Essential](https://zoomcorp.com/en/us/handheld-recorders/handheld-recorders/h1essential/) and clip it to the table. A phone works too — the audio is fine — but the moment you start using the phone for anything else during the session (looking up a rule, sending a message, opening a map), you bump the mic and rotate it, and the level drops. A dedicated recorder has one job. I press record at the start of the session and forget about it until we're done.
-
-The H1 records to a microSD card as WAV or MP3. I copy a single `combined.mp3` into the session folder and that's the only audio artefact I keep.
+I bought a [Zoom H1 Essential](https://zoomcorp.com/en/us/handheld-recorders/handheld-recorders/h1essential/) and clip it to the table. A phone works too, and the audio is fine, but the moment you start using the phone for anything else during the session (looking up a rule, sending a message, opening a map), you bump the mic and rotate it, and the level drops. A dedicated recorder has one job. I press record at the start of the session and forget about it until we're done.
 
 ## Icelandic speech-to-text that actually works
 
-I run the audio through **ElevenLabs speech-to-text**. Icelandic transcription used to mean either training your own model or living with a 30% word-error rate. ElevenLabs is now close enough that I can read the transcript and follow the session without playing the audio back. Proper nouns get mangled — Birthright race names like `rjúfi` or `anúri` come out as nonsense, and our PCs' names rotate through three or four spellings — but the structure of every scene is intact.
+I run the audio through [ElevenLabs speech-to-text](https://elevenlabs.io/speech-to-text). Before this I had experimented with summarising sessions directly from audio with Google Gemini, which works for a short clip but falls apart over a two-hour recording: long stretches go unsummarised and small details drift. The transcription route turned out to be the better lever.
 
-The transcript is a **hint**, not ground truth. I was at the session; my memory is the source. The transcript exists so I don't have to scrub through two hours of audio to remember who cast which spell in which room.
+The transcript is still a **hint** rather than ground truth (I was at the session, my memory is the source), but the error rate is now low enough that the transcript on its own is a very good record of what happened in a session. Proper nouns get mangled, Birthright race names like `rjúfi` or `anúri` come out as nonsense, and our PCs' names rotate through three or four spellings, but the structure of every scene is intact.
 
 ## From transcript to comic script
 
 This is the part where Claude Code does the work. The pipeline is:
 
-1. **Read the whole transcript.** Most of it is out-of-character chitchat (politics, gym talk, who's getting coffee). Cut all of that. What remains is the in-character story.
+1. **Read the whole transcript.** A lot of it can be out-of-character chitchat (politics, gym talk, who's getting coffee). Cut all of that. What remains is the in-character story.
 2. **Propose a page outline.** A numbered list of pages with one line each. I sign off before any page is drafted.
-3. **Draft pages one at a time.** Each page is a panel-by-panel breakdown with dialogue, captions, sound effects, and — where appropriate — a chibi doodle of the DM in the margin. I review and correct each page before the next is written.
+3. **Draft pages one at a time.** Each page is a panel-by-panel breakdown with dialogue, captions, sound effects, and where appropriate a chibi doodle of the DM in the margin. I review and correct each page before the next is written.
 4. **Generate the art.** A single Python entry point reads the script, attaches the right reference images, and calls `gpt-image-2` for each page.
 
-The reason for the per-page cadence is that the transcript loses **attribution**. It almost never says "Bjarki cast Fireball" — it says "*fireball*" and someone laughs. I'm the one who remembers it was Bjarki and not Skarpheðinn. Per-page review is how those misattributions get caught early, before they propagate into a generated image I'd have to throw away.
+The reason for the per-page cadence is that the transcript loses **attribution**. It almost never says "Bjarki cast Fireball"; it says "*fireball*" and someone laughs. I'm the one who remembers which character it was. Per-page review is how those misattributions get caught early, before they propagate into a generated image I'd have to throw away.
 
 ## Reference images keep the cast consistent
 
 `gpt-image-2` draws good panels but has no memory between calls. Consistency comes from the reference images attached to each page-generation request. Every PC and every recurring NPC gets a **character design sheet**: a full-body neutral pose on a plain background, with the name labelled at the top and small arrows pointing to signature gear.
 
 <figure>
-  <img src="/img/dnd/ref-party.png" alt="The party lineup reference: Skarpheðinn, Bjarki with the squirrel Pú on his shoulder, and Brand, drawn as a labelled design sheet." />
-  <figcaption>The <code>_party</code> ref: a labelled lineup of the three PCs plus Pú the squirrel. This single image is attached to every page that contains the full party, instead of attaching three individual refs and hitting the model's input cap.</figcaption>
+  <img src="/img/dnd/ref-party.png" alt="The party lineup reference: Skarphéðinn, Bjarki with the squirrel Pú on his shoulder, and Brand, drawn as a labelled design sheet." />
+  <figcaption>The <code>_party</code> ref: a labelled lineup of the three PCs plus Pú the squirrel. The model accepts up to sixteen reference images per call so three individual refs would fit, but a single composed lineup keeps proportions, palette, and silhouettes tighter than three separate refs negotiating composition.</figcaption>
 </figure>
 
 <figure>
-  <img src="/img/dnd/ref-bjarki.png" alt="Character design sheet for Bjarki — full-body view, head turnarounds, and callouts to signature gear." />
+  <img src="/img/dnd/ref-bjarki.png" alt="Character design sheet for Bjarki, with full-body view, head turnarounds, and callouts to signature gear." />
   <figcaption>An individual PC ref. Multiple face angles plus a full body give the model enough information to draw the same person in any pose without drifting.</figcaption>
 </figure>
 
-NPCs get the same treatment. Below is Blámi, a stone gargoyle who guards a mausoleum door in the campus crypts.
+NPCs get the same treatment. Below is Trausti van Gilt, a second-year mirror-magic dilettante who shows up later in the session.
 
 <figure>
-  <img src="/img/dnd/ref-blami.png" alt="Reference sheet for Blámi, a blue stone gargoyle with bat-like wings." />
-  <figcaption>Blámi the gargoyle. The colour and silhouette stay locked across every page he appears on because his ref is attached to those pages.</figcaption>
+  <img src="/img/dnd/ref-trausti.png" alt="Reference sheet for Trausti van Gilt, with a full body view, three-quarter portrait, and signature silver mirror pendant." />
+  <figcaption>An NPC design sheet. Once Trausti has a ref on disk, every page that lists him in <code>NPCS_ON_PAGE</code> picks it up automatically and his face stays consistent across panels.</figcaption>
 </figure>
 
-The page generator decides which refs to attach by reading the comic script. Each page declares its cast (`CHARACTERS_ON_PAGE: _party`, `NPCS_ON_PAGE: blami`) and the script picks the right PNGs off disk. When a character picks up a visible item or takes a visible wound that lasts for several pages, I generate an **alternate** ref (e.g. `bjarki_wounded`) anchored on the canonical one, and switch the script over to the alt slug for as long as the state lasts. The original ref is never overwritten, so flashbacks and callback panels still work.
+The page generator decides which refs to attach by reading the comic script. Each page declares its cast (`CHARACTERS_ON_PAGE: _party`, `NPCS_ON_PAGE: trausti`) and the script picks the right PNGs off disk. When a character picks up a visible item or takes a visible wound that lasts for several pages, I generate an **alternate** ref (for example `bjarki_wounded`) anchored on the canonical one, and switch the script over to the alt slug for as long as the state lasts. The original ref is never overwritten, so flashbacks and callback panels still work.
 
 ## What the pages look like
 
-A quiet establishing page from session four. The party is camped inside the door of a magical dungeon that closes once every six days. Pú the squirrel sits on Bjarki's shoulder. The yellow caption gives the scene-setter, the parchment box with a d20 icon is the DM-narrator voice, and the chibi doodle in the corner is the in-session DM commentary, drawn outside the panel border.
+A quiet establishing page from session four. The party is camped inside the door of a magical dungeon that closes six days after it first opens. Pú the squirrel sits on Bjarki's shoulder. The yellow caption gives the scene-setter, the parchment box with a d20 icon is the DM-narrator voice, and the chibi doodle in the corner is the in-session DM commentary, drawn outside the panel border.
 
 <figure>
   <img src="/img/dnd/page-01.png" alt="Comic page: three adventurers and a squirrel sit by lanternlight inside a dungeon. Captions establish that they are on day two of four." />
-  <figcaption>Page 1 of the 5 May session. Four distinct text elements — speech bubble, yellow caption box, parchment DM-narration box, and the blue-pen chibi DM doodle — each have their own visual treatment, defined once in a style guide and prepended automatically to every prompt.</figcaption>
+  <figcaption>Page 1 of the 5 May session. Four distinct text elements (speech bubble, yellow caption box, parchment DM-narration box, and the blue-pen chibi DM doodle) each have their own visual treatment, defined once in a style guide and prepended automatically to every prompt.</figcaption>
 </figure>
 
-A louder page from the same session — Skarpheðinn throws an alchemical fire-flask into a chamber full of giant spiders, the DM whispers "There were two. There is one." in the margin, and the panel layout gets to breathe.
+A louder page from the same session. Skarphéðinn throws an alchemical fire-flask into a chamber full of giant spiders, the DM whispers "There were two. There is one." in the margin, and the panel layout gets to breathe.
 
 <figure>
   <img src="/img/dnd/page-08.png" alt="Comic page: a character throws a flask of alchemical fire into a spider-filled chamber. Large FWOOOM! sound effect." />
-  <figcaption>Sound effects are integrated into the art. The big middle panel is deliberately wider than the others — when the page outline gives a beat its own page, I give the loudest panel most of the real estate.</figcaption>
+  <figcaption>Sound effects are integrated into the art. The big middle panel is deliberately wider than the others; when the page outline gives a beat its own page, I give the loudest panel most of the real estate.</figcaption>
 </figure>
 
 A puzzle page near the end. The party reaches a chamber full of mirror-objects and works out that the dungeon's parting gift is whichever ordinary-looking thing pairs with one of the silver replicas.
@@ -84,10 +82,14 @@ A puzzle page near the end. The party reaches a chamber full of mirror-objects a
 
 A few honest failure modes.
 
-- **Moderation flags fire on warlock-class language.** "Pact," "patron," "Hex," and especially "Hex + a photo of a real person as input" will get a page blocked. I rewrite to "old mentor," "old bargain," "summoned blade." Anatomical pierce-through framing (sword *through* a head) also blocks; a clean across-body strike with a "no gore, no blood" qualifier does not.
+- **Moderation flags fire on warlock-class language.** "Pact," "patron," "Hex," and especially "Hex" combined with a photo of a real person as input will get a page blocked. I rewrite to "old mentor," "old bargain," "summoned blade." Anatomical pierce-through framing (sword *through* a head) also blocks; a clean across-body strike with a "no gore, no blood" qualifier does not.
 - **Similar-looking PCs swap.** Two bearded men in cloaks will rotate identities between panels unless every panel declares which PC is *in this frame* with a one-line visual reminder. I had to add `CHARACTERS IN FRAME` as a per-panel field.
-- **The DM never appears inside a panel.** I tried it once and it looked wrong — the DM is the storyteller, not someone in the scene. He lives in margin doodles and parchment narration boxes only. The chibi ref attaches automatically to any page whose prompt mentions a margin doodle.
-- **Variable Typst fonts and OpenAI's MPO photos.** Two unrelated annoyances. Variable TTFs confuse Typst inside `set text`; iPhone photos are MPO format and rejected by the API. Both have one-line workarounds: static fonts; convert to PNG before upload.
+- **The DM never appears inside a panel.** I tried it once and it looked wrong: the DM is the storyteller, not someone in the scene. He lives in margin doodles and parchment narration boxes only. The chibi ref attaches automatically to any page whose prompt mentions a margin doodle.
+- **OpenAI's MPO photos.** iPhone photos are MPO format and rejected by the API, so character refs anchored on real player photos need a one-step PNG conversion before upload.
+
+## Where I'm taking this
+
+For now I use the pipeline as a **session summariser**: a 16-page recap of what happened, dropped into our group chat between sessions so we can re-anchor before the next one. With more work it could become an actual published comic, but that is not really my aspiration. The point is to remember the sessions in a form that is more fun to revisit than a transcript.
 
 ## The skill, if you want to try this yourself
 
@@ -118,14 +120,14 @@ project/
     └── pages/page_NN.png              # produced by this skill
 ```
 
-## Working principles — read first
+## Working principles, read first
 
 The user was actually present at the session. The transcript is noisy and
 loses attribution and location. The user's memory is authoritative; the
 transcript is a hint.
 
 - **Ask, don't invent.** When the transcript is ambiguous about who, where,
-  what, or how — ask one short question before resolving the ambiguity.
+  what, or how, ask one short question before resolving the ambiguity.
 - **Be explicit about what you are leaving out.** In every page outline,
   list in-character beats you are deliberately omitting (out-of-character
   chitchat doesn't count).
@@ -152,7 +154,7 @@ transcript is a hint.
      reminder per character. Without this, similar-looking PCs swap
      identities between panels.
 5. **Final review.** Present the full `comic_script.txt` and any new refs.
-   Wait for an explicit "go ahead, generate" — per-page drafting approval
+   Wait for an explicit "go ahead, generate"; per-page drafting approval
    does not imply image-generation approval.
 6. **Generate every page** in script order (not parallel), so each page can
    chain the previous one or two as continuity references. Run in the
@@ -204,7 +206,7 @@ python3 generate_image.py page      --session YYYY_MM_DD --page N [--force]
 ```
 ````
 
-The `generate_image.py` script itself is short — about 600 lines of Python that prepends the style guide, picks ref images off disk based on the page's declared cast, and posts to the OpenAI Images API. I'll publish it as a small standalone repo once I've sanded a few rough edges off.
+The `generate_image.py` script itself is short, about 600 lines of Python that prepends the style guide, picks ref images off disk based on the page's declared cast, and posts to the OpenAI Images API. I'll publish it as a small standalone repo once I've sanded a few rough edges off.
 
 ## How to cite this
 
