@@ -12,8 +12,9 @@ const isActive = (href: string) =>
   here === href || (href !== '/' && here.startsWith(href));
 ---
 <header class="sticky top-0 z-20 bg-bg/80 backdrop-blur-md border-b border-rule">
-  <nav class="max-w-page mx-auto px-6 h-14 flex items-center justify-between">
-    <a href="/" class="font-semibold tracking-tight text-ink">Hafsteinn Einarsson</a>
+  <nav class="max-w-page mx-auto px-6 h-14 flex items-center justify-between gap-3">
+    <a href="/" class="font-semibold tracking-tight text-ink shrink-0">Hafsteinn Einarsson</a>
+
     <ul class="hidden md:flex items-center gap-6 text-sm">
       {items.map((it) => (
         <li>
@@ -27,8 +28,125 @@ const isActive = (href: string) =>
         </li>
       ))}
     </ul>
+
     <div class="flex items-center gap-2">
       <slot name="end" />
+      <button
+        type="button"
+        id="mobile-menu-button"
+        aria-expanded="false"
+        aria-controls="mobile-menu-panel"
+        aria-label="Open navigation menu"
+        class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-full border border-rule text-ink-muted hover:text-ink hover:bg-accent-primary-soft transition-colors"
+      >
+        <svg
+          data-menu-icon="open"
+          width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <line x1="4" y1="7" x2="20" y2="7" />
+          <line x1="4" y1="12" x2="20" y2="12" />
+          <line x1="4" y1="17" x2="20" y2="17" />
+        </svg>
+        <svg
+          data-menu-icon="close"
+          class="hidden"
+          width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <line x1="6" y1="6" x2="18" y2="18" />
+          <line x1="18" y1="6" x2="6" y2="18" />
+        </svg>
+      </button>
     </div>
   </nav>
+
+  <div
+    id="mobile-menu-panel"
+    class="md:hidden grid transition-[grid-template-rows] duration-200 ease-out motion-reduce:transition-none"
+    style="grid-template-rows: 0fr"
+  >
+    <div class="min-h-0 overflow-hidden">
+      <ul class="border-t border-rule px-3 py-2 flex flex-col gap-0.5">
+        {items.map((it) => {
+          const active = isActive(it.href);
+          return (
+            <li>
+              <a
+                href={it.href}
+                aria-current={active ? 'page' : undefined}
+                class:list={[
+                  'relative flex items-center min-h-11 px-4 rounded-md text-base transition-colors',
+                  active
+                    ? 'text-accent-warm font-medium'
+                    : 'text-ink hover:text-ink hover:bg-accent-primary-soft'
+                ]}
+              >
+                {active && (
+                  <span
+                    class="absolute left-1 top-2 bottom-2 w-0.5 rounded-full bg-accent-warm"
+                    aria-hidden="true"
+                  />
+                )}
+                {it.label}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  </div>
 </header>
+
+<script is:inline>
+  (() => {
+    const btn = document.getElementById('mobile-menu-button');
+    const panel = document.getElementById('mobile-menu-panel');
+    if (!btn || !panel) return;
+
+    const iconOpen = btn.querySelector('[data-menu-icon="open"]');
+    const iconClose = btn.querySelector('[data-menu-icon="close"]');
+
+    const setOpen = (state) => {
+      btn.setAttribute('aria-expanded', state ? 'true' : 'false');
+      btn.setAttribute('aria-label', state ? 'Close navigation menu' : 'Open navigation menu');
+      panel.style.gridTemplateRows = state ? '1fr' : '0fr';
+      iconOpen?.classList.toggle('hidden', state);
+      iconClose?.classList.toggle('hidden', !state);
+    };
+
+    const isOpen = () => btn.getAttribute('aria-expanded') === 'true';
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setOpen(!isOpen());
+    });
+
+    /* Close after tapping a link so the destination page lands clean. */
+    panel.querySelectorAll('a').forEach((a) => {
+      a.addEventListener('click', () => setOpen(false));
+    });
+
+    /* Escape closes and returns focus to the trigger. */
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen()) {
+        setOpen(false);
+        btn.focus();
+      }
+    });
+
+    /* Click outside the panel + button closes. */
+    document.addEventListener('click', (e) => {
+      if (!isOpen()) return;
+      if (panel.contains(e.target) || btn.contains(e.target)) return;
+      setOpen(false);
+    });
+
+    /* If the viewport grows past md the desktop nav takes over — collapse. */
+    const mq = window.matchMedia('(min-width: 768px)');
+    const onChange = (e) => { if (e.matches) setOpen(false); };
+    mq.addEventListener ? mq.addEventListener('change', onChange) : mq.addListener(onChange);
+  })();
+</script>
