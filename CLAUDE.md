@@ -63,8 +63,19 @@ Key invariants:
 | Tweak hero text on homepage | `src/components/Hero.astro` |
 | Tweak any page prose | `src/pages/<section>/index.astro` |
 | Tweak design tokens | `src/styles/global.css` (and mirror in `cv/template.typ` for the CV) |
+| Pick the social-share image for a post | Add `hero: ../../assets/<image>.png` to the post's frontmatter (otherwise a title card is generated) |
+| Add a footnote in a post | Standard GFM syntax: `[^name]` inline + `[^name]: …` block; littlefoot turns it into a hover/click popover |
 
 After editing anything that affects the CV (publications, students, awards, positions, summaries), run `npm run cv` and **commit both PDFs alongside the source change** — they're checked in.
+
+## Blog post pipeline
+
+Every `.mdx` post inherits a few things automatically. Worth knowing before touching post-layout code:
+
+- **Per-post OG image.** `src/pages/[year]/[month]/[day]/[slug]/index.astro` computes the social-share URL: if the post has `hero:` in frontmatter, that image is resized to 1200×630 via `getImage({ position: 'attention' })`; otherwise the build runs `src/pages/og/[...slug].png.ts`, which composes an SVG title card (brand H tile + word-wrapped post title on the aubergine background) and rasterises it through `sharp`. `BaseLayout`'s `ogImage` prop still defaults to `/og/default.png` for everything outside `/blog/`.
+- **Code blocks** go through **astro-expressive-code** (frames, syntax highlighting, copy button, word wrap on by default). The integration is registered in `astro.config.mjs` *and* its rehype plugin is wired directly into `mdx({ rehypePlugins })` — both are required, see "Things that have bitten people".
+- **Footnotes** use GFM (`[^name]` syntax) at build time, then **littlefoot** at runtime swaps the inline `<sup>` for a small accent-coloured superscript with a popover. Mounted from `PostLayout.astro`; styling lives in `src/styles/global.css` **outside `@layer components`** so it can win against littlefoot's own CSS.
+- **`<figure>` / `<figcaption>`.** Scoped styling in `.prose-body` gives captions a hairline rule, smaller italic centred serif type, and a 56ch cap. Use `<Picture {...pictureProps} src={imported} />` inside `<figure>` for AVIF + WebP + PNG fallback at multiple widths; the `pictureProps` spread is conventionally defined as `export const pictureProps = {...}` at the top of the MDX.
 
 ## Things that have bitten people
 
@@ -73,6 +84,11 @@ After editing anything that affects the CV (publications, students, awards, posi
 - **Typst variable fonts.** Typst is picky in `set text` mode. Use static (not variable) TTFs in `cv/fonts/` and register with `--font-path`.
 - **GitHub Pages stale after deploy.** Wait 1–3 minutes. The Actions tab shows when `peaceiris/actions-gh-pages@v4` finished; then hard-reload.
 - **CI uses Node 24 with `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true`.** Local Node 22 is fine; don't add Node-version-specific syntax beyond that.
+- **expressive-code's MDX wiring.** Registering `expressiveCode(opts)` before `mdx()` in `integrations` is necessary but not sufficient: on Astro 5 + `@astrojs/mdx` 4 the rehype plugin doesn't reach `.mdx` files via `extendMarkdownConfig`. The fix in `astro.config.mjs` is belt-and-suspenders — `expressiveCode(opts)` keeps the vite plugin emitting the CSS chunk, *and* `rehypeExpressiveCode` is added directly to `mdx({ rehypePlugins })`. No duplication occurs because `.md` files aren't used.
+- **`@layer components` loses to unlayered CSS.** Vite-imported third-party stylesheets (littlefoot, anything imported from a `<script>` block) arrive unlayered and always beat layered rules regardless of source order. Overrides for those libraries belong **outside** `@layer components` in `src/styles/global.css`.
+- **littlefoot anchor pattern.** The library's default `anchorPattern` expects kramdown-style `#fn:1` hrefs; GFM (what Astro emits) writes `#user-content-fn-…`, so the default silently matches nothing. The init in `PostLayout.astro` overrides to `/(?:user-content-)?fn[:\-_\d]/i`.
+- **SVG attribute quoting in the OG generator.** If you template a font-family list into an SVG attribute, inner double quotes terminate the attribute. Use single quotes for `'Helvetica Neue'` etc. (the outer attribute is double-quoted). sharp's error message ("tag mismatch") is misleading; the real cause is always a prematurely closed attribute.
+- **Favicon caches everywhere.** `public/favicon.ico` is what Chrome and Safari hit first — keep it in sync with `favicon.svg`. Regenerate from the SVG with `magick -background none -density 384 favicon.svg \( -resize 16x16 \) \( -resize 32x32 \) … favicon.ico` after design changes.
 
 ## Deploy
 
