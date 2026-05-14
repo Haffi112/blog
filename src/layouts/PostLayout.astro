@@ -7,15 +7,17 @@ interface Props {
   date: Date;
   cited?: string[];
   description?: string;
+  ogImage?: string;
 }
 
-const { title, date, cited = [], description } = Astro.props;
+const { title, date, cited = [], description, ogImage } = Astro.props;
 ---
 <BaseLayout
   title={title}
   description={description}
   ogType="article"
   publishedTime={date}
+  ogImage={ogImage}
 >
   <article class="max-w-prose mx-auto px-6 py-12">
     <header>

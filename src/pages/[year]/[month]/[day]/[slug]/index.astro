@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
 import PostLayout from '~/layouts/PostLayout.astro';
 
 export async function getStaticPaths() {
@@ -13,19 +14,38 @@ export async function getStaticPaths() {
     const slug = post.slug.replace(/^\d{4}-\d{2}-\d{2}-/, '');
     return {
       params: { year, month, day, slug },
-      props: { post }
+      props: { post, slug }
     };
   });
 }
 
-const { post } = Astro.props;
+const { post, slug } = Astro.props;
 const { Content } = await post.render();
+
+// Social-share image. Priority: explicit hero image from the post's
+// frontmatter (resized to the 1200x630 OG canvas), otherwise the
+// generated title card at /og/<slug>.png.
+let ogImage: string;
+if (post.data.hero) {
+  const optimised = await getImage({
+    src: post.data.hero,
+    width: 1200,
+    height: 630,
+    format: 'png',
+    fit: 'cover',
+    position: 'attention'
+  });
+  ogImage = optimised.src;
+} else {
+  ogImage = `/og/${slug}.png`;
+}
 ---
 <PostLayout
   title={post.data.title}
   date={post.data.date}
   cited={post.data.cited}
   description={post.data.excerpt}
+  ogImage={ogImage}
 >
   <Content />
 </PostLayout>
