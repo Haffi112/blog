@@ -249,6 +249,65 @@
     font-style: normal;
     font-weight: 600;
   }
+
+  /* Footnote popovers (littlefoot). Override the library's CSS variables
+     to match the site's design tokens, and shape the inline button so it
+     reads as a traditional superscript number instead of a chunky pill. */
+  .littlefoot {
+    --button-background-color: transparent;
+    --button-text-color: var(--color-accent-primary);
+    --button-active-background-color: var(--color-accent-primary-soft);
+    --button-active-text-color: var(--color-accent-primary);
+    --button-border-radius: 0.25rem;
+    --button-height: auto;
+    --button-margin: 0 0.05em;
+    --button-padding: 0 0.2em;
+    --button-font-size: 0.7em;
+    --button-font-weight: 600;
+
+    --popover-background-color: var(--color-bg-elev);
+    --popover-text-color: var(--color-ink);
+    --popover-border: 1px solid var(--color-rule);
+    --popover-border-radius: 0.5rem;
+    --popover-shadow: 0 8px 24px -8px rgb(0 0 0 / 0.18), 0 2px 6px -2px rgb(0 0 0 / 0.08);
+    --popover-width: 22em;
+    --popover-max-width: min(22em, 90vw);
+    --popover-horizontal-padding: 1rem;
+    --popover-vertical-padding: 0.75rem;
+    --popover-font-family: var(--font-prose);
+    --popover-font-size: 0.9375rem;
+    --popover-line-height: 1.55;
+    --popover-scroll-indicator-color: var(--color-ink-muted);
+  }
+
+  .littlefoot__button {
+    vertical-align: super;
+    line-height: 1;
+    text-decoration: none;
+  }
+  .littlefoot__button:hover,
+  .littlefoot__button:focus,
+  .littlefoot__button.is-active {
+    text-decoration: none;
+  }
+
+  /* Pre-empt the first-paint flash: the GFM-emitted footnote anchor and
+     the trailing footnotes section are visible until littlefoot's JS
+     runs (which then adds the `littlefoot--print` class to swap them out
+     while keeping them visible on print). Hide both pre-emptively here;
+     the print stylesheet below restores them. */
+  .prose-body sup[data-footnote-ref],
+  .prose-body section[data-footnotes],
+  .prose-body section.footnotes {
+    display: none;
+  }
+  @media print {
+    .prose-body sup[data-footnote-ref],
+    .prose-body section[data-footnotes],
+    .prose-body section.footnotes {
+      display: revert;
+    }
+  }
 }
 
 /* --- Reduced motion --- */

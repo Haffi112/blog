@@ -33,3 +33,31 @@ const { title, date, cited = [], description } = Astro.props;
     )}
   </article>
 </BaseLayout>
+
+<script>
+  // Replace inline footnote references with click/hover popovers via
+  // littlefoot. GFM emits the footnotes block + jump links during markdown
+  // compile; littlefoot hides the block at runtime and renders an inline
+  // numbered button instead. No-op on posts without footnotes.
+  import littlefoot from 'littlefoot';
+  import 'littlefoot/dist/littlefoot.css';
+
+  if (document.querySelector('[data-footnotes], .footnotes')) {
+    littlefoot({
+      activateOnHover: true,
+      hoverDelay: 250,
+      dismissOnUnhover: true,
+      buttonTemplate: `
+        <button
+          aria-controls="fncontent:<% id %>"
+          aria-expanded="false"
+          aria-label="Footnote <% number %>"
+          class="littlefoot__button"
+          id="<% reference %>"
+          rel="footnote"
+          title="See footnote <% number %>"
+        ><% number %></button>
+      `
+    });
+  }
+</script>
