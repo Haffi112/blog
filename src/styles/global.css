@@ -210,6 +210,45 @@
   .prose-body a:hover {
     text-decoration-thickness: 2px;
   }
+
+  /* Figures: traditional book/journal convention. The image sits flush,
+     the caption is smaller, italic, centred, separated from the image by
+     a thin hairline rule and a touch of breathing room. */
+  .prose-body figure {
+    margin: 2.25rem 0;
+  }
+  .prose-body figure :is(img, picture, picture > img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 0.25rem;
+  }
+  .prose-body figure figcaption {
+    margin: 0.875rem auto 0;
+    padding-top: 0.625rem;
+    max-width: 56ch;
+    border-top: 1px solid var(--color-rule);
+    font-family: var(--font-prose);
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    font-style: italic;
+    text-align: center;
+    color: var(--color-ink-muted);
+  }
+  .prose-body figure figcaption code {
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 0.78em;
+    padding: 0.05em 0.3em;
+    border-radius: 0.25rem;
+    background: var(--color-bg-elev);
+  }
+  /* Reader theme removes italics in favour of bold for legibility, so
+     mirror that here so captions stay distinct without leaning on italic. */
+  [data-theme="reader"] .prose-body figure figcaption {
+    font-style: normal;
+    font-weight: 600;
+  }
 }
 
 /* --- Reduced motion --- */

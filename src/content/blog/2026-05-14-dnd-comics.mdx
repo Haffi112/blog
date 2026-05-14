@@ -9,6 +9,23 @@ tags:
   - tooling
 ---
 
+import { Picture } from 'astro:assets';
+import refParty from '~/assets/dnd/ref-party.png';
+import refBjarki from '~/assets/dnd/ref-bjarki.png';
+import refTrausti from '~/assets/dnd/ref-trausti.png';
+import page01 from '~/assets/dnd/page-01.png';
+import page08 from '~/assets/dnd/page-08.png';
+import page12 from '~/assets/dnd/page-12.png';
+
+export const pictureProps = {
+  widths: [480, 720, 1024, 1440],
+  sizes: '(max-width: 768px) 100vw, 680px',
+  formats: ['avif', 'webp'],
+  fallbackFormat: 'png',
+  loading: 'lazy',
+  decoding: 'async'
+};
+
 I play in a homebrew **Birthright** campaign in Icelandic, alongside two other players and a squirrel familiar. A few weeks ago I started turning each session into an English-language graphic novel. The setup is small enough to explain in one post.
 
 ## Why a separate recorder
@@ -37,19 +54,19 @@ The reason for the per-page cadence is that the transcript loses **attribution**
 `gpt-image-2` draws good panels but has no memory between calls. Consistency comes from the reference images attached to each page-generation request. Every PC and every recurring NPC gets a **character design sheet**: a full-body neutral pose on a plain background, with the name labelled at the top and small arrows pointing to signature gear.
 
 <figure>
-  <img src="/img/dnd/ref-party.png" alt="The party lineup reference: Skarphéðinn, Bjarki with the squirrel Pú on his shoulder, and Brand, drawn as a labelled design sheet." />
+  <Picture {...pictureProps} src={refParty} alt="The party lineup reference: Skarphéðinn, Bjarki with the squirrel Pú on his shoulder, and Brand, drawn as a labelled design sheet." />
   <figcaption>The <code>_party</code> ref: a labelled lineup of the three PCs plus Pú the squirrel. The model accepts up to sixteen reference images per call so three individual refs would fit, but a single composed lineup keeps proportions, palette, and silhouettes tighter than three separate refs negotiating composition.</figcaption>
 </figure>
 
 <figure>
-  <img src="/img/dnd/ref-bjarki.png" alt="Character design sheet for Bjarki, with full-body view, head turnarounds, and callouts to signature gear." />
+  <Picture {...pictureProps} src={refBjarki} alt="Character design sheet for Bjarki, with full-body view, head turnarounds, and callouts to signature gear." />
   <figcaption>An individual PC ref. Multiple face angles plus a full body give the model enough information to draw the same person in any pose without drifting.</figcaption>
 </figure>
 
 NPCs get the same treatment. Below is Trausti van Gilt, a second-year mirror-magic dilettante who shows up later in the session.
 
 <figure>
-  <img src="/img/dnd/ref-trausti.png" alt="Reference sheet for Trausti van Gilt, with a full body view, three-quarter portrait, and signature silver mirror pendant." />
+  <Picture {...pictureProps} src={refTrausti} alt="Reference sheet for Trausti van Gilt, with a full body view, three-quarter portrait, and signature silver mirror pendant." />
   <figcaption>An NPC design sheet. Once Trausti has a ref on disk, every page that lists him in <code>NPCS_ON_PAGE</code> picks it up automatically and his face stays consistent across panels.</figcaption>
 </figure>
 
@@ -60,21 +77,21 @@ The page generator decides which refs to attach by reading the comic script. Eac
 A quiet establishing page from session four. The party is camped inside the door of a magical dungeon that closes six days after it first opens. Pú the squirrel sits on Bjarki's shoulder. The yellow caption gives the scene-setter, the parchment box with a d20 icon is the DM-narrator voice, and the chibi doodle in the corner is the in-session DM commentary, drawn outside the panel border.
 
 <figure>
-  <img src="/img/dnd/page-01.png" alt="Comic page: three adventurers and a squirrel sit by lanternlight inside a dungeon. Captions establish that they are on day two of four." />
+  <Picture {...pictureProps} src={page01} alt="Comic page: three adventurers and a squirrel sit by lanternlight inside a dungeon. Captions establish that they are on day two of four." />
   <figcaption>Page 1 of the 5 May session. Four distinct text elements (speech bubble, yellow caption box, parchment DM-narration box, and the blue-pen chibi DM doodle) each have their own visual treatment, defined once in a style guide and prepended automatically to every prompt.</figcaption>
 </figure>
 
 A louder page from the same session. Skarphéðinn throws an alchemical fire-flask into a chamber full of giant spiders, the DM whispers "There were two. There is one." in the margin, and the panel layout gets to breathe.
 
 <figure>
-  <img src="/img/dnd/page-08.png" alt="Comic page: a character throws a flask of alchemical fire into a spider-filled chamber. Large FWOOOM! sound effect." />
+  <Picture {...pictureProps} src={page08} alt="Comic page: a character throws a flask of alchemical fire into a spider-filled chamber. Large FWOOOM! sound effect." />
   <figcaption>Sound effects are integrated into the art. The big middle panel is deliberately wider than the others; when the page outline gives a beat its own page, I give the loudest panel most of the real estate.</figcaption>
 </figure>
 
 A puzzle page near the end. The party reaches a chamber full of mirror-objects and works out that the dungeon's parting gift is whichever ordinary-looking thing pairs with one of the silver replicas.
 
 <figure>
-  <img src="/img/dnd/page-12.png" alt="Comic page: party studies mirror objects in a vault, including a silver dog statue. Pú the squirrel watches from Bjarki's shoulder." />
+  <Picture {...pictureProps} src={page12} alt="Comic page: party studies mirror objects in a vault, including a silver dog statue. Pú the squirrel watches from Bjarki's shoulder." />
   <figcaption>Page-to-page continuity is enforced by attaching the previous one or two already-generated pages as additional references when generating each new page. The model is told to use them <em>only</em> for lighting and lettering style, never for layout or composition.</figcaption>
 </figure>
 
