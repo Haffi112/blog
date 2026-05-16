@@ -6,9 +6,12 @@ semesters:
   - Spring 2023
   - Spring 2025
 description: >-
-  Bridge course between the BSc and MSc programmes in computer
-  science, co-taught with Steinn Guðmundsson and Páll Melsted on a
-  rotating basis. Algorithm design and analysis with an emphasis on
-  asymptotic complexity, divide-and-conquer, greedy methods, dynamic
-  programming, graph algorithms, and the basics of NP-completeness.
-  Taught in English.
+  Algorithm design and analysis, taught as a bridge course between
+  the BSc and MSc programmes in computer science. Covers asymptotic
+  complexity, algorithms for sorting and searching, graph algorithms
+  and matrix computation, and the standard design strategies of
+  divide-and-conquer, greedy methods, and dynamic programming. The
+  course closes with the basics of intractability: NP-completeness,
+  approximation algorithms, and randomised algorithms. Co-taught with
+  Steinn Guðmundsson and Páll Melsted on a rotating basis. Taught in
+  English.

@@ -9,9 +9,9 @@ semesters:
   - Spring 2025
   - Spring 2026
 description: >-
-  Hafsteinn's flagship master's course, run annually since 2021, on
-  the full lifecycle of an applied AI project: framing the problem,
-  sourcing and curating data, model selection and evaluation,
-  deployment, and post-deployment monitoring. Students work on team
-  projects that take an idea through every stage from specification
-  to a deployed prototype.
+  Master's course on the full lifecycle of a production AI system:
+  gathering and preparing data, feature selection, training models,
+  evaluating them, putting them into production, serving them as
+  services, and monitoring and maintaining them once live. The
+  semester is built around three larger team projects in which
+  student teams compete to build the best working solution.

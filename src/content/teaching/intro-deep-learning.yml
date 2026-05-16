@@ -4,8 +4,10 @@ language: english
 semesters:
   - Fall 2025
 description: >-
-  Master's introduction to deep learning: from the basics of
-  feed-forward networks and back-propagation through modern
-  architectures, with a focus on practical implementation in PyTorch.
-  Includes coverage of convolutional networks, recurrent and attention
-  models, and the basics of training large models. Taught in English.
+  Master's introduction to deep neural networks, covering
+  backpropagation, model training and regularisation, and
+  architectures used for image, audio, and text. Generative,
+  adversarial, and sequential models are part of the syllabus, with
+  PyTorch as the implementation language throughout. Students
+  present a paper or project of their own from the field as part of
+  the assessment. Taught in English.

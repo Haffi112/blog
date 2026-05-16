@@ -4,9 +4,12 @@ language: icelandic
 semesters:
   - Spring 2026
 description: >-
-  Master's course at the School of Humanities on the use of large
-  language models for Icelandic, co-taught with Iris Edda Nowenstein
-  as main instructor. Covers what current models can and cannot do
-  for an under-resourced language, evaluation and bias considerations,
-  and practical work with Icelandic-language models and datasets
-  developed at the University of Iceland. Taught in Icelandic.
+  Master's course at the School of Humanities asking how well large
+  language models work in Icelandic and what their behaviour says
+  about both the models and human language. Topics include methods
+  for evaluating LLM linguistic competence in Icelandic, the risks
+  that come with widespread chatbot use in smaller language
+  communities (misinformation, bias and prejudice), and what
+  cross-linguistic performance suggests about the way children and
+  machines acquire language. Lead instructor: Iris Edda Nowenstein.
+  Taught in Icelandic.

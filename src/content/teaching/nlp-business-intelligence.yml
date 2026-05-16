@@ -6,10 +6,9 @@ semesters:
   - Spring 2023
   - Spring 2024
 description: >-
-  Two-week NLP module that Hafsteinn delivers as a guest instructor
-  inside the Business Intelligence master's course at the School of
-  Business, which is convened by Helga Ingimundardóttir. Covers the
-  practical NLP toolkit modern analysts need: text preprocessing,
-  embeddings, classification, named-entity recognition, and the use
-  of large language models for business applications. Taught in
-  English.
+  Two-week module on natural language processing taught inside the
+  Business Intelligence master's course at the School of Business,
+  where Helga Ingimundardóttir is the lead instructor. The module
+  covers text preprocessing, embeddings, classification, named-entity
+  recognition, and the use of large language models in analyst
+  workflows. Taught in English.

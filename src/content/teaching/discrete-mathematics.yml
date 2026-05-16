@@ -7,9 +7,10 @@ semesters:
   - Fall 2022
   - Fall 2023
 description: >-
-  Large foundational discrete math course (200–230 students per
-  cohort) for first-year computer science students. Covers logic and
-  proof techniques, set theory, combinatorics, graphs, recurrences,
-  and an introduction to probability on discrete sample spaces.
-  Taught at the University of Iceland Department of Computer Science
-  with a mixed Icelandic and international cohort.
+  First-year course covering the discrete-math foundations used
+  throughout the rest of the computer-science degree: propositions
+  and predicate logic, set theory and Boolean algebra, induction and
+  recursion, counting and basic algorithm analysis, relations and
+  their representations, trees and graphs, and the basics of strings,
+  finite automata, and formal grammars. Enrolment runs 200–230
+  students per cohort, a mix of Icelandic and international students.
