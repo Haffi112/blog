@@ -27,6 +27,12 @@ research_statement: >-
   Icelandic blog comments, and machine-translation resources for Faroese.
 
 current_positions:
+  - title: Dean
+    institution: University of Iceland
+    department: Faculty of Industrial Engineering, Mechanical Engineering and Computer Science
+    start: 2026
+    end: present
+    location: Iceland
   - title: Associate Professor in Computer Science
     institution: University of Iceland
     department: Faculty of Industrial Engineering, Mechanical Engineering and Computer Science
@@ -151,6 +157,32 @@ service:
       organization: Association of Computer Scientists in Iceland
       start: 2026
       end: present
+    - role: Ad-hoc committee member
+      organization: Ethics committee, University of Iceland
+      start: 2026
+      end: 2026
+      note: single case
+    - role: Lead author
+      organization: AI policy of the University of Iceland
+      start: 2025
+      end: 2025
+      link: https://hi.is/gervigreindarstefna
+    - role: Editorial board member
+      organization: Vísindavefurinn (Icelandic Science Web), University of Iceland
+      start: 2024
+      end: 2026
+    - role: Committee member
+      organization: Icelandic language committee, University of Iceland
+      start: 2021
+      end: 2026
+    - role: Committee member
+      organization: Teaching committee, School of Engineering and Natural Sciences, University of Iceland
+      start: 2021
+      end: 2024
+    - role: Committee member
+      organization: Equality committee, School of Engineering and Natural Sciences, University of Iceland
+      start: 2021
+      end: 2023
     - role: President
       organization: Association of Computer Scientists in Iceland
       start: 2020

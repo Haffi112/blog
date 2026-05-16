@@ -133,7 +133,7 @@
 ]
 #for r in data.service.roles [
   #entry(_range(r.start, r.end))[
-    *#r.role*, #r.organization
+    *#r.role*, #r.organization#if r.at("note", default: none) != none [ — #r.note]#if r.at("link", default: none) != none [. #link(r.link)[#r.link]]
   ]
 ]
 
