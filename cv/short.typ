@@ -63,7 +63,9 @@
 
 #section-title("Teaching")
 #plain-entry[
-  #data.teaching.map(t => t.title).join(", ").
+  #data.teaching.map(t => {
+    if t.at("years_short", default: "") != "" [#t.title (#t.years_short)] else [#t.title]
+  }).join(", ").
   Roughly 300+ students per academic year across these courses.
 ]
 

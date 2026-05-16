@@ -64,7 +64,8 @@ const students = defineCollection({
     startYear: z.number().int().optional(),
     endYear: z.number().int().optional(),
     link: z.string().url().optional(),
-    nowAt: z.string().optional()
+    nowAt: z.string().optional(),
+    supervisor: z.string().optional()
   })
 });
 

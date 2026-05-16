@@ -98,6 +98,9 @@
 #for t in data.teaching [
   #entry(course-level-label(t.level))[
     *#t.title* — #t.description
+    #if t.at("semesters", default: ()).len() > 0 [
+       #text(fill: muted, size: 9pt)[_Taught:_ #t.semesters.join(", ").]
+    ]
   ]
 ]
 

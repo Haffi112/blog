@@ -1,9 +1,14 @@
 title: Analysis of Algorithms
 level: mixed
 language: english
-semesters: []
+semesters:
+  - Spring 2021
+  - Spring 2023
+  - Spring 2025
 description: >-
-  Bridge course between the BSc and MSc programmes in computer science.
-  Algorithm design and analysis with an emphasis on asymptotic
-  complexity, divide-and-conquer, greedy methods, dynamic programming,
-  graph algorithms, and the basics of NP-completeness. Taught in English.
+  Bridge course between the BSc and MSc programmes in computer
+  science, co-taught with Steinn Guðmundsson and Páll Melsted on a
+  rotating basis. Algorithm design and analysis with an emphasis on
+  asymptotic complexity, divide-and-conquer, greedy methods, dynamic
+  programming, graph algorithms, and the basics of NP-completeness.
+  Taught in English.

@@ -1,10 +1,17 @@
 title: The AI Lifecycle
 level: msc
 language: english
-semesters: []
+semesters:
+  - Spring 2021
+  - Spring 2022
+  - Spring 2023
+  - Spring 2024
+  - Spring 2025
+  - Spring 2026
 description: >-
-  Master's course developed and taught by Hafsteinn on the full lifecycle
-  of an applied AI project: framing the problem, sourcing and curating
-  data, model selection and evaluation, deployment, and post-deployment
-  monitoring. Students work on team projects that take an idea through
-  every stage from specification to a deployed prototype.
+  Hafsteinn's flagship master's course, run annually since 2021, on
+  the full lifecycle of an applied AI project: framing the problem,
+  sourcing and curating data, model selection and evaluation,
+  deployment, and post-deployment monitoring. Students work on team
+  projects that take an idea through every stage from specification
+  to a deployed prototype.

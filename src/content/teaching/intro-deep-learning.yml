@@ -1,7 +1,8 @@
 title: Introduction to Deep Learning
 level: msc
 language: english
-semesters: []
+semesters:
+  - Fall 2025
 description: >-
   Master's introduction to deep learning: from the basics of
   feed-forward networks and back-propagation through modern

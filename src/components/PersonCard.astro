@@ -5,8 +5,9 @@ interface Props {
   title?: string;      // dissertation / thesis title
   link?: string;       // personal page, ORCID, etc.
   nowAt?: string;      // for alumni: "Now PhD student at X"
+  supervisor?: string; // main supervisor when I served on the committee
 }
-const { name, role, title, link, nowAt } = Astro.props;
+const { name, role, title, link, nowAt, supervisor } = Astro.props;
 ---
 <article class="py-4 border-t border-rule first:border-t-0">
   <div class="flex flex-col gap-1">
@@ -15,6 +16,7 @@ const { name, role, title, link, nowAt } = Astro.props;
     </p>
     <p class="text-sm text-ink-muted">{role}</p>
     {title && <p class="text-sm text-ink">{title}</p>}
+    {supervisor && <p class="text-xs text-ink-muted">Main supervisor: {supervisor}</p>}
     {nowAt && <p class="text-xs text-ink-muted italic">{nowAt}</p>}
   </div>
 </article>

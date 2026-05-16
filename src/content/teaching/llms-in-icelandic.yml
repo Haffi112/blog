@@ -1,11 +1,12 @@
 title: Large Language Models in an Icelandic Context
 level: msc
 language: icelandic
-semesters: []
+semesters:
+  - Spring 2026
 description: >-
-  Master's course co-taught at the School of Humanities on the use of
-  large language models for Icelandic. Covers what current models can
-  and cannot do for an under-resourced language, evaluation and bias
-  considerations, and practical work with Icelandic-language models
-  and datasets developed at the University of Iceland. Taught in
-  Icelandic.
+  Master's course at the School of Humanities on the use of large
+  language models for Icelandic, co-taught with Iris Edda Nowenstein
+  as main instructor. Covers what current models can and cannot do
+  for an under-resourced language, evaluation and bias considerations,
+  and practical work with Icelandic-language models and datasets
+  developed at the University of Iceland. Taught in Icelandic.

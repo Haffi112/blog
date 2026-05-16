@@ -1,10 +1,15 @@
 title: Discrete Mathematics for Computer Science
 level: bsc
 language: mixed
-semesters: []
+semesters:
+  - Fall 2020
+  - Fall 2021
+  - Fall 2022
+  - Fall 2023
 description: >-
-  Foundational discrete math course for first-year computer science
-  students. Covers logic and proof techniques, set theory, combinatorics,
-  graphs, recurrences, and an introduction to probability on discrete
-  sample spaces. Taught at the University of Iceland Department of
-  Computer Science with a mixed Icelandic and international cohort.
+  Large foundational discrete math course (200–230 students per
+  cohort) for first-year computer science students. Covers logic and
+  proof techniques, set theory, combinatorics, graphs, recurrences,
+  and an introduction to probability on discrete sample spaces.
+  Taught at the University of Iceland Department of Computer Science
+  with a mixed Icelandic and international cohort.

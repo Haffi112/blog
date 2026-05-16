@@ -3,7 +3,13 @@ import BaseLayout from '~/components/BaseLayout.astro';
 import PersonCard from '~/components/PersonCard.astro';
 import { getCollection } from 'astro:content';
 
-type Role = 'phd-main' | 'phd-committee' | 'msc' | 'alumni-phd' | 'alumni-msc';
+type Role =
+  | 'phd-main'
+  | 'phd-committee'
+  | 'msc'
+  | 'alumni-phd'
+  | 'alumni-phd-committee'
+  | 'alumni-msc';
 
 const all = (await getCollection('students')).map((s) => s.data);
 
@@ -23,6 +29,15 @@ const groups: Array<{ role: Role; label: string; description?: string }> = [
     label: 'Current master’s students'
   },
   {
+    role: 'alumni-phd',
+    label: 'PhD alumni'
+  },
+  {
+    role: 'alumni-phd-committee',
+    label: 'PhD alumni (committee)',
+    description: 'Doctoral graduates whose committees I served on.'
+  },
+  {
     role: 'alumni-msc',
     label: 'Recent MSc alumni'
   }
@@ -33,6 +48,7 @@ const roleLabel: Record<Role, string> = {
   'phd-committee': 'PhD candidate',
   msc: 'MSc student',
   'alumni-phd': 'PhD alumnus',
+  'alumni-phd-committee': 'PhD alumnus',
   'alumni-msc': 'MSc alumnus'
 };
 ---
@@ -61,6 +77,7 @@ const roleLabel: Record<Role, string> = {
                 title={m.title}
                 link={m.link}
                 nowAt={m.nowAt}
+                supervisor={m.supervisor}
               />
             ))}
           </div>

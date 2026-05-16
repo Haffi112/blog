@@ -1,10 +1,15 @@
 title: Natural Language Processing (Business Intelligence module)
 level: msc
 language: english
-semesters: []
+semesters:
+  - Spring 2022
+  - Spring 2023
+  - Spring 2024
 description: >-
-  NLP module taught as part of the Business Intelligence master's
-  programme at the School of Business. Covers the practical NLP
-  toolkit modern analysts need: text preprocessing, embeddings,
-  classification, named-entity recognition, and the use of large
-  language models for business applications. Taught in English.
+  Two-week NLP module that Hafsteinn delivers as a guest instructor
+  inside the Business Intelligence master's course at the School of
+  Business, which is convened by Helga Ingimundardóttir. Covers the
+  practical NLP toolkit modern analysts need: text preprocessing,
+  embeddings, classification, named-entity recognition, and the use
+  of large language models for business applications. Taught in
+  English.

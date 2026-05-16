@@ -142,6 +142,28 @@ const THEME_LABELS: Record<string, string> = {
 };
 const THEME_ORDER = ['nlp-is', 'cv-nat', 'clinical-ai', 'genetics', 'comp-neuro'];
 
+// Collapses a list of semester strings into a compact display range when
+// every entry shares one season (e.g. all "Spring YYYY") and the years are
+// strictly consecutive, otherwise returns the entries comma-joined. An
+// empty input returns an empty string so the short CV can skip the suffix.
+function compactSemesters(semesters: string[]): string {
+  if (semesters.length === 0) return '';
+  if (semesters.length === 1) return semesters[0];
+  const parsed = semesters.map((s) => {
+    const m = s.match(/^(?:(Spring|Fall|Summer|Winter)\s+)?(\d{4})$/);
+    return m ? { season: m[1] ?? '', year: parseInt(m[2], 10) } : null;
+  });
+  if (parsed.some((p) => p === null)) return semesters.join(', ');
+  const seasons = new Set(parsed.map((p) => p!.season));
+  const years = parsed.map((p) => p!.year);
+  const consecutive = years.every((y, i) => i === 0 || y === years[i - 1] + 1);
+  if (seasons.size === 1 && consecutive) {
+    const prefix = parsed[0]!.season ? `${parsed[0]!.season} ` : '';
+    return `${prefix}${years[0]}–${years[years.length - 1]}`;
+  }
+  return semesters.join(', ');
+}
+
 // ---------- Main ----------
 
 function main() {
@@ -166,6 +188,12 @@ function main() {
   // Sort courses: MSc/PhD first
   const levelOrder: Record<string, number> = { phd: 0, msc: 1, mixed: 2, bsc: 3 };
   courses.sort((a, b) => (levelOrder[a.level] ?? 9) - (levelOrder[b.level] ?? 9));
+  // Compact range like "Spring 2021–2026" when every entry shares one season
+  // and the years run consecutively; otherwise fall back to the literal list.
+  const coursesWithYears = courses.map((c) => ({
+    ...c,
+    years_short: compactSemesters(c.semesters ?? [])
+  }));
 
   // Sort talks by full date desc so entries within a year are chronological
   const talksWithYear = talks
@@ -212,7 +240,7 @@ function main() {
     alumni_msc,
     alumni_msc_count: alumni_msc.length,
 
-    teaching: courses,
+    teaching: coursesWithYears,
     projects,
     talks: talksWithYear,
 
