@@ -162,6 +162,11 @@ service:
       start: 2026
       end: 2026
       note: single case
+    - role: Council member
+      organization: Professional Council, Icelandic Technology Development Fund (Tækniþróunarsjóður)
+      start: 2025
+      end: present
+      note: reviewing research and innovation applications
     - role: Lead author
       organization: AI policy of the University of Iceland
       start: 2025
