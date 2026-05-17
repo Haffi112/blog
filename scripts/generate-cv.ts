@@ -135,7 +135,7 @@ interface Talk {
 
 const THEME_LABELS: Record<string, string> = {
   'nlp-is': 'NLP for Icelandic and Germanic languages',
-  'cv-nat': 'Computer vision for natural sciences',
+  'cv-nat': 'Machine learning for the natural sciences',
   'clinical-ai': 'Clinical AI and cardiology',
   genetics: 'Human genetics and computational biology',
   'comp-neuro': 'Computational neuroscience'

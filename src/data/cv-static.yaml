@@ -132,6 +132,8 @@ awards_and_grants:
 
 service:
   reviewing:
+    - venue: Icelandic Technology Development Fund (Tækniþróunarsjóður), research and innovation applications
+      years: "2025–present"
     - venue: ACL Rolling Review
       years: "2024–present"
     - venue: LREC workshops
@@ -167,11 +169,12 @@ service:
       start: 2025
       end: present
       note: reviewing research and innovation applications
-    - role: Lead author
+    - role: Leading author
       organization: AI policy of the University of Iceland
       start: 2025
       end: 2025
       link: https://hi.is/gervigreindarstefna
+      note: chaired the preparatory committee; the final policy was drafted by three main authors
     - role: Editorial board member
       organization: Vísindavefurinn (Icelandic Science Web), University of Iceland
       start: 2024
