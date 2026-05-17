@@ -175,6 +175,12 @@ service:
       end: 2025
       link: https://hi.is/gervigreindarstefna
       note: chaired the preparatory committee; the final policy was drafted by three main authors
+    - role: Vice-chair and founding member
+      organization: University of Iceland Centre for Artificial Intelligence
+      start: 2024
+      end: present
+      link: https://ai.hi.is/en/about/
+      note: preparatory work from 2024; centre established 2025
     - role: Editorial board member
       organization: Vísindavefurinn (Icelandic Science Web), University of Iceland
       start: 2024

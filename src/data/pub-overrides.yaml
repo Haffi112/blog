@@ -64,7 +64,6 @@ weissenberger2018origin:
 
 einarsson2019bootstrap:
   theme: comp-neuro
-  selected: true
   summary: |
     Studies bootstrap percolation on random graphs in the presence of
     inhibitory vertices, a generalisation of the classical activation
@@ -183,10 +182,14 @@ sigurdhardottir2023otolith:
 
 davidhsson2023efficient:
   theme: cv-nat
+  selected: true
   summary: |
-    Develops gait-classification models for five-gaited Icelandic horses
-    using mobile-phone inertial sensors, focused on data-efficient
-    training and on-device inference. Published in Animals (MDPI).
+    Gait-classification models for five-gaited Icelandic horses built
+    from accelerometer time series recorded by smartphones mounted on
+    the horse. Uses LSTM and GRU architectures with attention to model
+    size and on-device inference cost, showing that compact recurrent
+    models reach near-expert accuracy without specialised hardware.
+    Published in Animals (MDPI, 2023).
 
 hamedpour2023analyzing:
   theme: cv-nat
@@ -369,7 +372,6 @@ einarsson2024icelandic:
 
 einarsson2024sequence:
   theme: genetics
-  selected: true
   summary: |
     deCODE-led genome-wide study (Nature Communications 2024) showing
     that sequence variants associated with body mass index influence
@@ -513,27 +515,28 @@ hamedpour2022drought:
 
 einarsson2025mazeeval:
   theme: nlp-is
+  selected: true
   summary: |
     MazeEval is a benchmark for testing sequential decision-making in
     language models through navigation tasks in procedurally generated
-    mazes. Single-author preprint.
+    mazes. The setup probes whether models can maintain a coherent
+    internal map across multiple turns of interaction rather than
+    relying on local pattern matching. Single-author preprint released
+    on arXiv (2025).
   links:
     arxiv: https://arxiv.org/abs/2507.20395
 
 da2025temporal:
   theme: cv-nat
+  selected: true
   summary: |
-    Aggregates temporal vision-language features for high-accuracy fish
-    classification in automated underwater monitoring streams.
-    Ecological Informatics.
-
-fridhriksdottirdetecting:
-  theme: nlp-is
-  summary: |
-    Frames detection of biased language in Icelandic as a named-entity
-    recognition task, with annotations targeting socially responsible
-    text analysis. Workshop on Socially Responsible Language Modelling
-    Research.
+    Aggregates temporal vision-language features from underwater video
+    to classify fish species in automated monitoring streams,
+    combining per-frame embeddings with temporal pooling to handle the
+    noise and occlusion that limit frame-by-frame classifiers in
+    deployed systems. Published in Ecological Informatics (2025) as
+    part of the lab's ongoing computer-vision work with the Marine
+    and Freshwater Research Institute.
 
 chang2025global:
   theme: nlp-is
