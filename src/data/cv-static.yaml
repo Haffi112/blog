@@ -246,6 +246,12 @@ outreach:
     year: 2020
 
 media_appearances:
+  - date: 2026-05-27
+    title_is: "Utanríkisráðherra óttast „Brexit-augnablik“ í þjóðaratkvæðagreiðslu um ESB-aðild"
+    title_en: "Iceland’s foreign minister fears ‘Brexit moment’ in EU accession referendum"
+    outlet: "The Guardian"
+    type: article
+    url: "https://www.theguardian.com/world/2026/may/27/iceland-foreign-minister-thorgerthur-katrin-gunnarsdottir-brexit-moment-eu-accession-referendum"
   - date: 2026-05-03
     title_is: "Gervigreindin gæti haft áhrif á ESB-atkvæðagreiðsluna"
     title_en: "AI could influence the EU referendum vote"
