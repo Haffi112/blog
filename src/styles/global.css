@@ -6,11 +6,79 @@
 @import "katex/dist/katex.min.css";
 @import "tailwindcss";
 
-/* daisyUI v5 — ship every built-in theme (~35) and add the user's custom
-   "reader" theme below. */
+/* daisyUI v5 — three curated themes only: the editorial "light" and "dark"
+   palettes (custom blocks below override the built-ins of the same name)
+   plus the accessibility-focused "reader" theme. */
 @plugin "daisyui" {
-  themes: all;
+  themes: light --default, dark --prefersdark, reader;
 }
+
+/* Editorial light: warm paper, near-black ink, brand aubergine (#5B3A78,
+   the same accent used on OG cards), bronze as the warm secondary. */
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+  --color-base-100: oklch(97.5% 0.006 85);
+  --color-base-200: oklch(99.2% 0.003 85);
+  --color-base-300: oklch(88.5% 0.012 85);
+  --color-base-content: oklch(23% 0.018 315);
+  --color-primary: oklch(39% 0.1 304);
+  --color-primary-content: oklch(97.5% 0.006 85);
+  --color-secondary: oklch(50% 0.09 60);
+  --color-secondary-content: oklch(97.5% 0.006 85);
+  --color-accent: oklch(55% 0.15 30);
+  --color-accent-content: oklch(97.5% 0.006 85);
+  --color-neutral: oklch(30% 0.02 305);
+  --color-neutral-content: oklch(97.5% 0.006 85);
+  --color-info: oklch(58% 0.09 230);
+  --color-success: oklch(52% 0.09 160);
+  --color-warning: oklch(70% 0.13 70);
+  --color-error: oklch(52% 0.17 25);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* Editorial dark: aubergine-tinted near-black, warm off-white ink, the
+   brand accent lifted to a readable mauve. */
+@plugin "daisyui/theme" {
+  name: "dark";
+  default: false;
+  prefersdark: true;
+  color-scheme: dark;
+  --color-base-100: oklch(18.5% 0.016 305);
+  --color-base-200: oklch(22% 0.018 305);
+  --color-base-300: oklch(30% 0.02 305);
+  --color-base-content: oklch(90% 0.012 85);
+  --color-primary: oklch(76% 0.08 305);
+  --color-primary-content: oklch(18.5% 0.016 305);
+  --color-secondary: oklch(76% 0.09 70);
+  --color-secondary-content: oklch(18.5% 0.016 305);
+  --color-accent: oklch(72% 0.13 35);
+  --color-accent-content: oklch(18.5% 0.016 305);
+  --color-neutral: oklch(80% 0.02 305);
+  --color-neutral-content: oklch(18.5% 0.016 305);
+  --color-info: oklch(72% 0.09 230);
+  --color-success: oklch(72% 0.09 160);
+  --color-warning: oklch(80% 0.11 80);
+  --color-error: oklch(68% 0.14 25);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
 @plugin "daisyui/theme" {
   name: "reader";
   default: false;
@@ -48,7 +116,7 @@
    when daisyUI re-skins via [data-theme] our utilities follow automatically.
 
    This is the bridge that lets all existing Astro components keep their
-   class names while gaining 35 new palettes.
+   class names while the palette swaps per theme.
 --------------------------------------------------------------------------- */
 @theme {
   /* Surface + ink (mapped to daisyUI's base + content scale) */
@@ -71,6 +139,9 @@
   --font-serif: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
   --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
   --font-prose: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
+  /* Display face for page titles and section headings — the serif carries
+     the editorial identity; overridable per-theme (reader swaps it out). */
+  --font-display: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
 
   /* Prose sizing — also per-theme overridable */
   --prose-size: 1.0625rem;
@@ -87,42 +158,29 @@
   --width-prose: 680px;
   --width-pubs: 75ch;
 
-  /* Custom font size: drives text-display utility */
-  --text-display: 3rem;
-  --text-display--line-height: 1.15;
-  --text-display--letter-spacing: -0.02em;
+  /* Custom font size: drives text-display utility (fluid). */
+  --text-display: clamp(2.5rem, 1.6rem + 3.5vw, 4rem);
+  --text-display--line-height: 1.08;
+  --text-display--letter-spacing: -0.015em;
+
+  /* Secondary display size for section-page titles. */
+  --text-display-sm: clamp(2rem, 1.4rem + 2.2vw, 2.75rem);
+  --text-display-sm--line-height: 1.12;
+  --text-display-sm--letter-spacing: -0.012em;
 }
 
 /* daisyUI sets data-theme on <html>; we use the same hook to fire `dark:*`
    Tailwind variants for the "dark" theme (and any user variants we add). */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
-/* --- Typography overlays on top of daisyUI palettes ------------------------
-   daisyUI varies palette per theme but not typography. Layer a few
-   personality overlays so adjacent themes don't all look the same:
-     - wireframe / black / luxury → serif everywhere (newspaper feel)
-     - cupcake / valentine / garden / pastel → spacious leading
-     - reader → OpenDyslexic + bold accents replace italics
+/* --- Typography overlay for the reader theme -------------------------------
+   OpenDyslexic everywhere (including display type), larger body, and bold
+   accents replacing italics further below.
 --------------------------------------------------------------------------- */
-[data-theme="wireframe"],
-[data-theme="black"],
-[data-theme="luxury"] {
-  --font-sans: var(--font-serif);
-  --font-prose: var(--font-serif);
-}
-
-[data-theme="cupcake"],
-[data-theme="valentine"],
-[data-theme="garden"],
-[data-theme="pastel"],
-[data-theme="caramellatte"] {
-  --prose-leading: 1.72;
-  --prose-size: 1.125rem;
-}
-
 [data-theme="reader"] {
   --font-sans: "OpenDyslexic", "Comic Sans MS", system-ui, sans-serif;
   --font-prose: "OpenDyslexic", "Comic Sans MS", system-ui, sans-serif;
+  --font-display: "OpenDyslexic", "Comic Sans MS", system-ui, sans-serif;
   --prose-size: 1.125rem;
   --prose-leading: 1.85;
 }
@@ -190,10 +248,27 @@
     letter-spacing: -0.01em;
     line-height: 1.25;
   }
+
+  /* Editorial identity: display serif on the two top heading levels;
+     h3/h4 stay sans for dense UI lists (publications, projects). */
+  h1, h2 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+  }
 }
 
 /* --- Components --- */
 @layer components {
+  /* Small-caps mono kicker above titles ("Research", "01"). */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
   .prose-body {
     font-family: var(--font-prose);
     font-size: var(--prose-size);
@@ -329,6 +404,44 @@
   outline: 2px solid var(--color-accent-primary);
   outline-offset: 2px;
   border-radius: 0.125rem;
+}
+
+/* --- Scroll reveals -----------------------------------------------------
+   Elements marked data-reveal fade/rise in when they enter the viewport
+   (observer lives in BaseLayout). Gated behind the `js` class set by the
+   no-FOUC script so content is fully visible without JavaScript, and
+   neutralised under prefers-reduced-motion. */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.6s var(--ease-out),
+    transform 0.6s var(--ease-out);
+}
+.js [data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --- Cross-document view transitions (CSS-only, progressive) ----------- */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 150ms;
+  }
+}
+/* Keep the sticky header visually stable while page content crossfades. */
+header[data-site-header] {
+  view-transition-name: site-header;
 }
 
 /* --- Reduced motion --- */

@@ -1,0 +1,194 @@
+---
+/**
+ * GraphField — an animated "knowledge graph" particle field, rendered on a
+ * plain Canvas2D. Nodes drift slowly; edges fade in between nearby nodes;
+ * the field leans gently toward the cursor. Meant to sit behind hero
+ * content (absolutely positioned by the parent).
+ *
+ * Performance / accessibility contract:
+ *  - no dependencies; the whole thing is this inline script (~4 KB)
+ *  - devicePixelRatio-aware, capped at 2
+ *  - animation pauses when the canvas leaves the viewport or the tab hides
+ *  - prefers-reduced-motion gets a single static frame, no animation
+ *  - colors come from the theme's CSS custom properties and re-resolve
+ *    when data-theme changes, so the field matches light/dark/reader
+ *  - without JavaScript the canvas stays blank and invisible; content is
+ *    unaffected
+ */
+---
+<canvas data-graph-field class="w-full h-full block" aria-hidden="true"></canvas>
+
+<script is:inline>
+  (() => {
+    const canvas = document.querySelector('[data-graph-field]');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    /* Resolve theme colors by probing computed `color` (this forces the
+       browser to collapse oklch()/color-mix() tokens into a plain rgb()
+       string that every canvas implementation accepts). */
+    let inkColor = 'rgb(120 110 130)';
+    let accentColor = 'rgb(91 58 120)';
+    const resolveColors = () => {
+      const probe = document.createElement('span');
+      probe.style.display = 'none';
+      document.body.appendChild(probe);
+      probe.style.color = 'var(--color-ink-muted)';
+      const ink = getComputedStyle(probe).color;
+      probe.style.color = 'var(--color-accent-primary)';
+      const accent = getComputedStyle(probe).color;
+      probe.remove();
+      if (ink) inkColor = ink;
+      if (accent) accentColor = accent;
+    };
+    resolveColors();
+    /* Re-resolve on theme switch; repaint immediately if the loop is
+       parked (reduced motion / off-screen). */
+    new MutationObserver(() => {
+      resolveColors();
+      if (!raf) draw();
+    }).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme']
+    });
+
+    const DPR = Math.min(window.devicePixelRatio || 1, 2);
+    const LINK_DIST = 120;
+    const SPEED = 0.16;
+    let w = 0, h = 0, nodes = [];
+
+    const rand = (a, b) => a + Math.random() * (b - a);
+
+    const seed = () => {
+      const count = Math.min(90, Math.max(28, Math.round((w * h) / 16000)));
+      nodes = Array.from({ length: count }, () => ({
+        x: rand(0, w),
+        y: rand(0, h),
+        vx: rand(-SPEED, SPEED),
+        vy: rand(-SPEED, SPEED),
+        r: rand(1.1, 2.4)
+      }));
+    };
+
+    const resize = () => {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      if (rect.width === w && rect.height === h && nodes.length) return;
+      w = rect.width;
+      h = rect.height;
+      canvas.width = Math.round(w * DPR);
+      canvas.height = Math.round(h * DPR);
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      seed();
+    };
+
+    /* Pointer influence (desktop only; coarse pointers skip the listener). */
+    const pointer = { x: -1e4, y: -1e4 };
+    if (window.matchMedia('(pointer: fine)').matches) {
+      canvas.parentElement.addEventListener('pointermove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        pointer.x = e.clientX - rect.left;
+        pointer.y = e.clientY - rect.top;
+      });
+      canvas.parentElement.addEventListener('pointerleave', () => {
+        pointer.x = -1e4;
+        pointer.y = -1e4;
+      });
+    }
+
+    const step = () => {
+      for (const n of nodes) {
+        /* Gentle cursor attraction inside a 160px radius. */
+        const dx = pointer.x - n.x, dy = pointer.y - n.y;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < 160 * 160 && d2 > 1) {
+          const f = 0.012 / Math.sqrt(d2);
+          n.vx += dx * f;
+          n.vy += dy * f;
+        }
+        /* Cap velocity so cursor energy dissipates. */
+        n.vx = Math.max(-0.5, Math.min(0.5, n.vx * 0.995));
+        n.vy = Math.max(-0.5, Math.min(0.5, n.vy * 0.995));
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < -10) n.x = w + 10; else if (n.x > w + 10) n.x = -10;
+        if (n.y < -10) n.y = h + 10; else if (n.y > h + 10) n.y = -10;
+      }
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, w, h);
+      /* Edges first, nodes on top. */
+      for (let i = 0; i < nodes.length; i++) {
+        const a = nodes[i];
+        for (let j = i + 1; j < nodes.length; j++) {
+          const b = nodes[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 > LINK_DIST * LINK_DIST) continue;
+          const alpha = 0.3 * (1 - Math.sqrt(d2) / LINK_DIST);
+          ctx.strokeStyle = inkColor;
+          ctx.globalAlpha = alpha;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+      ctx.globalAlpha = 0.65;
+      ctx.fillStyle = accentColor;
+      for (const n of nodes) {
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    };
+
+    let raf = 0;
+    let visible = false;
+    const loop = () => {
+      step();
+      draw();
+      raf = requestAnimationFrame(loop);
+    };
+    const start = () => {
+      if (raf || reduced.matches || !visible || document.hidden) return;
+      raf = requestAnimationFrame(loop);
+    };
+    const stop = () => {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    };
+
+    const io = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      visible ? start() : stop();
+    });
+    io.observe(canvas);
+
+    document.addEventListener('visibilitychange', () => {
+      document.hidden ? stop() : start();
+    });
+
+    reduced.addEventListener?.('change', () => {
+      if (reduced.matches) { stop(); draw(); } else start();
+    });
+
+    /* ResizeObserver (rather than an eager resize() call): this inline
+       script executes mid-parse, before the hero has its final height, so
+       measuring now would yield a zero-sized canvas. The observer fires
+       once layout settles and again whenever the hero changes size. */
+    let resizeTimer = 0;
+    new ResizeObserver(() => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        resize();
+        /* Repaint if the loop is parked (reduced motion / off-screen). */
+        if (!raf) draw();
+      }, 100);
+    }).observe(canvas.parentElement);
+  })();
+</script>

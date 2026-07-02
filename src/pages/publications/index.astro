@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '~/components/BaseLayout.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import SectionHeading from '~/components/SectionHeading.astro';
 import PubCard from '~/components/PubCard.astro';
 import pubsData from '~/data/publications.json';
 import type { Publication, Theme } from '~/data/publications.schema';
@@ -35,15 +37,16 @@ const lastBuild = new Date();
   title="Publications"
   description="Publications by Hafsteinn Einarsson — themed list with summaries and links."
 >
-  <section class="max-w-prose mx-auto px-6 py-12">
-    <h1 class="text-display font-semibold tracking-tight text-ink">Publications</h1>
-    <p class="mt-3 text-ink-muted text-sm">
-      {all.length} publications · last updated {lastBuild.toISOString().slice(0, 10)} ·
-      <a href="https://orcid.org/0000-0001-5072-3678" class="underline underline-offset-2 decoration-1 hover:decoration-2">ORCID</a> ·
-      <a href="https://scholar.google.com/citations?user=QH69Qk8AAAAJ&hl=en" class="underline underline-offset-2 decoration-1 hover:decoration-2">Google Scholar</a>
-    </p>
+  <section class="max-w-prose mx-auto px-6 pb-12">
+    <PageHeader title="Publications">
+      <p class="mt-4 text-ink-muted text-sm">
+        {all.length} publications · last updated {lastBuild.toISOString().slice(0, 10)} ·
+        <a href="https://orcid.org/0000-0001-5072-3678" class="underline underline-offset-2 decoration-1 hover:decoration-2">ORCID</a> ·
+        <a href="https://scholar.google.com/citations?user=QH69Qk8AAAAJ&hl=en" class="underline underline-offset-2 decoration-1 hover:decoration-2">Google Scholar</a>
+      </p>
+    </PageHeader>
 
-    <details class="mt-4 text-sm text-ink-muted">
+    <details class="mt-6 text-sm text-ink-muted">
       <summary class="cursor-pointer">Authorship convention</summary>
       <p class="mt-2">
         In NLP and ML venues, last author typically denotes the senior/PI position;
@@ -55,14 +58,16 @@ const lastBuild = new Date();
     </details>
 
     {selected.length > 0 && (
-      <section class="mt-12 max-w-prose">
-        <h2 class="text-2xl font-semibold text-ink mb-4">Selected</h2>
-        {selected.map((p) => <PubCard pub={p} variant="selected" />)}
+      <section class="mt-12 max-w-prose" data-reveal>
+        <SectionHeading number="01" title="Selected" />
+        <div class="mt-6">
+          {selected.map((p) => <PubCard pub={p} variant="selected" />)}
+        </div>
       </section>
     )}
 
-    <section class="mt-16 max-w-prose">
-      <h2 class="text-2xl font-semibold text-ink">All publications</h2>
+    <section class="mt-16 max-w-prose" data-reveal>
+      <SectionHeading number="02" title="All publications" />
       {themeOrder.map((t) => (
         byTheme[t].length > 0 && (
           <section class="mt-10">

@@ -80,21 +80,24 @@ const fullTitle = `${title} · Hafsteinn Einarsson`;
       // No-FOUC theme init: must run before paint.
       // Mirror the ids in src/styles/global.css and ThemeToggle.astro.
       (() => {
-        const VALID = new Set([
-          'reader', 'light', 'dark', 'corporate', 'business', 'nord',
-          'autumn', 'winter', 'lofi', 'pastel', 'cupcake', 'bumblebee',
-          'emerald', 'garden', 'forest', 'aqua', 'fantasy', 'cmyk',
-          'lemonade', 'acid', 'retro', 'valentine', 'caramellatte',
-          'silk', 'coffee', 'luxury', 'wireframe', 'black', 'dim',
-          'night', 'sunset', 'synthwave', 'cyberpunk', 'halloween',
-          'dracula', 'abyss'
+        // Signals to CSS that JS is running (gates scroll-reveal styling).
+        document.documentElement.classList.add('js');
+        const VALID = new Set(['light', 'dark', 'reader']);
+        // Dark-leaning names from the retired 35-theme set: returning
+        // visitors keep a theme of the same polarity instead of snapping
+        // to light.
+        const DARKISH = new Set([
+          'business', 'forest', 'aqua', 'coffee', 'luxury', 'black',
+          'dim', 'night', 'sunset', 'synthwave', 'halloween', 'dracula',
+          'abyss', 'mono'
         ]);
-        // Migrate names from the pre-daisyUI custom theme set.
-        const MIGRATE = { aubergine: 'light', nordic: 'nord', mono: 'black' };
         let saved = localStorage.getItem('theme');
-        if (saved && MIGRATE[saved]) saved = MIGRATE[saved];
+        if (saved && !VALID.has(saved)) {
+          saved = DARKISH.has(saved) ? 'dark' : 'light';
+          localStorage.setItem('theme', saved);
+        }
         const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = saved && VALID.has(saved) ? saved : (sysDark ? 'dark' : 'light');
+        const theme = saved ?? (sysDark ? 'dark' : 'light');
         document.documentElement.dataset.theme = theme;
       })();
     </script>
@@ -107,5 +110,26 @@ const fullTitle = `${title} · Hafsteinn Einarsson`;
     </Nav>
     <main id="main"><slot /></main>
     <Footer />
+    <script is:inline>
+      // Scroll reveals: fade/rise elements marked data-reveal as they
+      // enter the viewport. CSS (gated on html.js) hides them initially;
+      // reduced-motion users get everything visible via the media query.
+      (() => {
+        const els = document.querySelectorAll('[data-reveal]');
+        if (!els.length || !('IntersectionObserver' in window)) {
+          els.forEach((el) => el.classList.add('is-revealed'));
+          return;
+        }
+        const io = new IntersectionObserver((entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add('is-revealed');
+              io.unobserve(e.target);
+            }
+          }
+        }, { rootMargin: '0px 0px -8% 0px' });
+        els.forEach((el) => io.observe(el));
+      })();
+    </script>
   </body>
 </html>

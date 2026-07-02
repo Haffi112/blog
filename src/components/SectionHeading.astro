@@ -1,0 +1,25 @@
+---
+/**
+ * Numbered editorial section heading: mono index, serif title, optional
+ * trailing link, hairline rule underneath.
+ */
+interface Props {
+  number?: string; // "01" — omit for unnumbered headings
+  title: string;
+  href?: string;
+  linkLabel?: string;
+  /** Heading level (defaults to h2). */
+  as?: 'h2' | 'h3';
+}
+
+const { number, title, href, linkLabel, as: Tag = 'h2' } = Astro.props;
+---
+<div class="flex items-baseline justify-between gap-4 pb-3 border-b border-rule">
+  <Tag class="flex items-baseline gap-3 text-2xl font-semibold text-ink">
+    {number && <span class="eyebrow translate-y-[-0.2em]" aria-hidden="true">{number}</span>}
+    {title}
+  </Tag>
+  {href && linkLabel && (
+    <a href={href} class="text-sm shrink-0">{linkLabel} →</a>
+  )}
+</div>

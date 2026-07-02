@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '~/components/BaseLayout.astro';
+import PageHeader from '~/components/PageHeader.astro';
 
 const sims = [
   { href: '/simulations/standard-percolation.html', label: 'Synchronous bootstrap percolation' },
@@ -12,12 +13,13 @@ const sims = [
   title="Simulations"
   description="Standalone interactive d3.js simulations from Hafsteinn Einarsson's PhD years on bootstrap percolation and neural dynamics."
 >
-  <section class="max-w-prose mx-auto px-6 py-12">
-    <h1 class="text-display font-semibold tracking-tight text-ink">Simulations</h1>
-    <p class="mt-3 prose-body">
-      Standalone interactive simulations from my PhD years. Most use <a href="https://d3js.org/">d3.js</a> for the visuals. Feel free to use them for educational purposes; the code lives in <a href="https://github.com/Haffi112/blog">the GitHub repo</a>.
-    </p>
-    <ul class="mt-8">
+  <section class="max-w-prose mx-auto px-6 pb-12">
+    <PageHeader title="Simulations">
+      <p class="mt-4 prose-body max-w-prose">
+        Standalone interactive simulations from my PhD years. Most use <a href="https://d3js.org/">d3.js</a> for the visuals. Feel free to use them for educational purposes; the code lives in <a href="https://github.com/Haffi112/blog">the GitHub repo</a>.
+      </p>
+    </PageHeader>
+    <ul class="mt-8" data-reveal>
       {sims.map((s) => (
         <li class="py-3 border-t border-rule first:border-t-0">
           <a href={s.href}>{s.label} →</a>

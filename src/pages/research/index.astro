@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '~/components/BaseLayout.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import SectionHeading from '~/components/SectionHeading.astro';
 import ThemeCard from '~/components/ThemeCard.astro';
 import ProjectCard from '~/components/ProjectCard.astro';
 import TalkItem from '~/components/TalkItem.astro';
@@ -42,14 +44,14 @@ const themes = [
   title="Research"
   description="Research themes, open-source projects, and talks by Hafsteinn Einarsson's group."
 >
-  <section class="max-w-prose mx-auto px-6 py-12">
-    <h1 class="text-display font-semibold tracking-tight text-ink">Research</h1>
-    <p class="mt-3 text-ink-muted">
-      My group works across five themes. Open-source projects and recent talks are below.
-    </p>
+  <section class="max-w-prose mx-auto px-6 pb-12">
+    <PageHeader
+      title="Research"
+      lede="My group works across five themes. Open-source projects and recent talks are below."
+    />
 
-    <section id="themes" class="mt-12 scroll-mt-20">
-      <h2 class="text-2xl font-semibold text-ink">Themes</h2>
+    <section id="themes" class="mt-12 scroll-mt-20" data-reveal>
+      <SectionHeading number="01" title="Themes" />
       <div class="mt-6 flex flex-col gap-4">
         {themes.map((t) => (
           <ThemeCard theme={t.code} title={t.title} body={t.body} anchor={t.code} />
@@ -57,8 +59,8 @@ const themes = [
       </div>
     </section>
 
-    <section id="projects" class="mt-16 scroll-mt-20">
-      <h2 class="text-2xl font-semibold text-ink">Open-source projects</h2>
+    <section id="projects" class="mt-16 scroll-mt-20" data-reveal>
+      <SectionHeading number="02" title="Open-source projects" />
       <p class="mt-3 text-ink-muted text-sm">
         Datasets, models, and tools released by the group. Most live on Hugging Face or GitHub; see the linked publication for context.
       </p>
@@ -67,8 +69,8 @@ const themes = [
       </div>
     </section>
 
-    <section id="talks" class="mt-16 scroll-mt-20">
-      <h2 class="text-2xl font-semibold text-ink">Talks &amp; outreach</h2>
+    <section id="talks" class="mt-16 scroll-mt-20" data-reveal>
+      <SectionHeading number="03" title="Talks & outreach" />
       <ul class="mt-4">
         {talks.map((t) => <TalkItem {...t} />)}
       </ul>

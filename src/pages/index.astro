@@ -4,6 +4,7 @@ import JsonLdPerson from '~/components/JsonLdPerson.astro';
 import Hero from '~/components/Hero.astro';
 import NewsItem from '~/components/NewsItem.astro';
 import PubCard from '~/components/PubCard.astro';
+import SectionHeading from '~/components/SectionHeading.astro';
 import { getCollection } from 'astro:content';
 import pubsData from '~/data/publications.json';
 import type { Publication } from '~/data/publications.schema';
@@ -23,10 +24,8 @@ const selected = pubs.filter((p) => p.selected).slice(0, 3);
   <JsonLdPerson slot="head" />
   <Hero />
 
-  <section class="max-w-prose mx-auto px-6 py-12">
-    <div class="flex items-baseline justify-between">
-      <h2 class="text-2xl font-semibold text-ink">News</h2>
-    </div>
+  <section class="max-w-prose mx-auto px-6 py-14" data-reveal>
+    <SectionHeading number="01" title="News" />
     <ul class="mt-4">
       {news.map((n, i) => (
         <NewsItem
@@ -39,12 +38,14 @@ const selected = pubs.filter((p) => p.selected).slice(0, 3);
     </ul>
   </section>
 
-  <section class="max-w-prose mx-auto px-6 py-12">
-    <div class="flex items-baseline justify-between">
-      <h2 class="text-2xl font-semibold text-ink">Selected publications</h2>
-      <a href="/publications/" class="text-sm">All publications →</a>
-    </div>
-    <div class="mt-4">
+  <section class="max-w-prose mx-auto px-6 py-14" data-reveal>
+    <SectionHeading
+      number="02"
+      title="Selected publications"
+      href="/publications/"
+      linkLabel="All publications"
+    />
+    <div class="mt-6">
       {selected.map((p) => <PubCard pub={p} variant="selected" />)}
     </div>
   </section>

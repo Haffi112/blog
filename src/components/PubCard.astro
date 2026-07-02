@@ -22,14 +22,11 @@ const linkOrder: Array<{ key: keyof Publication['links']; label: string }> = [
 const links = linkOrder.filter((l) => pub.links?.[l.key]);
 ---
 <article class:list={[
-  'py-5 border-t border-rule first:border-t-0',
-  variant === 'selected' && 'bg-bg-elev rounded-card border border-rule p-6 mb-3'
+  variant === 'list' && 'py-5 border-t border-rule first:border-t-0',
+  variant === 'selected' && 'border-l-2 border-accent-primary pl-5 md:pl-6 py-4 mb-7 last:mb-0'
 ]}>
   <div class="flex items-center gap-3 mb-2">
     <ThemeTag theme={pub.theme} />
-    {variant === 'selected' && (
-      <span class="text-xs uppercase tracking-wide text-accent-warm">Selected</span>
-    )}
   </div>
   <h3 class="text-lg md:text-xl font-semibold text-ink leading-snug">
     {pub.title}

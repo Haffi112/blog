@@ -1,40 +1,50 @@
 ---
 import { Picture } from 'astro:assets';
+import GraphField from './GraphField.astro';
 import hafsteinnPhoto from '~/assets/hafsteinn.png';
 ---
-<section class="max-w-3xl mx-auto px-6 pt-16 pb-12 md:pt-24 md:pb-20">
-  <div class="grid md:grid-cols-[180px_1fr] gap-8 md:gap-12 items-start">
-    <Picture
-      src={hafsteinnPhoto}
-      alt="Hafsteinn Einarsson"
-      width={180}
-      height={225}
-      densities={[1, 2]}
-      formats={['avif', 'webp']}
-      fallbackFormat="png"
-      class="w-36 md:w-44 rounded-card border border-rule"
-      loading="eager"
-      fetchpriority="high"
-    />
-    <div>
-      <h1 class="text-display font-semibold tracking-tight text-ink leading-tight">
-        Hafsteinn Einarsson
-      </h1>
-      <p class="mt-3 text-lg text-ink-muted">
-        Associate Professor, University of Iceland<br />
-        Research Scientist, Amgen deCODE
-      </p>
-      <p class="mt-6 prose-body">
-        I lead a research group working on natural-language processing for
-        low-resource Germanic languages — Icelandic and Faroese — with active
-        projects in computer vision for the natural sciences, clinical AI,
-        and human genetics.
-      </p>
-      <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-        <li><a href="/research/">Research →</a></li>
-        <li><a href="/publications/">Publications →</a></li>
-        <li><a href="/cv.pdf">Download CV ↓</a></li>
-      </ul>
+<section class="relative overflow-hidden border-b border-rule">
+  <!-- Animated knowledge-graph field, faded into the page background so
+       the hero text stays readable and the section ends cleanly. -->
+  <div class="absolute inset-0" aria-hidden="true">
+    <GraphField />
+    <div class="absolute inset-0 bg-linear-to-b from-bg/55 via-bg/25 to-bg"></div>
+  </div>
+
+  <div class="relative max-w-page mx-auto px-6 pt-20 pb-16 md:pt-28 md:pb-24">
+    <div class="grid md:grid-cols-[1fr_auto] gap-10 md:gap-16 items-center">
+      <div class="max-w-2xl">
+        <p class="eyebrow">Machine learning research</p>
+        <h1 class="mt-4 text-display font-semibold text-ink">
+          Hafsteinn Einarsson
+        </h1>
+        <p class="mt-4 text-lg text-ink-muted">
+          Associate Professor, University of Iceland<br />
+          Research Scientist, Amgen deCODE
+        </p>
+        <p class="mt-6 prose-body max-w-prose">
+          I lead a research group working on natural language processing for
+          Icelandic and Faroese, with active projects in computer vision for
+          the natural sciences, clinical AI, and human genetics.
+        </p>
+        <ul class="mt-8 flex flex-wrap gap-x-7 gap-y-3 text-sm font-medium">
+          <li><a href="/research/">Research →</a></li>
+          <li><a href="/publications/">Publications →</a></li>
+          <li><a href="/cv.pdf">Download CV ↓</a></li>
+        </ul>
+      </div>
+      <Picture
+        src={hafsteinnPhoto}
+        alt="Hafsteinn Einarsson"
+        width={200}
+        height={250}
+        densities={[1, 2]}
+        formats={['avif', 'webp']}
+        fallbackFormat="png"
+        class="w-36 md:w-44 lg:w-50 rounded-card border border-rule shadow-sm"
+        loading="eager"
+        fetchpriority="high"
+      />
     </div>
   </div>
 </section>

@@ -11,18 +11,21 @@ const here = Astro.url.pathname;
 const isActive = (href: string) =>
   here === href || (href !== '/' && here.startsWith(href));
 ---
-<header class="sticky top-0 z-20 bg-bg/80 backdrop-blur-md border-b border-rule">
+<header data-site-header class="sticky top-0 z-20 bg-bg/85 backdrop-blur-md border-b border-rule">
   <nav class="max-w-page mx-auto px-6 h-14 flex items-center justify-between gap-3">
-    <a href="/" class="font-semibold tracking-tight text-ink shrink-0">Hafsteinn Einarsson</a>
+    <a href="/" class="font-display font-semibold tracking-tight text-ink shrink-0">Hafsteinn Einarsson</a>
 
     <ul class="hidden md:flex items-center gap-6 text-sm">
       {items.map((it) => (
         <li>
           <a
             href={it.href}
+            aria-current={isActive(it.href) ? 'page' : undefined}
             class:list={[
-              'transition-colors',
-              isActive(it.href) ? 'text-accent-warm' : 'text-ink-muted hover:text-ink'
+              'transition-colors pb-1',
+              isActive(it.href)
+                ? 'text-ink border-b-2 border-accent-primary'
+                : 'text-ink-muted hover:text-ink'
             ]}
           >{it.label}</a>
         </li>
@@ -80,13 +83,13 @@ const isActive = (href: string) =>
                 class:list={[
                   'relative flex items-center min-h-11 px-4 rounded-md text-base transition-colors',
                   active
-                    ? 'text-accent-warm font-medium'
+                    ? 'text-accent-primary font-medium'
                     : 'text-ink hover:text-ink hover:bg-accent-primary-soft'
                 ]}
               >
                 {active && (
                   <span
-                    class="absolute left-1 top-2 bottom-2 w-0.5 rounded-full bg-accent-warm"
+                    class="absolute left-1 top-2 bottom-2 w-0.5 rounded-full bg-accent-primary"
                     aria-hidden="true"
                   />
                 )}

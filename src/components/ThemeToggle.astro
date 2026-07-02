@@ -1,53 +1,21 @@
 ---
-// 36-theme switcher: 35 daisyUI built-ins + the custom Reader theme.
+// Three-theme switcher: editorial light, editorial dark, and the
+// accessibility-focused Reader theme.
 //
 // Swatches are determined at runtime by probing `--color-primary` on a
 // hidden <div data-theme=...> element — no hardcoded hex values to drift
-// out of sync with daisyUI updates.
+// out of sync with the CSS.
 //
 // To add a new theme:
-//   1. Append a `@plugin "daisyui/theme" { name: "myname"; ... }` block in
-//      src/styles/global.css (or enable a daisyUI built-in there).
+//   1. Add a `@plugin "daisyui/theme" { name: "myname"; ... }` block in
+//      src/styles/global.css and list it in the `themes:` option there.
 //   2. Append { id: 'myname', label: 'My Name' } to THEMES below.
 //   3. Append the id to the VALID set in BaseLayout's no-FOUC script.
 
 const THEMES = [
-  { id: 'light',        label: 'Light' },
-  { id: 'dark',         label: 'Dark' },
-  { id: 'corporate',    label: 'Corporate' },
-  { id: 'business',     label: 'Business' },
-  { id: 'nord',         label: 'Nord' },
-  { id: 'autumn',       label: 'Autumn' },
-  { id: 'winter',       label: 'Winter' },
-  { id: 'lofi',         label: 'Lofi' },
-  { id: 'pastel',       label: 'Pastel' },
-  { id: 'cupcake',      label: 'Cupcake' },
-  { id: 'bumblebee',    label: 'Bumblebee' },
-  { id: 'emerald',      label: 'Emerald' },
-  { id: 'garden',       label: 'Garden' },
-  { id: 'forest',       label: 'Forest' },
-  { id: 'aqua',         label: 'Aqua' },
-  { id: 'fantasy',      label: 'Fantasy' },
-  { id: 'cmyk',         label: 'CMYK' },
-  { id: 'lemonade',     label: 'Lemonade' },
-  { id: 'acid',         label: 'Acid' },
-  { id: 'retro',        label: 'Retro' },
-  { id: 'valentine',    label: 'Valentine' },
-  { id: 'caramellatte', label: 'Caramellatte' },
-  { id: 'silk',         label: 'Silk' },
-  { id: 'coffee',       label: 'Coffee' },
-  { id: 'luxury',       label: 'Luxury' },
-  { id: 'wireframe',    label: 'Wireframe' },
-  { id: 'black',        label: 'Black' },
-  { id: 'dim',          label: 'Dim' },
-  { id: 'night',        label: 'Night' },
-  { id: 'sunset',       label: 'Sunset' },
-  { id: 'synthwave',    label: 'Synthwave' },
-  { id: 'cyberpunk',    label: 'Cyberpunk' },
-  { id: 'halloween',    label: 'Halloween' },
-  { id: 'dracula',      label: 'Dracula' },
-  { id: 'abyss',        label: 'Abyss' },
-  { id: 'reader',       label: 'Reader',       note: 'OpenDyslexic, large body, italics → bold' }
+  { id: 'light',  label: 'Light' },
+  { id: 'dark',   label: 'Dark' },
+  { id: 'reader', label: 'Reader', note: 'OpenDyslexic, large body, italics → bold' }
 ] as const;
 ---
 <div class="relative" data-theme-switcher>
@@ -117,13 +85,8 @@ const THEMES = [
     const themeById = Object.fromEntries(THEMES.map((t) => [t.id, t]));
     const valid = new Set(THEMES.map((t) => t.id));
 
-    /* Migrate legacy theme names so returning visitors don't snap-reset. */
-    const stored = localStorage.getItem('theme');
-    const MIGRATE = { aubergine: 'light', nordic: 'nord', mono: 'black' };
-    if (stored && MIGRATE[stored]) {
-      localStorage.setItem('theme', MIGRATE[stored]);
-      if (root.dataset.theme === stored) root.dataset.theme = MIGRATE[stored];
-    }
+    /* Legacy theme names are migrated by BaseLayout's no-FOUC script
+       before this runs, so localStorage only ever holds a valid id here. */
 
     /* Probe `--color-primary` for each theme by briefly setting data-theme on
        an off-screen <div>. Runs once at mount; results cached into a map. */
