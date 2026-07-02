@@ -72,7 +72,7 @@
                                 // needed before a node activates
     const POT_MS = 2600;        // how long collected potential lingers
     const FANOUT = 4;           // messages sent per activation
-    const MAX_MSGS = 140;       // global particle cap
+    const MAX_MSGS = 260;       // global particle cap
     let w = 0, h = 0, nodes = [], msgs = [];
 
     const rand = (a, b) => a + Math.random() * (b - a);
@@ -109,14 +109,17 @@
       seed();
     };
 
-    /* Fire a node: glow, then send messages to its nearest neighbours
-       (excluding whoever delivered the triggering message). */
+    /* Fire a node: glow, then send messages to its nearest RESTED
+       neighbours (excluding whoever delivered the triggering message).
+       Targeting rested nodes only is what keeps a wave travelling: the
+       nearest neighbours of a fresh spike are mostly the refractory
+       nodes behind the wavefront, where messages would be wasted. */
     const fire = (n, ts, from) => {
       n.state = 1;
       n.stateT = ts;
       n.pot = 0;
       const targets = nodes
-        .filter((m) => m !== n && m !== from)
+        .filter((m) => m !== n && m !== from && m.state === 0)
         .map((m) => ({ m, d2: (m.x - n.x) ** 2 + (m.y - n.y) ** 2 }))
         .filter((e) => e.d2 < LINK_DIST * LINK_DIST)
         .sort((a, b) => a.d2 - b.d2)
