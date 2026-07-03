@@ -49,7 +49,7 @@ matheus2018hippocampal:
     Frontiers in Neuroscience.
 
 einarsson2018linear:
-  theme: comp-neuro
+  theme: discrete-math
   summary: |
     Analyses the (1+1) evolutionary algorithm on the linear hidden subset
     problem with scheduled and adaptive mutation rates. GECCO 2018
@@ -63,7 +63,7 @@ weissenberger2018origin:
     structure. Hippocampus journal.
 
 einarsson2019bootstrap:
-  theme: comp-neuro
+  theme: discrete-math
   summary: |
     Studies bootstrap percolation on random graphs in the presence of
     inhibitory vertices, a generalisation of the classical activation
@@ -78,7 +78,7 @@ einarsson2019bootstrap:
     arxiv: https://arxiv.org/abs/1410.3291
 
 lengler2016connectivity:
-  theme: comp-neuro
+  theme: discrete-math
   summary: |
     Establishes connectivity thresholds for bounded-size rules in random
     graph processes, a contribution to the theory of Achlioptas-style

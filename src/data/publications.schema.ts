@@ -1,4 +1,10 @@
-export type Theme = 'nlp-is' | 'cv-nat' | 'clinical-ai' | 'genetics' | 'comp-neuro';
+export type Theme =
+  | 'nlp-is'
+  | 'cv-nat'
+  | 'clinical-ai'
+  | 'genetics'
+  | 'comp-neuro'
+  | 'discrete-math';
 
 export interface Author {
   first: string;

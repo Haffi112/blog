@@ -138,9 +138,10 @@ const THEME_LABELS: Record<string, string> = {
   'cv-nat': 'Machine learning for the natural sciences',
   'clinical-ai': 'Clinical AI and cardiology',
   genetics: 'Human genetics and computational biology',
-  'comp-neuro': 'Computational neuroscience'
+  'comp-neuro': 'Computational neuroscience',
+  'discrete-math': 'Discrete mathematics and probabilistic combinatorics'
 };
-const THEME_ORDER = ['nlp-is', 'cv-nat', 'clinical-ai', 'genetics', 'comp-neuro'];
+const THEME_ORDER = ['nlp-is', 'cv-nat', 'clinical-ai', 'genetics', 'comp-neuro', 'discrete-math'];
 
 // Collapses a list of semester strings into a compact display range when
 // every entry shares one season (e.g. all "Spring YYYY") and the years are

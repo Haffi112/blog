@@ -9,14 +9,15 @@ import type { Publication, Theme } from '~/data/publications.schema';
 const all = pubsData as unknown as Publication[];
 const selected = all.filter((p) => p.selected);
 
-const themeOrder: Theme[] = ['nlp-is', 'cv-nat', 'clinical-ai', 'genetics', 'comp-neuro'];
+const themeOrder: Theme[] = ['nlp-is', 'cv-nat', 'clinical-ai', 'genetics', 'comp-neuro', 'discrete-math'];
 
 const themeLabels: Record<Theme, string> = {
   'nlp-is': 'NLP for Icelandic and Germanic languages',
   'cv-nat': 'Machine learning for the natural sciences',
   'clinical-ai': 'Clinical AI and cardiology',
   genetics: 'Human genetics and computational biology',
-  'comp-neuro': 'Computational neuroscience'
+  'comp-neuro': 'Computational neuroscience',
+  'discrete-math': 'Discrete mathematics and probabilistic combinatorics'
 };
 
 const byTheme: Record<Theme, Publication[]> = {
@@ -24,7 +25,8 @@ const byTheme: Record<Theme, Publication[]> = {
   'cv-nat': [],
   'clinical-ai': [],
   genetics: [],
-  'comp-neuro': []
+  'comp-neuro': [],
+  'discrete-math': []
 };
 for (const p of all) {
   if (p.theme) byTheme[p.theme].push(p);
