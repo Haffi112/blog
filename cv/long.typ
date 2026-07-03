@@ -7,13 +7,11 @@
 
 #cv-doc(
   contact: data.contact,
-  title: "Curriculum Vitae (full)",
+  title: "Curriculum Vitae · Full record",
 )[
 
 #section-title("Research Statement")
-#block(below: 0.6em)[
-  #data.research_statement
-]
+#lede(data.research_statement)
 
 #section-title("Current Positions")
 #for p in data.current_positions [

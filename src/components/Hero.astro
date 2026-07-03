@@ -12,8 +12,10 @@ import hafsteinnPhoto from '~/assets/hafsteinn.png';
   </div>
 
   <div class="relative max-w-page mx-auto px-6 pt-20 pb-16 md:pt-28 md:pb-24">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-center gap-10 md:gap-14">
-      <div class="max-w-2xl shrink rounded-card bg-bg/60 backdrop-blur-[3px] p-6 md:p-8 -m-6 md:-m-8">
+    <!-- Mobile: portrait leads, centered, name block centered underneath.
+         md+: side-by-side composition centered on the page axis. -->
+    <div class="flex flex-col-reverse md:flex-row md:items-center md:justify-center items-center gap-8 md:gap-14">
+      <div class="max-w-2xl shrink text-center md:text-left rounded-card bg-bg/60 backdrop-blur-[3px] p-6 md:p-8 -m-6 md:-m-8">
         <p class="eyebrow">Machine learning research</p>
         <h1 class="mt-4 text-display font-semibold text-ink">
           Hafsteinn Einarsson
@@ -22,12 +24,12 @@ import hafsteinnPhoto from '~/assets/hafsteinn.png';
           Associate Professor, University of Iceland<br />
           Research Scientist, Amgen deCODE
         </p>
-        <p class="mt-6 prose-body max-w-prose">
+        <p class="mt-6 prose-body max-w-prose text-left">
           I lead a research group working on natural language processing for
           Icelandic and Faroese, with active projects in computer vision for
           the natural sciences, clinical AI, and human genetics.
         </p>
-        <ul class="mt-8 flex flex-wrap gap-x-7 gap-y-3 text-sm font-medium">
+        <ul class="mt-8 flex flex-wrap justify-center md:justify-start gap-x-7 gap-y-3 text-sm font-medium">
           <li><a href="/research/">Research →</a></li>
           <li><a href="/publications/">Publications →</a></li>
           <li><a href="/cv.pdf">Download CV ↓</a></li>
@@ -41,7 +43,7 @@ import hafsteinnPhoto from '~/assets/hafsteinn.png';
         densities={[1, 2]}
         formats={['avif', 'webp']}
         fallbackFormat="png"
-        class="w-36 md:w-44 lg:w-50 shrink-0 rounded-card border border-rule shadow-sm"
+        class="w-32 md:w-44 lg:w-50 shrink-0 rounded-card border border-rule shadow-sm"
         loading="eager"
         fetchpriority="high"
       />

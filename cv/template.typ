@@ -5,6 +5,13 @@
 
 #import "theme.typ": *
 
+// --- Font stacks (files shipped in cv/fonts/) -----------------------------
+// The serif display face mirrors the site's editorial identity; Inter and
+// JetBrains Mono match body/date typography on haffi112.github.io.
+#let font-serif = ("Source Serif 4", "Georgia")
+#let font-sans = ("Inter", "Helvetica Neue", "Helvetica", "Arial")
+#let font-mono = ("JetBrains Mono", "Menlo", "Courier New")
+
 // --- Helpers ---
 
 #let _range(start, end) = {
@@ -18,24 +25,43 @@
   }
 }
 
+// Numbered editorial section heading, mirroring the site's SectionHeading:
+// gold mono index, serif title, hairline rule underneath.
+#let _section = counter("cv-section")
 #let section-title(title) = {
-  v(1.2em, weak: true)
-  block(below: 0.7em, breakable: false)[
-    #text(size: 9.5pt, weight: "semibold", fill: primary, tracking: 1.2pt)[
-      #upper(title)
-    ]
-    #v(-0.2em)
+  _section.step()
+  v(1.15em, weak: true)
+  block(below: 0.65em, breakable: false)[
+    #grid(
+      columns: (auto, 1fr),
+      column-gutter: 0.45cm,
+      align: (left + bottom, left + bottom),
+      text(size: 9pt, weight: "medium", fill: secondary, font: font-mono)[
+        #context _section.display("01")
+      ],
+      text(size: 12.5pt, weight: "semibold", fill: ink, font: font-serif, tracking: -0.1pt)[
+        #title
+      ],
+    )
+    #v(0.25em)
     #line(length: 100%, stroke: 0.4pt + rule)
   ]
 }
 
+// Serif-italic lede paragraph (research statement on the long CV).
+#let lede(body) = {
+  block(below: 0.8em)[
+    #text(font: font-serif, style: "italic", size: 10.5pt, fill: ink)[#body]
+  ]
+}
+
 #let entry(date, body) = {
-  block(below: 0.5em, breakable: false)[
+  block(below: 0.42em, breakable: false)[
     #grid(
-      columns: (3.2cm, 1fr),
-      column-gutter: 0.55cm,
+      columns: (2.7cm, 1fr),
+      column-gutter: 0.5cm,
       align: (left + top, left + top),
-      text(size: 9pt, fill: date-fill, font: ("JetBrains Mono", "Menlo", "Courier New"))[#date],
+      text(size: 9pt, fill: date-fill, font: font-mono)[#date],
       body,
     )
   ]
@@ -52,7 +78,7 @@
     size: 8.5pt,
     weight: "medium",
     fill: fill,
-    font: ("JetBrains Mono", "Menlo", "Courier New"),
+    font: font-mono,
   )[#label]
 }
 
@@ -79,9 +105,11 @@
   set document(title: contact.name + " — " + title, author: contact.name)
   set page(
     paper: "a4",
-    margin: (x: 2cm, top: 1.8cm, bottom: 1.5cm),
+    margin: (x: 2cm, top: 1.6cm, bottom: 1.5cm),
     footer: context [
-      #set text(size: 8pt, fill: muted)
+      #line(length: 100%, stroke: 0.4pt + rule)
+      #v(0.35em)
+      #set text(size: 7.5pt, fill: muted, font: font-mono)
       #grid(
         columns: (1fr, auto),
         [#contact.name · #link(contact.website)[#contact.website.replace("https://", "")]],
@@ -90,7 +118,7 @@
     ],
   )
   set text(
-    font: ("Inter", "Helvetica Neue", "Helvetica", "Arial"),
+    font: font-sans,
     size: 10pt,
     fill: ink,
     lang: "en",
@@ -104,25 +132,36 @@
   show strong: it => text(weight: "semibold", fill: ink)[#it.body]
   show emph: it => text(style: "italic", fill: ink)[#it.body]
 
-  // Header
-  block(below: 0.4em)[
-    #text(size: 22pt, weight: "semibold", fill: ink, tracking: -0.4pt)[#contact.name]
-  ]
-  block(below: 0.4em)[
-    #text(size: 11pt, fill: muted)[#title]
-  ]
-  block(below: 0.6em)[
-    #text(size: 8.5pt, fill: muted)[
-      #link("mailto:" + contact.email)[#contact.email]
-      #h(0.5em) · #h(0.5em)
-      ORCID #link("https://orcid.org/" + contact.orcid)[#contact.orcid]
-      #h(0.5em) · #h(0.5em)
-      #link(contact.scholar)[Scholar]
-      #h(0.5em) · #h(0.5em)
-      #link(contact.website)[#contact.website.replace("https://", "")]
+  // --- Masthead: mono eyebrow, serif display name left, contact stack
+  //     right, closed by an editorial double rule. ---
+  block(below: 0.7em)[
+    #text(size: 7.5pt, weight: "medium", fill: muted, tracking: 1.6pt, font: font-mono)[
+      #upper(title)
     ]
   ]
-  line(length: 100%, stroke: 0.5pt + rule)
+  grid(
+    columns: (1fr, auto),
+    column-gutter: 1cm,
+    align: (left + bottom, right + bottom),
+    text(
+      size: 27pt,
+      weight: "semibold",
+      fill: ink,
+      font: font-serif,
+      tracking: -0.3pt,
+    )[#contact.name],
+    text(size: 8.5pt, fill: muted)[
+      #set par(leading: 0.65em)
+      #link("mailto:" + contact.email)[#contact.email] \
+      ORCID #link("https://orcid.org/" + contact.orcid)[#contact.orcid] \
+      #link(contact.scholar)[Google Scholar] · #link(contact.github)[GitHub] \
+      #link(contact.website)[#contact.website.replace("https://", "").trim("/")]
+    ],
+  )
+  v(0.6em)
+  line(length: 100%, stroke: 1.2pt + primary)
+  v(0.13em)
+  line(length: 100%, stroke: 0.4pt + primary)
 
   body
 }
