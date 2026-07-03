@@ -15,16 +15,17 @@ contact:
   nationality: Icelandic
 
 research_statement: >-
-  My PhD at ETH Zurich centred on mathematical models of neural systems,
-  drawing on probability theory, distributed computing, and differential
-  equations. After a postdoc in systems neuroscience and two years as a
-  data scientist in banking, I joined the University of Iceland in 2020
-  and built a research group on natural-language processing for
-  low-resource languages, with a focus on Icelandic and other
-  North-Germanic languages. My group has contributed Icelandic language
-  models, methods for automated clinical coding, gender-bias evaluation
-  for morphologically gendered languages, sentiment annotation for
-  Icelandic blog comments, and machine-translation resources for Faroese.
+  I work on machine learning for settings that mainstream models serve
+  poorly: small languages, specialised scientific measurements, and
+  clinical text. My group builds the infrastructure that lets Icelandic
+  and Faroese participate in modern NLP, from language models and
+  translation resources to evaluation sets for gender bias, sentiment,
+  and question answering. The same toolkit supports collaborations in
+  marine and agricultural vision, automated clinical coding with the
+  National Hospital, and human genetics at deCODE. I was trained in
+  probabilistic combinatorics and models of cortical circuits. That
+  background still shows in how the group works: explicit assumptions,
+  small data budgets, and results we can check.
 
 current_positions:
   - title: Dean

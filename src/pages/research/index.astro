@@ -36,7 +36,12 @@ const themes = [
   {
     code: 'comp-neuro' as const,
     title: 'Computational neuroscience',
-    body: "PhD-era and ongoing work on emergent behaviour in models of cortical networks. Bootstrap percolation with inhibition, fast Hebbian spike-latency normalisation, and synfire-chain emergence under spike-timing-dependent plasticity."
+    body: "PhD-era and ongoing work on emergent behaviour in models of cortical networks: fast Hebbian spike-latency normalisation, synfire-chain emergence under spike-timing-dependent plasticity, and high-capacity one-shot association learning."
+  },
+  {
+    code: 'discrete-math' as const,
+    title: 'Discrete mathematics and probabilistic combinatorics',
+    body: "Rigorous results on random processes in graphs: bootstrap percolation with inhibition, connectivity thresholds for bounded-size Achlioptas rules, and runtime analysis of the (1+1) evolutionary algorithm on the linear hidden subset problem."
   }
 ];
 ---
@@ -47,7 +52,7 @@ const themes = [
   <section class="max-w-prose mx-auto px-6 pb-12">
     <PageHeader
       title="Research"
-      lede="My group works across five themes. Open-source projects and recent talks are below."
+      lede="My group works across six themes. Open-source projects and recent talks are below."
     />
 
     <section id="themes" class="mt-12 scroll-mt-20" data-reveal>
