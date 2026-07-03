@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-Source for **haffi112.github.io** — the academic homepage of Hafsteinn Einarsson (Associate Professor, U. of Iceland; Research Scientist, deCODE genetics). Built with **Astro 5**, deployed via GitHub Actions to a separate `Haffi112/haffi112.github.io` repo on every push to `master`. The same site data drives two **Typst**-generated CV PDFs.
+Source for **haffi112.github.io** — the academic homepage of Hafsteinn Einarsson (Associate Professor, U. of Iceland; Principal Scientist, deCODE genetics). Built with **Astro 5**, deployed via GitHub Actions to a separate `Haffi112/haffi112.github.io` repo on every push to `master`. The same site data drives two **Typst**-generated CV PDFs.
 
 For a long-form tour see `README.md` — this file is the operator's cheat sheet.
 

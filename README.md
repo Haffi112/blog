@@ -1,6 +1,6 @@
 # haffi112.github.io
 
-Source for [haffi112.github.io](https://haffi112.github.io/) — academic homepage for Hafsteinn Einarsson (Associate Professor of Computer Science, University of Iceland; Research Scientist, deCODE genetics).
+Source for [haffi112.github.io](https://haffi112.github.io/) — academic homepage for Hafsteinn Einarsson (Associate Professor of Computer Science, University of Iceland; Principal Scientist, deCODE genetics).
 
 The site is built with [Astro](https://astro.build) and deployed via GitHub Actions to the separate [`Haffi112/haffi112.github.io`](https://github.com/Haffi112/haffi112.github.io) repo on every push to `master`. CVs are generated from the same site data using [Typst](https://typst.app).
 
