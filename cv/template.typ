@@ -30,8 +30,8 @@
 #let _section = counter("cv-section")
 #let section-title(title) = {
   _section.step()
-  v(1.15em, weak: true)
-  block(below: 0.65em, breakable: false)[
+  v(1.05em, weak: true)
+  block(below: 0.6em, breakable: false)[
     #grid(
       columns: (auto, 1fr),
       column-gutter: 0.45cm,
@@ -105,7 +105,7 @@
   set document(title: contact.name + " — " + title, author: contact.name)
   set page(
     paper: "a4",
-    margin: (x: 2cm, top: 1.6cm, bottom: 1.5cm),
+    margin: (x: 2cm, top: 1.5cm, bottom: 1.35cm),
     footer: context [
       #line(length: 100%, stroke: 0.4pt + rule)
       #v(0.35em)
@@ -123,7 +123,7 @@
     fill: ink,
     lang: "en",
   )
-  set par(leading: 0.55em, justify: false)
+  set par(leading: 0.52em, justify: false)
 
   // Use a `set` rule so the link element survives and its URI annotation
   // is preserved in the PDF — replacing `it` with plain text would strip

@@ -13,7 +13,7 @@
 #section-title("Current Positions")
 #for p in data.current_positions [
   #entry(_range(p.start, p.end))[
-    *#p.title*, #p.institution#if p.at("location", default: none) != none [, #p.location]
+    *#p.title*, #p.institution#if p.at("department", default: none) != none [, #p.department]#if p.at("location", default: none) != none [, #p.location]
   ]
 ]
 
