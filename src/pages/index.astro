@@ -9,8 +9,28 @@ import { getCollection } from 'astro:content';
 import pubsData from '~/data/publications.json';
 import type { Publication } from '~/data/publications.schema';
 
-const news = (await getCollection('news'))
-  .map((n) => ({ ...n.data, id: n.id }))
+/* Blog posts appear in the news feed alongside curated news entries, so new
+   writing is visible from the front page. URL construction mirrors the
+   [year]/[month]/[day]/[slug] route. */
+const postItems = (await getCollection('blog', ({ data }) => !data.draft)).map(
+  (post) => {
+    const d = post.data.date;
+    const year = String(d.getUTCFullYear());
+    const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(d.getUTCDate()).padStart(2, '0');
+    const slug = post.slug.replace(/^\d{4}-\d{2}-\d{2}-/, '');
+    return {
+      date: d,
+      text: `New post: ${post.data.title}`,
+      link: `/${year}/${month}/${day}/${slug}/`
+    };
+  }
+);
+
+const news = [
+  ...(await getCollection('news')).map((n) => ({ ...n.data, id: n.id })),
+  ...postItems
+]
   .sort((a, b) => b.date.getTime() - a.date.getTime())
   .slice(0, 5);
 

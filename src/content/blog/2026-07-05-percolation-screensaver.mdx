@@ -1,0 +1,26 @@
+---
+title: A percolation screensaver
+date: 2026-07-05
+excerpt: The bootstrap percolation animation from the front page of this site, rebuilt as a native macOS screensaver with six color themes and a proper configuration sheet.
+tags:
+  - percolation
+  - screensaver
+  - macos
+  - claude-code
+---
+
+Back in 2016 I wrote a few posts about [bootstrap percolation](/2016/03/27/bootstrap-percolation/), a process where activity spreads through a graph and a node activates once enough of its neighbours have. When I redesigned this site I put a small simulation of it in the header: nodes drift around, fire, and pass messages along edges, and every firing is followed by a refractory period so the activity travels in waves instead of taking over the whole graph. I caught myself watching it for longer than I would like to admit, which is more or less the job description of a screensaver. So now it is one. The code is on [GitHub](https://github.com/Haffi112/percolation_screensaver).
+
+## What it runs
+
+The rules are the same as in the header animation. A resting node needs two arriving messages to fire (the classic bootstrap threshold), and a small charge arc shows how far along it is. When it fires it glows, sends messages to its nearest resting neighbours, and then recovers for a few seconds while an arc refills around it. On the blog you can trigger cascades with the cursor, but a screensaver exits the moment you touch the mouse, so here the ambient waves carry the show: every few seconds two adjacent nodes fire together, and their shared neighbours are what let a wave get over the threshold and roll across the screen before it burns out.
+
+## Configuration
+
+There are six color themes (the light and dark palettes from this site plus four new ones) and sliders for node density, wave frequency, animation speed, and the recovery time. The option I am most fond of is message speed. "Constant" delivers every message at the same velocity, so waves spread as clean fronts. "Random" draws each edge-crossing time from an exponential distribution instead, which turns the whole thing into first-passage percolation: the fronts become ragged and organic, and occasionally a slow message arrives late enough to reignite a region that had already settled down.
+
+## Build notes
+
+It is a native Swift screensaver (the ScreenSaver framework plus Core Graphics), with the simulation in a small unit-tested package that knows nothing about rendering. I built it with the assistance of Claude Code, which also caught the two things I would warn anyone building a screensaver about. First, macOS drives third-party screensavers with a plain timer that is not aligned to the display refresh, so animation judders no matter how fast your drawing is; driving frames from a `CADisplayLink` inside the view fixes it. Second, issuing one Core Graphics call per node gets slower exactly when the animation gets interesting, since more activity means more arcs and particles. Batching everything of the same color into a single path keeps the frame time flat.
+
+If you want it on your own Mac: clone the [repo](https://github.com/Haffi112/percolation_screensaver), run `make install`, and pick Percolation in System Settings under Screen Saver. It needs macOS 13 or newer and Xcode to build.
