@@ -13,7 +13,10 @@ export function formatAuthor(a: Author): string {
 }
 
 export function isYou(a: Author): boolean {
-  return (
-    a.last === YOUR_LAST_NAME && a.first.trim().startsWith(YOUR_FIRST_INITIAL)
-  );
+  if (a.last !== YOUR_LAST_NAME) return false;
+  // The site owner has a single given name ("Hafsteinn", or just the
+  // initial "H" in some clinical-paper bib entries). A namesake co-author
+  // with a middle name (e.g. "Hafsteinn Birgir Einarsson") must not match.
+  const given = a.first.trim().split(/\s+/).filter(Boolean);
+  return given.length === 1 && given[0].startsWith(YOUR_FIRST_INITIAL);
 }
