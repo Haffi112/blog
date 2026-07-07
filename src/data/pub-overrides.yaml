@@ -549,6 +549,24 @@ chang2025global:
   links:
     arxiv: https://arxiv.org/abs/2510.24081
 
+einarsson2026curated:
+  theme: nlp-is
+  selected: true
+  summary: |
+    A pre-launch expert evaluation of Evrópuvefur, a government-funded
+    University of Iceland service that answers questions about the
+    European Union, conducted as Iceland prepared for its August 2026
+    referendum on resuming EU accession talks. Five domain experts
+    produced 551 evaluations of 449 AI-generated answers, comparing a
+    curated local corpus (RAG) against open web search: web search
+    answered more questions but flagged an untrustworthy or irrelevant
+    source in 35% of answers, while the curated corpus was trustworthy
+    yet limited in coverage. Argues that source trustworthiness is a
+    measurable but largely invisible dimension of information quality
+    in public AI services. First-author arXiv preprint.
+  links:
+    arxiv: https://arxiv.org/abs/2607.05217
+
 gudjonsson2025survival:
   theme: clinical-ai
   summary: |
