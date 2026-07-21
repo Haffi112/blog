@@ -87,7 +87,7 @@ function buildSvg(title: string) {
   <text font-family="${sans}" font-size="${TITLE_FONT_SIZE}" font-weight="800" fill="${INK}" letter-spacing="-1.5">
     ${tspans}
   </text>
-  <text x="${PAD_X}" y="${H - 72}" font-family="${sans}" font-size="22" font-weight="500" fill="${ACCENT}">haffi112.github.io</text>
+  <text x="${PAD_X}" y="${H - 72}" font-family="${sans}" font-size="22" font-weight="500" fill="${ACCENT}">hafst1.is</text>
 </svg>`;
 }
 

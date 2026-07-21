@@ -31,7 +31,7 @@ const {
   publishedTime
 } = Astro.props;
 
-const site = Astro.site ?? new URL('https://haffi112.github.io/');
+const site = Astro.site ?? new URL('https://hafst1.is/');
 const canonicalURL = new URL(canonical ?? Astro.url.pathname, site).toString();
 const ogImageURL = ogImage.startsWith('http')
   ? ogImage

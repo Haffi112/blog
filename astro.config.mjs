@@ -23,7 +23,7 @@ const ecOptions = {
 };
 
 export default defineConfig({
-  site: 'https://haffi112.github.io',
+  site: 'https://hafst1.is',
   trailingSlash: 'always',
   build: {
     format: 'directory',
