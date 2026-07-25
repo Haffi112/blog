@@ -26,7 +26,11 @@ import hafsteinnPhoto from '~/assets/hafsteinn.png';
     <div class="hero-grid grid gap-y-3.5 md:gap-x-[clamp(1.75rem,3.5vw,3rem)]">
       <span class="plate [grid-area:eyebrow] px-3 py-1.5 eyebrow">Machine learning research</span>
 
-      <h1 class="plate [grid-area:name] px-4 py-2.5 text-display font-light text-ink">
+      <!-- Steeper fluid clamp below md: the name is the one element that
+           cannot wrap, so it sets the floor for the text track once the
+           portrait sits beside it. It relaxes into the full display scale
+           at md, where the portrait moves alongside the whole block. -->
+      <h1 class="plate [grid-area:name] px-2.5 md:px-4 py-2.5 text-[clamp(1.875rem,8.5vw,3.25rem)] leading-[0.98] tracking-[-0.022em] md:text-display font-light text-ink">
         Hafsteinn<br />Einarsson
       </h1>
 
@@ -38,7 +42,9 @@ import hafsteinnPhoto from '~/assets/hafsteinn.png';
       <!-- Portrait: square-cornered, desaturated to sit inside the paper
            palette, on a hatched backing that shows through while the image
            decodes. -->
-      <div class="hero-portrait [grid-area:portrait] relative my-2 md:my-0 w-[56%] max-w-44 md:w-44 md:max-w-none lg:w-56 xl:w-[16.5rem] aspect-4/5">
+      <!-- Width comes from the grid track, not the item — see the note on
+           grid-template-columns below. -->
+      <div class="hero-portrait [grid-area:portrait] relative w-full aspect-4/5">
         <Picture
           src={hafsteinnPhoto}
           alt="Hafsteinn Einarsson"
@@ -67,39 +73,84 @@ import hafsteinnPhoto from '~/assets/hafsteinn.png';
 </section>
 
 <style>
-  /* Mobile: one column, portrait sitting in the text flow between the
-     affiliation and the bio — a magazine opener, rather than a slab
-     stacked above the name or left dangling below the buttons. */
+  /* Both regimes put the portrait immediately right of the name, in a
+     content-sized track. They differ only in whether the bio and buttons
+     tuck under the name or run beneath the portrait too.
+
+     minmax(0, max-content) is what keeps this safe at phone widths: the
+     track wants to be as wide as its widest item — which is the affiliation
+     line, not the name — and the 0 minimum lets it shrink below that, so
+     the eyebrow and affiliation wrap instead of forcing an overflow. The
+     name can't wrap, so it sets the real floor; hence its steeper clamp
+     below md. justify-content:start keeps both tracks hugging their
+     content, so the portrait can never drift away from the text as the
+     viewport grows.
+
+     The portrait track is sized here rather than on the portrait itself.
+     With an `auto` track the full-width rows below (the bio especially, at
+     46ch) distribute their max-content contribution across both columns and
+     inflate the portrait track — measured 69px/187px at 320px, which
+     crushed the name's track and pushed the h1 out from under itself and
+     beneath the portrait. A definite track cannot be inflated. */
+  .hero-grid {
+    grid-template-columns: minmax(0, max-content) clamp(5.5rem, 28vw, 11rem);
+    column-gap: 1rem;
+    justify-content: start;
+    justify-items: start;
+  }
+
+  /* Narrowest: only the name sits beside the portrait. The mono eyebrow
+     (~230px) and the affiliation (~270px) are both wider than the column
+     that's left over on a small phone, and squeezing them in there wraps
+     the eyebrow onto three lines and the affiliation onto five. They get
+     the full width instead. */
   .hero-grid {
     grid-template-areas:
-      'eyebrow'
-      'name'
-      'affil'
-      'portrait'
-      'bio'
-      'cta';
-    justify-items: start;
+      'eyebrow  eyebrow'
+      'name     portrait'
+      'affil    affil'
+      'bio      bio'
+      'cta      cta';
+  }
+  .hero-grid > .hero-portrait {
+    align-self: start;
+  }
+
+  /* Once the leftover column can hold the affiliation unwrapped, the whole
+     name block moves alongside the portrait. */
+  @media (min-width: 32rem) {
+    .hero-grid {
+      grid-template-areas:
+        'eyebrow  portrait'
+        'name     portrait'
+        'affil    portrait'
+        'bio      bio'
+        'cta      cta';
+    }
   }
 
   @media (min-width: 768px) {
     .hero-grid {
-      /* max-content, not 1fr: the text track hugs the width the copy
-         actually needs, so the portrait stays *next to* the text instead of
-         being pushed to the far edge as the viewport grows. minmax(0, …)
-         keeps it shrinkable when space runs short. */
-      grid-template-columns: minmax(0, max-content) auto;
+      grid-template-columns: minmax(0, max-content) 11rem;
       grid-template-areas:
         'eyebrow  portrait'
         'name     portrait'
         'affil    portrait'
         'bio      portrait'
         'cta      portrait';
-      justify-content: start;
     }
     /* Ground the portrait on the same baseline as the button row. */
     .hero-grid > .hero-portrait {
       align-self: end;
     }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-grid { grid-template-columns: minmax(0, max-content) 14rem; }
+  }
+
+  @media (min-width: 1280px) {
+    .hero-grid { grid-template-columns: minmax(0, max-content) 16.5rem; }
   }
 
   /* 45° hatch in the paper's own two tones — the same trick the design
