@@ -10,55 +10,39 @@ import hafsteinnPhoto from '~/assets/hafsteinn.png';
 
   <!-- pointer-events-none lets clicks fall through the type to the canvas
        so the whole hero is ignitable; the CTAs opt back in. -->
-  <div class="relative pointer-events-none max-w-page mx-auto px-6 pt-16 pb-16 md:pt-24 md:pb-20">
-    <!-- Text takes the free column, the portrait a content-sized one pinned
-         to the container's right edge. The design file pins it to the
-         *start* of an equal second column, but that was a 1180px card with
-         its own border; full-bleed here, the same rule strands the portrait
-         mid-canvas with nothing to close the gap on its right.
+  <!-- Tighter vertical padding on mobile: with the portrait sitting inside
+       the text flow the hero is taller there, and this keeps the CTAs
+       inside the first screen on a typical phone. -->
+  <div class="relative pointer-events-none max-w-page mx-auto px-6 pt-12 pb-12 md:pt-24 md:pb-20">
+    <!-- Every block — including the portrait — is a direct grid child, so
+         the same elements can be re-mapped per breakpoint by grid-template-
+         areas alone (see the <style> block). That is what lets the portrait
+         sit beside the text on desktop and *inside* the text flow, between
+         the affiliation and the bio, on mobile — with no duplicated markup
+         and no change to DOM order.
 
-         On mobile the order is flipped visually so the portrait leads
-         instead of dangling under the CTAs. DOM order is unchanged, so the
-         <h1> still comes first for assistive tech; nothing in the portrait
-         is focusable, so tab order is unaffected. -->
-    <div class="grid gap-10 md:gap-[clamp(1.75rem,4vw,3.5rem)] md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-      <!-- Each block carries its own frosted plate rather than sharing one
-           card, so the cascade stays visible between the lines. -->
-      <div class="order-2 md:order-1 flex flex-col items-start gap-3.5 max-w-2xl">
-        <span class="plate inline-block px-3 py-1.5 eyebrow">Machine learning research</span>
+         Each block carries its own frosted plate rather than sharing one
+         card, so the cascade stays visible between the lines. -->
+    <div class="hero-grid grid gap-y-3.5 md:gap-x-[clamp(1.75rem,3.5vw,3rem)]">
+      <span class="plate [grid-area:eyebrow] px-3 py-1.5 eyebrow">Machine learning research</span>
 
-        <h1 class="plate inline-block px-4 py-2.5 text-display font-light text-ink">
-          Hafsteinn<br />Einarsson
-        </h1>
+      <h1 class="plate [grid-area:name] px-4 py-2.5 text-display font-light text-ink">
+        Hafsteinn<br />Einarsson
+      </h1>
 
-        <p class="plate inline-block px-3.5 py-2 font-prose italic font-light text-ink-muted text-[1.0625rem] md:text-[1.1875rem] leading-[1.5]">
-          Associate Professor, University of Iceland<br />
-          Principal Scientist, Amgen deCODE
-        </p>
-
-        <p class="plate inline-block px-4 py-3 prose-body max-w-[50ch] text-[1.03125rem] md:text-[1.15rem]">
-          I lead a research group working on natural language processing for
-          Icelandic and Faroese, with active projects in computer vision for
-          the natural sciences, clinical AI, and human genetics.
-        </p>
-
-        <div class="pointer-events-auto mt-1.5 flex flex-wrap gap-2.5">
-          <a href="/research/" class="btn-editorial btn-editorial--solid">Research →</a>
-          <a href="/publications/" class="btn-editorial plate">Publications →</a>
-          <a href="/cv.pdf" class="btn-editorial plate">Download CV ↓</a>
-        </div>
-      </div>
+      <p class="plate [grid-area:affil] px-3.5 py-2 font-prose italic font-light text-ink-muted text-[1.0625rem] md:text-[1.1875rem] leading-[1.5]">
+        Associate Professor, University of Iceland<br />
+        Principal Scientist, Amgen deCODE
+      </p>
 
       <!-- Portrait: square-cornered, desaturated to sit inside the paper
            palette, on a hatched backing that shows through while the image
            decodes. -->
-      <div
-        class="hero-portrait order-1 md:order-2 relative w-[70%] max-w-52 md:w-52 md:max-w-none lg:w-64 xl:w-[18.25rem] justify-self-start md:justify-self-end aspect-4/5"
-      >
+      <div class="hero-portrait [grid-area:portrait] relative my-2 md:my-0 w-[56%] max-w-44 md:w-44 md:max-w-none lg:w-56 xl:w-[16.5rem] aspect-4/5">
         <Picture
           src={hafsteinnPhoto}
           alt="Hafsteinn Einarsson"
-          widths={[292, 584]}
+          widths={[264, 528]}
           formats={['avif', 'webp']}
           fallbackFormat="png"
           class="absolute inset-0 w-full h-full object-cover grayscale contrast-[1.06]"
@@ -66,11 +50,58 @@ import hafsteinnPhoto from '~/assets/hafsteinn.png';
           fetchpriority="high"
         />
       </div>
+
+      <p class="plate [grid-area:bio] px-4 py-3 prose-body max-w-[46ch] text-[1.03125rem] md:text-[1.15rem]">
+        I lead a research group working on natural language processing for
+        Icelandic and Faroese, with active projects in computer vision for
+        the natural sciences, clinical AI, and human genetics.
+      </p>
+
+      <div class="[grid-area:cta] pointer-events-auto mt-1.5 flex flex-wrap gap-2.5">
+        <a href="/research/" class="btn-editorial btn-editorial--solid">Research →</a>
+        <a href="/publications/" class="btn-editorial plate">Publications →</a>
+        <a href="/cv.pdf" class="btn-editorial plate">Download CV ↓</a>
+      </div>
     </div>
   </div>
 </section>
 
 <style>
+  /* Mobile: one column, portrait sitting in the text flow between the
+     affiliation and the bio — a magazine opener, rather than a slab
+     stacked above the name or left dangling below the buttons. */
+  .hero-grid {
+    grid-template-areas:
+      'eyebrow'
+      'name'
+      'affil'
+      'portrait'
+      'bio'
+      'cta';
+    justify-items: start;
+  }
+
+  @media (min-width: 768px) {
+    .hero-grid {
+      /* max-content, not 1fr: the text track hugs the width the copy
+         actually needs, so the portrait stays *next to* the text instead of
+         being pushed to the far edge as the viewport grows. minmax(0, …)
+         keeps it shrinkable when space runs short. */
+      grid-template-columns: minmax(0, max-content) auto;
+      grid-template-areas:
+        'eyebrow  portrait'
+        'name     portrait'
+        'affil    portrait'
+        'bio      portrait'
+        'cta      portrait';
+      justify-content: start;
+    }
+    /* Ground the portrait on the same baseline as the button row. */
+    .hero-grid > .hero-portrait {
+      align-self: end;
+    }
+  }
+
   /* 45° hatch in the paper's own two tones — the same trick the design
      uses to keep the portrait from floating on the canvas. */
   .hero-portrait {
