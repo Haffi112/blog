@@ -8,16 +8,14 @@
 @import "@fontsource-variable/ibm-plex-sans";
 @import "@fontsource/ibm-plex-mono/latin-400.css";
 @import "@fontsource/ibm-plex-mono/latin-500.css";
-@import "@fontsource/opendyslexic/latin-400.css";
-@import "@fontsource/opendyslexic/latin-700.css";
 @import "katex/dist/katex.min.css";
 @import "tailwindcss";
 
-/* daisyUI v5 — three curated themes only: the editorial "light" and "dark"
-   palettes (custom blocks below override the built-ins of the same name)
-   plus the accessibility-focused "reader" theme. */
+/* daisyUI v5 — two curated themes only: the editorial "light" and "dark"
+   palettes. The custom blocks below override the built-ins of the same
+   name. */
 @plugin "daisyui" {
-  themes: light --default, dark --prefersdark, reader;
+  themes: light --default, dark --prefersdark;
 }
 
 /* Editorial light — "quiet paper". Surfaces and ink are the redesign's own
@@ -95,36 +93,6 @@
   --noise: 0;
 }
 
-@plugin "daisyui/theme" {
-  name: "reader";
-  default: false;
-  prefersdark: false;
-  color-scheme: light;
-  --color-base-100: oklch(98% 0.02 80);
-  --color-base-200: oklch(100% 0 0);
-  --color-base-300: oklch(86% 0.04 75);
-  --color-base-content: oklch(20% 0.02 60);
-  --color-primary: oklch(45% 0.10 240);
-  --color-primary-content: oklch(98% 0 0);
-  --color-secondary: oklch(50% 0.12 70);
-  --color-secondary-content: oklch(98% 0 0);
-  --color-accent: oklch(45% 0.16 30);
-  --color-accent-content: oklch(98% 0 0);
-  --color-neutral: oklch(40% 0.02 70);
-  --color-neutral-content: oklch(98% 0 0);
-  --color-info: oklch(60% 0.10 220);
-  --color-success: oklch(55% 0.10 160);
-  --color-warning: oklch(70% 0.14 70);
-  --color-error: oklch(55% 0.18 25);
-  --radius-selector: 0.5rem;
-  --radius-field: 0.5rem;
-  --radius-box: 0.75rem;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 1;
-  --noise: 0;
-}
 
 /* --- Custom tokens layered on top of daisyUI -------------------------------
    We alias every utility our markup uses (bg-bg, text-ink, border-rule,
@@ -163,7 +131,7 @@
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-prose: "Newsreader Variable", "Newsreader", Georgia, serif;
   /* Display face for page titles and section headings — the serif carries
-     the editorial identity; overridable per-theme (reader swaps it out). */
+     the editorial identity; overridable per-theme. */
   --font-display: "Newsreader Variable", "Newsreader", Georgia, serif;
 
   /* Prose sizing — also per-theme overridable. Newsreader has a larger
@@ -200,34 +168,6 @@
 /* daisyUI sets data-theme on <html>; we use the same hook to fire `dark:*`
    Tailwind variants for the "dark" theme (and any user variants we add). */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
-
-/* --- Typography overlay for the reader theme -------------------------------
-   OpenDyslexic everywhere (including display type), larger body, and bold
-   accents replacing italics further below.
---------------------------------------------------------------------------- */
-[data-theme="reader"] {
-  --font-sans: "OpenDyslexic", "Comic Sans MS", system-ui, sans-serif;
-  --font-prose: "OpenDyslexic", "Comic Sans MS", system-ui, sans-serif;
-  --font-display: "OpenDyslexic", "Comic Sans MS", system-ui, sans-serif;
-  --prose-size: 1.125rem;
-  --prose-leading: 1.85;
-}
-
-/* Reader-mode italics → bold accent (better for dyslexic readers). */
-[data-theme="reader"] em,
-[data-theme="reader"] i,
-[data-theme="reader"] .italic,
-[data-theme="reader"] em *,
-[data-theme="reader"] i * {
-  font-style: normal !important;
-  font-weight: 700;
-  color: var(--color-accent-primary);
-}
-
-[data-theme="reader"] nav a,
-[data-theme="reader"] nav button {
-  letter-spacing: 0.01em;
-}
 
 /* --- Non-Tailwind custom properties (motion) --- */
 :root {
@@ -429,12 +369,6 @@
     padding: 0.05em 0.3em;
     border-radius: 0.25rem;
     background: var(--color-bg-elev);
-  }
-  /* Reader theme removes italics in favour of bold for legibility, so
-     mirror that here so captions stay distinct without leaning on italic. */
-  [data-theme="reader"] .prose-body figure figcaption {
-    font-style: normal;
-    font-weight: 600;
   }
 
   /* Pre-empt the first-paint flash: the GFM-emitted footnote anchor and

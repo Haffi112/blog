@@ -1,6 +1,5 @@
 ---
-// Three-theme switcher: editorial light, editorial dark, and the
-// accessibility-focused Reader theme.
+// Two-theme switcher: editorial light and editorial dark.
 //
 // Swatches are determined at runtime by probing `--color-primary` on a
 // hidden <div data-theme=...> element — no hardcoded hex values to drift
@@ -13,9 +12,8 @@
 //   3. Append the id to the VALID set in BaseLayout's no-FOUC script.
 
 const THEMES = [
-  { id: 'light',  label: 'Light' },
-  { id: 'dark',   label: 'Dark' },
-  { id: 'reader', label: 'Reader', note: 'OpenDyslexic, large body, italics → bold' }
+  { id: 'light', label: 'Light' },
+  { id: 'dark',  label: 'Dark' }
 ] as const;
 ---
 <div class="relative" data-theme-switcher>

@@ -153,10 +153,16 @@
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     /* ---- Theme colours ---------------------------------------------------
-       Probe computed `color` so oklch()/color-mix() tokens collapse into a
-       plain rgb() string every canvas implementation accepts, then keep the
-       numeric components around for the many rgba(...) strokes below. */
-    let inkRGB = '28,26,23';
+       Probe computed `color` to resolve the theme tokens, and use the
+       returned strings verbatim as fill/stroke styles.
+
+       Do NOT try to pick numeric components out of these strings to build
+       `rgba(r,g,b,a)`: getComputedStyle returns the colour in its authored
+       space, so an oklch() token comes back as "oklch(0.91 0.008 88)" and
+       reading those three numbers as R,G,B yields near-black in *both*
+       themes — which looks plausible on paper and is invisible on the dark
+       surface. Alpha belongs on ctx.globalAlpha instead. */
+    let inkColor = 'rgb(28,26,23)';
     let accent = 'rgb(182,76,43)';
     const resolveColors = () => {
       const probe = document.createElement('span');
@@ -166,9 +172,7 @@
         probe.style.color = `var(${token})`;
         return getComputedStyle(probe).color;
       };
-      const ink = grab('--color-ink');
-      const m = /(-?[\d.]+)[,\s]+(-?[\d.]+)[,\s]+(-?[\d.]+)/.exec(ink);
-      if (m) inkRGB = `${Math.round(+m[1])},${Math.round(+m[2])},${Math.round(+m[3])}`;
+      inkColor = grab('--color-ink') || inkColor;
       accent = grab('--color-accent-energy') || accent;
       probe.remove();
     };
@@ -464,10 +468,11 @@
       ctx.save();
 
       /* Edges: one batched path at low alpha, so the mesh reads as texture
-         rather than wireframe and costs a single stroke call. */
-      ctx.globalAlpha = 0.62;
+         rather than wireframe and costs a single stroke call. (0.62 × 0.075
+         from the original two-stage alpha, folded into one value.) */
+      ctx.globalAlpha = 0.047;
       ctx.lineWidth = 1;
-      ctx.strokeStyle = `rgba(${inkRGB},0.075)`;
+      ctx.strokeStyle = inkColor;
       ctx.beginPath();
       for (const e of edges) {
         ctx.moveTo(nodes[e[0]].x, nodes[e[0]].y);
@@ -564,19 +569,20 @@
           ctx.fill();
         } else if (nd.st === 2) {
           const k = Math.min(1, nd.t / REFRAC);
-          ctx.globalAlpha = 1;
-          ctx.fillStyle = `rgba(${inkRGB},0.11)`;
+          ctx.fillStyle = inkColor;
+          ctx.globalAlpha = 0.11;
           ctx.beginPath();
           ctx.arc(nd.x, nd.y, 3, 0, TAU);
           ctx.fill();
-          ctx.strokeStyle = `rgba(${inkRGB},0.18)`;
+          ctx.strokeStyle = inkColor;
+          ctx.globalAlpha = 0.18;
           ctx.lineWidth = 1.3;
           ctx.beginPath();
           ctx.arc(nd.x, nd.y, 6.5, -Math.PI / 2, -Math.PI / 2 + k * TAU);
           ctx.stroke();
         } else {
-          ctx.globalAlpha = 1;
-          ctx.fillStyle = `rgba(${inkRGB},0.22)`;
+          ctx.fillStyle = inkColor;
+          ctx.globalAlpha = 0.22;
           ctx.beginPath();
           ctx.arc(nd.x, nd.y, 2.7, 0, TAU);
           ctx.fill();

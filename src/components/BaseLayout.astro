@@ -83,10 +83,10 @@ const fullTitle = `${title} · Hafsteinn Einarsson`;
       (() => {
         // Signals to CSS that JS is running (gates scroll-reveal styling).
         document.documentElement.classList.add('js');
-        const VALID = new Set(['light', 'dark', 'reader']);
-        // Dark-leaning names from the retired 35-theme set: returning
-        // visitors keep a theme of the same polarity instead of snapping
-        // to light.
+        const VALID = new Set(['light', 'dark']);
+        // Dark-leaning names from the retired 35-theme set (and the
+        // retired "reader" theme, which was light): returning visitors keep
+        // a theme of the same polarity instead of snapping to light.
         const DARKISH = new Set([
           'business', 'forest', 'aqua', 'coffee', 'luxury', 'black',
           'dim', 'night', 'sunset', 'synthwave', 'halloween', 'dracula',

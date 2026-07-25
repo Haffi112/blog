@@ -11,13 +11,20 @@ import hafsteinnPhoto from '~/assets/hafsteinn.png';
   <!-- pointer-events-none lets clicks fall through the type to the canvas
        so the whole hero is ignitable; the CTAs opt back in. -->
   <div class="relative pointer-events-none max-w-page mx-auto px-6 pt-16 pb-16 md:pt-24 md:pb-20">
-    <!-- Two equal columns with the portrait pinned to the *start* of the
-         second one, as in the design: it lands near the centre line and
-         leaves the right third open for the graph to breathe. -->
-    <div class="grid gap-10 md:gap-[clamp(1.75rem,4vw,3.75rem)] md:grid-cols-2 md:items-end">
+    <!-- Text takes the free column, the portrait a content-sized one pinned
+         to the container's right edge. The design file pins it to the
+         *start* of an equal second column, but that was a 1180px card with
+         its own border; full-bleed here, the same rule strands the portrait
+         mid-canvas with nothing to close the gap on its right.
+
+         On mobile the order is flipped visually so the portrait leads
+         instead of dangling under the CTAs. DOM order is unchanged, so the
+         <h1> still comes first for assistive tech; nothing in the portrait
+         is focusable, so tab order is unaffected. -->
+    <div class="grid gap-10 md:gap-[clamp(1.75rem,4vw,3.5rem)] md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
       <!-- Each block carries its own frosted plate rather than sharing one
            card, so the cascade stays visible between the lines. -->
-      <div class="flex flex-col items-start gap-3.5 max-w-2xl">
+      <div class="order-2 md:order-1 flex flex-col items-start gap-3.5 max-w-2xl">
         <span class="plate inline-block px-3 py-1.5 eyebrow">Machine learning research</span>
 
         <h1 class="plate inline-block px-4 py-2.5 text-display font-light text-ink">
@@ -46,7 +53,7 @@ import hafsteinnPhoto from '~/assets/hafsteinn.png';
            palette, on a hatched backing that shows through while the image
            decodes. -->
       <div
-        class="hero-portrait relative w-full max-w-52 sm:max-w-[18.25rem] justify-self-start aspect-4/5"
+        class="hero-portrait order-1 md:order-2 relative w-[70%] max-w-52 md:w-52 md:max-w-none lg:w-64 xl:w-[18.25rem] justify-self-start md:justify-self-end aspect-4/5"
       >
         <Picture
           src={hafsteinnPhoto}
