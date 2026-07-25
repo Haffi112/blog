@@ -1,6 +1,13 @@
-@import "@fontsource-variable/inter";
-@import "@fontsource-variable/source-serif-4";
-@import "@fontsource-variable/jetbrains-mono";
+/* Type system — "quiet paper": Newsreader carries everything editorial
+   (display, headings, body prose), IBM Plex Mono carries metadata (dates,
+   eyebrows, nav, tags), IBM Plex Sans is the UI sans for controls and dense
+   lists. Italic is loaded for Newsreader only — the design leans on it for
+   affiliations, captions and author lines. */
+@import "@fontsource-variable/newsreader";
+@import "@fontsource-variable/newsreader/wght-italic.css";
+@import "@fontsource-variable/ibm-plex-sans";
+@import "@fontsource/ibm-plex-mono/latin-400.css";
+@import "@fontsource/ibm-plex-mono/latin-500.css";
 @import "@fontsource/opendyslexic/latin-400.css";
 @import "@fontsource/opendyslexic/latin-700.css";
 @import "katex/dist/katex.min.css";
@@ -13,32 +20,40 @@
   themes: light --default, dark --prefersdark, reader;
 }
 
-/* Editorial light: warm paper, near-black ink, brand aubergine (#5B3A78,
-   the same accent used on OG cards), bronze as the warm secondary. */
+/* Editorial light — "quiet paper". Surfaces and ink are the redesign's own
+   values converted to OKLCH so color-mix() stays hue-stable:
+     base-100  #f7f5f0  paper
+     base-200  #f1ede4  the warmer, *darker* raised surface (footer, panels)
+     base-300  the design's rgba(28,26,23,0.12) hairline, pre-composited
+     content   #1c1a17  ink
+   The accent is the warm rust hsl(20 62% 44%) that runs through the hero
+   cascade, theme tags and hover states. Note base-200 sits below base-100
+   in lightness here — on paper, "raised" reads as a warmer tint, not a
+   brighter one. */
 @plugin "daisyui/theme" {
   name: "light";
   default: true;
   prefersdark: false;
   color-scheme: light;
-  --color-base-100: oklch(97.5% 0.006 85);
-  --color-base-200: oklch(99.2% 0.003 85);
-  --color-base-300: oklch(88.5% 0.012 85);
-  --color-base-content: oklch(23% 0.018 315);
-  --color-primary: oklch(39% 0.1 304);
-  --color-primary-content: oklch(97.5% 0.006 85);
-  --color-secondary: oklch(50% 0.09 60);
-  --color-secondary-content: oklch(97.5% 0.006 85);
-  --color-accent: oklch(55% 0.15 30);
-  --color-accent-content: oklch(97.5% 0.006 85);
-  --color-neutral: oklch(30% 0.02 305);
-  --color-neutral-content: oklch(97.5% 0.006 85);
-  --color-info: oklch(58% 0.09 230);
-  --color-success: oklch(52% 0.09 160);
-  --color-warning: oklch(70% 0.13 70);
+  --color-base-100: oklch(97.03% 0.007 88.6);
+  --color-base-200: oklch(94.67% 0.0127 86.8);
+  --color-base-300: oklch(89.08% 0.0068 87.8);
+  --color-base-content: oklch(21.89% 0.0065 78.2);
+  --color-primary: oklch(56.94% 0.1342 44.9);
+  --color-primary-content: oklch(97.03% 0.007 88.6);
+  --color-secondary: oklch(39.1% 0.0363 62.6);
+  --color-secondary-content: oklch(97.03% 0.007 88.6);
+  --color-accent: oklch(56.94% 0.1342 44.9);
+  --color-accent-content: oklch(97.03% 0.007 88.6);
+  --color-neutral: oklch(21.89% 0.0065 78.2);
+  --color-neutral-content: oklch(97.03% 0.007 88.6);
+  --color-info: oklch(53.49% 0.0743 222.8);
+  --color-success: oklch(50.71% 0.0745 160.3);
+  --color-warning: oklch(65% 0.12 70);
   --color-error: oklch(52% 0.17 25);
-  --radius-selector: 0.5rem;
-  --radius-field: 0.5rem;
-  --radius-box: 0.75rem;
+  --radius-selector: 0;
+  --radius-field: 0;
+  --radius-box: 0;
   --size-selector: 0.25rem;
   --size-field: 0.25rem;
   --border: 1px;
@@ -46,32 +61,33 @@
   --noise: 0;
 }
 
-/* Editorial dark: aubergine-tinted near-black, warm off-white ink, the
-   brand accent lifted to a readable mauve. */
+/* Editorial dark — the paper palette inverted rather than re-hued: warm
+   near-black surfaces on the same yellow-ward axis (~80°), warm off-white
+   ink, and the rust accent lifted into a readable ember. */
 @plugin "daisyui/theme" {
   name: "dark";
   default: false;
   prefersdark: true;
   color-scheme: dark;
-  --color-base-100: oklch(18.5% 0.016 305);
-  --color-base-200: oklch(22% 0.018 305);
-  --color-base-300: oklch(30% 0.02 305);
-  --color-base-content: oklch(90% 0.012 85);
-  --color-primary: oklch(76% 0.08 305);
-  --color-primary-content: oklch(18.5% 0.016 305);
-  --color-secondary: oklch(76% 0.09 70);
-  --color-secondary-content: oklch(18.5% 0.016 305);
-  --color-accent: oklch(72% 0.13 35);
-  --color-accent-content: oklch(18.5% 0.016 305);
-  --color-neutral: oklch(80% 0.02 305);
-  --color-neutral-content: oklch(18.5% 0.016 305);
-  --color-info: oklch(72% 0.09 230);
+  --color-base-100: oklch(17.5% 0.006 80);
+  --color-base-200: oklch(21.5% 0.008 80);
+  --color-base-300: oklch(30% 0.009 80);
+  --color-base-content: oklch(91% 0.008 88);
+  --color-primary: oklch(73% 0.128 46);
+  --color-primary-content: oklch(17.5% 0.006 80);
+  --color-secondary: oklch(82% 0.045 82);
+  --color-secondary-content: oklch(17.5% 0.006 80);
+  --color-accent: oklch(74% 0.14 45);
+  --color-accent-content: oklch(17.5% 0.006 80);
+  --color-neutral: oklch(91% 0.008 88);
+  --color-neutral-content: oklch(17.5% 0.006 80);
+  --color-info: oklch(72% 0.09 225);
   --color-success: oklch(72% 0.09 160);
   --color-warning: oklch(80% 0.11 80);
   --color-error: oklch(68% 0.14 25);
-  --radius-selector: 0.5rem;
-  --radius-field: 0.5rem;
-  --radius-box: 0.75rem;
+  --radius-selector: 0;
+  --radius-field: 0;
+  --radius-box: 0;
   --size-selector: 0.25rem;
   --size-field: 0.25rem;
   --border: 1px;
@@ -123,8 +139,15 @@
   --color-bg: var(--color-base-100);
   --color-bg-elev: var(--color-base-200);
   --color-ink: var(--color-base-content);
-  --color-ink-muted: color-mix(in oklch, var(--color-base-content) 65%, var(--color-base-100));
+  /* 62% ink over the surface — the design's rgba(28,26,23,0.62) metadata
+     grey, expressed as a mix so it re-derives correctly in every theme. */
+  --color-ink-muted: color-mix(in oklch, var(--color-base-content) 62%, var(--color-base-100));
+  /* 42% ink — the fainter tier used for mono dates and section numbers. */
+  --color-ink-faint: color-mix(in oklch, var(--color-base-content) 44%, var(--color-base-100));
   --color-rule: var(--color-base-300);
+  /* Hairline used *inside* content blocks (list separators), lighter than
+     the structural --color-rule that divides whole sections. */
+  --color-rule-soft: color-mix(in oklch, var(--color-base-content) 10%, var(--color-base-100));
 
   /* Accents (mapped to daisyUI's primary/secondary/accent) */
   --color-accent-primary: var(--color-primary);
@@ -135,38 +158,43 @@
 
   /* Fonts — tied to the @theme so themes can override --font-prose and the
      .prose-body component will reflow with the new family. */
-  --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
-  --font-serif: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
-  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
-  --font-prose: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
+  --font-sans: "IBM Plex Sans Variable", "IBM Plex Sans", system-ui, sans-serif;
+  --font-serif: "Newsreader Variable", "Newsreader", Georgia, serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-prose: "Newsreader Variable", "Newsreader", Georgia, serif;
   /* Display face for page titles and section headings — the serif carries
      the editorial identity; overridable per-theme (reader swaps it out). */
-  --font-display: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
+  --font-display: "Newsreader Variable", "Newsreader", Georgia, serif;
 
-  /* Prose sizing — also per-theme overridable */
-  --prose-size: 1.0625rem;
-  --prose-leading: 1.55;
+  /* Prose sizing — also per-theme overridable. Newsreader has a larger
+     x-height than Source Serif 4 at the same em, but the design sets body
+     copy noticeably bigger (16–17px at 1.6), so the size goes up too. */
+  --prose-size: 1.09375rem;
+  --prose-leading: 1.62;
   --prose-weight: 400;
 
   /* Card radius — uses daisyUI's --radius-box when defined by the theme so
-     cards naturally pick up each daisyUI theme's corner style. */
-  --radius-card: var(--radius-box, 0.75rem);
+     cards naturally pick up each daisyUI theme's corner style. The paper
+     themes set it to 0: this design is square-cornered throughout. */
+  --radius-card: var(--radius-box, 0);
   --border-card: 1px;
 
   /* Layout widths (drive max-w-page, max-w-prose, max-w-pubs utilities) */
-  --width-page: 1120px;
+  --width-page: 1180px;
   --width-prose: 680px;
   --width-pubs: 75ch;
 
-  /* Custom font size: drives text-display utility (fluid). */
-  --text-display: clamp(2.5rem, 1.6rem + 3.5vw, 4rem);
-  --text-display--line-height: 1.08;
-  --text-display--letter-spacing: -0.015em;
+  /* Custom font size: drives text-display utility (fluid). Mirrors the
+     design's clamp(42px, 7.4vw, 80px) on a near-solid 0.98 leading — the
+     name is set as two tight lines, so the leading has to close up. */
+  --text-display: clamp(2.625rem, 1.1rem + 5.4vw, 5rem);
+  --text-display--line-height: 0.98;
+  --text-display--letter-spacing: -0.022em;
 
   /* Secondary display size for section-page titles. */
-  --text-display-sm: clamp(2rem, 1.4rem + 2.2vw, 2.75rem);
-  --text-display-sm--line-height: 1.12;
-  --text-display-sm--letter-spacing: -0.012em;
+  --text-display-sm: clamp(2rem, 1.35rem + 2.6vw, 3rem);
+  --text-display-sm--line-height: 1.08;
+  --text-display-sm--letter-spacing: -0.018em;
 }
 
 /* daisyUI sets data-theme on <html>; we use the same hook to fire `dark:*`
@@ -231,29 +259,52 @@
     color: var(--color-accent-primary);
   }
 
+  /* Editorial link treatment. Content links stay in ink and are marked by
+     a hairline rule underneath — the way the redesign draws them in the
+     news feed and publication lists — with the rust accent held back for
+     hover and for accent chrome (theme tags, active nav, the cascade).
+     Chrome links (nav, footer, buttons, cards) opt out: anything inside
+     <header>/<footer>/<nav>, or carrying .link-plain. */
   a {
-    color: var(--color-accent-primary);
-    text-decoration: none;
-    transition: color var(--motion-fast) var(--ease-out);
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: color-mix(in srgb, currentColor 28%, transparent);
+    text-underline-offset: 0.22em;
+    transition:
+      color var(--motion-fast) var(--ease-out),
+      text-decoration-color var(--motion-fast) var(--ease-out);
   }
-  a:hover { color: var(--color-accent-warm); }
+  a:hover {
+    color: var(--color-accent-primary);
+    text-decoration-color: currentColor;
+  }
+  :is(header, footer, nav) a,
+  .link-plain {
+    text-decoration: none;
+  }
+  :is(header, footer, nav) a:hover,
+  .link-plain:hover {
+    color: var(--color-accent-primary);
+  }
   a:focus-visible {
     outline: 2px solid var(--color-accent-primary);
     outline-offset: 2px;
-    border-radius: 2px;
   }
 
+  /* Newsreader carries every heading level — in this design the serif is
+     the voice, and mono/sans are reserved for metadata and controls.
+     Weights stay light: the display face does the work, not the ink. */
   h1, h2, h3, h4 {
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    line-height: 1.25;
-  }
-
-  /* Editorial identity: display serif on the two top heading levels;
-     h3/h4 stay sans for dense UI lists (publications, projects). */
-  h1, h2 {
     font-family: var(--font-display);
-    letter-spacing: -0.015em;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+  h1, h2 {
+    font-weight: 400;
+    letter-spacing: -0.018em;
+    line-height: 1.18;
   }
 }
 
@@ -262,11 +313,70 @@
   /* Small-caps mono kicker above titles ("Research", "01"). */
   .eyebrow {
     font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    font-weight: 500;
-    letter-spacing: 0.14em;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--color-ink-muted);
+  }
+
+  /* Mono metadata: dates in the news feed, section indices, byline rails.
+     Untracked and unshouted — it sits beside content, not above it. */
+  .meta {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--color-ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Translucent paper backing plate. The hero types directly over a live
+     canvas, so each text block gets its own frosted panel rather than one
+     large card — that is what lets the cascade show *between* the lines
+     instead of only around the block. */
+  .plate {
+    background: color-mix(in oklch, var(--color-bg) 84%, transparent);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+  /* Browsers without backdrop-filter would show the canvas straight
+     through the 84% wash; opaque paper is the safe fallback. */
+  @supports not (backdrop-filter: blur(2px)) {
+    .plate { background: var(--color-bg); }
+  }
+
+  /* Square editorial buttons — mono, letterspaced, no radius. Solid is the
+     single primary action; outline is everything else. */
+  .btn-editorial {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.125rem;
+    font-family: var(--font-mono);
+    font-size: 0.78125rem;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    border: 1px solid color-mix(in oklch, var(--color-ink) 28%, transparent);
+    color: var(--color-ink);
+    text-decoration: none;
+    transition:
+      border-color var(--motion-fast) var(--ease-out),
+      background-color var(--motion-fast) var(--ease-out),
+      color var(--motion-fast) var(--ease-out);
+  }
+  .btn-editorial:hover {
+    border-color: var(--color-accent-primary);
+    color: var(--color-accent-primary);
+  }
+  .btn-editorial--solid {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-bg);
+  }
+  .btn-editorial--solid:hover {
+    background: var(--color-accent-primary);
+    border-color: var(--color-accent-primary);
+    color: var(--color-primary-content);
   }
 
   .prose-body {
@@ -277,10 +387,12 @@
     color: var(--color-ink);
   }
 
+  /* Inside running prose the hairline is drawn a little stronger than the
+     global default so a link is legible mid-sentence at Newsreader's
+     lighter stroke weight. */
   .prose-body a {
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 2px;
+    text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+    text-underline-offset: 0.2em;
   }
   .prose-body a:hover {
     text-decoration-thickness: 2px;

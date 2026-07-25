@@ -3,11 +3,12 @@ import '~/styles/global.css';
 import Nav from './Nav.astro';
 import Footer from './Footer.astro';
 import ThemeToggle from './ThemeToggle.astro';
-// Preload latin subsets of the two fonts that render above-the-fold body text,
-// so the browser starts fetching them in parallel with the HTML parse and we
-// avoid a layout shift when they swap in.
-import interLatinUrl from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
-import serifLatinUrl from '@fontsource-variable/source-serif-4/files/source-serif-4-latin-wght-normal.woff2?url';
+// Preload latin subsets of the two fonts that render above-the-fold text, so
+// the browser starts fetching them in parallel with the HTML parse and we
+// avoid a layout shift when they swap in. Newsreader carries the display and
+// body type; IBM Plex Mono carries every eyebrow, date and nav item.
+import serifLatinUrl from '@fontsource-variable/newsreader/files/newsreader-latin-wght-normal.woff2?url';
+import monoLatinUrl from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -72,8 +73,8 @@ const fullTitle = `${title} · Hafsteinn Einarsson`;
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="preload" as="font" type="font/woff2" href={interLatinUrl} crossorigin />
     <link rel="preload" as="font" type="font/woff2" href={serifLatinUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={monoLatinUrl} crossorigin />
     <link rel="apple-touch-icon" href="/apple-touch-icon-precomposed.png" />
     <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml" />
     <script is:inline>

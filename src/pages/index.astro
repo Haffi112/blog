@@ -3,7 +3,7 @@ import BaseLayout from '~/components/BaseLayout.astro';
 import JsonLdPerson from '~/components/JsonLdPerson.astro';
 import Hero from '~/components/Hero.astro';
 import NewsItem from '~/components/NewsItem.astro';
-import PubCard from '~/components/PubCard.astro';
+import PubDisclosure from '~/components/PubDisclosure.astro';
 import SectionHeading from '~/components/SectionHeading.astro';
 import { getCollection } from 'astro:content';
 import pubsData from '~/data/publications.json';
@@ -44,29 +44,39 @@ const selected = pubs.filter((p) => p.selected).slice(0, 3);
   <JsonLdPerson slot="head" />
   <Hero />
 
-  <section class="max-w-prose mx-auto px-6 py-14" data-reveal>
-    <SectionHeading number="01" title="News" />
-    <ul class="mt-4">
-      {news.map((n, i) => (
-        <NewsItem
-          date={n.date}
-          text={n.text}
-          link={n.link}
-          newest={i === 0}
-        />
-      ))}
-    </ul>
-  </section>
+  <!-- Two panels divided by a hairline. The rule is the 1px grid gap
+       showing the container background through — that way it runs the full
+       height of the taller column and collapses into a horizontal divider
+       when the grid stacks, with no extra elements. -->
+  <div
+    class="max-w-page mx-auto grid gap-px bg-rule lg:grid-cols-2"
+    data-reveal
+  >
+    <section class="bg-bg px-6 py-10 md:px-10 md:py-12">
+      <SectionHeading number="01" title="News" rule={false} />
+      <ul class="mt-6 list-none">
+        {news.map((n, i) => (
+          <NewsItem
+            date={n.date}
+            text={n.text}
+            link={n.link}
+            newest={i === 0}
+          />
+        ))}
+      </ul>
+    </section>
 
-  <section class="max-w-prose mx-auto px-6 py-14" data-reveal>
-    <SectionHeading
-      number="02"
-      title="Selected publications"
-      href="/publications/"
-      linkLabel="All publications"
-    />
-    <div class="mt-6">
-      {selected.map((p) => <PubCard pub={p} variant="selected" />)}
-    </div>
-  </section>
+    <section class="bg-bg px-6 py-10 md:px-10 md:py-12">
+      <SectionHeading
+        number="02"
+        title="Selected publications"
+        href="/publications/"
+        linkLabel="All"
+        rule={false}
+      />
+      <div class="mt-6">
+        {selected.map((p) => <PubDisclosure pub={p} />)}
+      </div>
+    </section>
+  </div>
 </BaseLayout>

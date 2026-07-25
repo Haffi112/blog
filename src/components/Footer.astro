@@ -17,28 +17,31 @@ const profileLinks = [
 ];
 const year = new Date().getFullYear();
 ---
-<footer class="border-t border-rule mt-24 bg-bg-elev/50">
-  <div class="max-w-page mx-auto px-6 py-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+<!-- The footer sits on the warmer paper tone (base-200), which in this
+     palette is a shade *darker* than the page — the design's #f1ede4. -->
+<footer class="border-t border-rule mt-24 bg-bg-elev">
+  <div class="max-w-page mx-auto px-6 py-10 md:px-10 md:py-12 grid gap-8 md:gap-12 sm:grid-cols-2 lg:grid-cols-3">
     <div class="max-w-xs">
-      <p class="font-display text-lg font-semibold text-ink">
+      <p class="font-display text-[1.1875rem] text-ink">
         Hafsteinn Einarsson
       </p>
-      <p class="mt-3 text-sm text-ink-muted">
+      <p class="mt-3 font-prose text-[1rem] leading-[1.55] text-ink-muted max-w-[34ch]">
         Machine learning research at the University of Iceland and Amgen
         deCODE: language, vision, clinical AI, and human genetics.
       </p>
+      <p class="meta mt-6">© {year} Hafsteinn Einarsson</p>
     </div>
     <nav aria-label="Site sections">
-      <p class="eyebrow">Explore</p>
-      <ul class="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 text-sm max-w-3xs">
+      <p class="eyebrow text-ink-faint">Explore</p>
+      <ul class="mt-3.5 flex flex-col gap-2.5 font-mono text-[0.78125rem]">
         {exploreLinks.map((l) => (
           <li><a href={l.href} class="text-ink-muted hover:text-ink">{l.label}</a></li>
         ))}
       </ul>
     </nav>
     <nav aria-label="Profiles elsewhere">
-      <p class="eyebrow">Elsewhere</p>
-      <ul class="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 text-sm max-w-3xs">
+      <p class="eyebrow text-ink-faint">Elsewhere</p>
+      <ul class="mt-3.5 flex flex-col gap-2.5 font-mono text-[0.78125rem]">
         {profileLinks.map((l) => (
           <li><a href={l.href} class="text-ink-muted hover:text-ink">{l.label}</a></li>
         ))}
@@ -46,9 +49,8 @@ const year = new Date().getFullYear();
     </nav>
   </div>
   <div class="border-t border-rule">
-    <div class="max-w-page mx-auto px-6 py-5 flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between text-xs text-ink-muted">
-      <span>© {year} Hafsteinn Einarsson</span>
-      <span><a href="/cv.pdf" class="hover:text-ink">Download CV ↓</a></span>
+    <div class="max-w-page mx-auto px-6 md:px-10 py-4 flex justify-end">
+      <a href="/cv.pdf" class="meta hover:text-ink">Download CV ↓</a>
     </div>
   </div>
 </footer>

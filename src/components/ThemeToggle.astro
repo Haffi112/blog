@@ -25,7 +25,7 @@ const THEMES = [
     aria-haspopup="menu"
     aria-expanded="false"
     aria-label="Switch theme"
-    class="flex items-center gap-2 px-2.5 py-1.5 rounded-full text-sm text-ink-muted hover:text-ink hover:bg-accent-primary-soft border border-rule transition-colors"
+    class="flex items-center gap-2 px-2.5 py-1.5 font-mono text-[0.75rem] uppercase tracking-[0.04em] text-ink-muted hover:text-ink hover:bg-accent-primary-soft border border-rule transition-colors"
   >
     <span
       data-theme-dot
@@ -43,7 +43,7 @@ const THEMES = [
     id="theme-switcher-menu"
     role="menu"
     aria-labelledby="theme-switcher-button"
-    class="hidden absolute right-0 mt-2 w-64 max-h-[28rem] overflow-y-auto origin-top-right bg-bg-elev border border-rule rounded-lg shadow-lg z-30 p-1"
+    class="hidden absolute right-0 mt-2 w-64 max-h-[28rem] overflow-y-auto origin-top-right bg-bg-elev border border-rule shadow-lg z-30 p-1"
   >
     {THEMES.map((t) => (
       <button
@@ -51,7 +51,7 @@ const THEMES = [
         role="menuitemradio"
         data-theme-option={t.id}
         title={t.note ?? t.label}
-        class="w-full flex items-start gap-3 px-3 py-2 rounded-md text-sm text-ink hover:bg-accent-primary-soft cursor-pointer transition-colors"
+        class="w-full flex items-start gap-3 px-3 py-2 text-sm text-ink hover:bg-accent-primary-soft cursor-pointer transition-colors"
       >
         <span
           data-theme-swatch={t.id}

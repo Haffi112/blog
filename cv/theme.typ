@@ -9,27 +9,31 @@
 //   - bg-*       : page background and elevated surfaces
 //   - ink, muted : primary and secondary text
 //   - rule       : dividers and faint lines
-//   - primary    : aubergine, used for section titles, links, self-name
-//   - secondary  : gold, used for dates and awards
-//   - energy     : burnt orange, used sparingly for emphasis
+//   - primary    : warm rust, used for section titles, links, self-name
+//   - secondary  : deep umber, used for dates and awards
+//   - energy     : a hotter rust, used sparingly for emphasis
 //   - badge-*    : semantic colours for course levels, project statuses, etc.
+//
+// These are the "quiet paper" values from the site redesign, kept as sRGB
+// hex because Typst has no OKLCH literal — they are the exact colours the
+// light theme in src/styles/global.css resolves to.
 
 // --- Surfaces --------------------------------------------------------------
-#let bg = rgb("#FAFAF6")
-#let bg-elev = rgb("#FFFFFF")
+#let bg = rgb("#F7F5F0")             // paper
+#let bg-elev = rgb("#F1EDE4")        // warmer raised surface
 
 // --- Text ------------------------------------------------------------------
-#let ink = rgb("#1A1418")
-#let muted = rgb("#5A5560")
-#let rule = rgb("#E8E4E2")
+#let ink = rgb("#1C1A17")
+#let muted = rgb("#67635D")          // ink at 62% over paper
+#let rule = rgb("#E2DFD8")           // ink at 12% over paper
 
 // --- Accents ---------------------------------------------------------------
-#let primary = rgb("#5B3A78")        // aubergine
-#let primary-soft = rgb("#F2EBF9")   // pale aubergine wash
-#let secondary = rgb("#8E5E0F")      // gold
-#let secondary-soft = rgb("#FBF2DF") // pale gold wash
-#let energy = rgb("#A84A1F")         // burnt orange
-#let energy-soft = rgb("#FBE8DC")    // pale orange wash
+#let primary = rgb("#B54C2B")        // warm rust — hsl(20 62% 44%)
+#let primary-soft = rgb("#F6E9E1")   // pale rust wash
+#let secondary = rgb("#54453A")      // deep umber
+#let secondary-soft = rgb("#EDE7E0") // pale umber wash
+#let energy = rgb("#A54527")         // hotter rust
+#let energy-soft = rgb("#F7E7DE")    // pale rust wash
 
 // --- Semantic tints -------------------------------------------------------
 // Date column in entry(), and year ranges in awards.

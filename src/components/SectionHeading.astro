@@ -1,7 +1,12 @@
 ---
 /**
- * Numbered editorial section heading: mono index, serif title, optional
- * trailing link, hairline rule underneath.
+ * Numbered editorial section heading. In the redesign the section title is
+ * not a large serif line but a small letterspaced cap beside a mono index —
+ * the heading recedes and the content carries the page.
+ *
+ * `rule` draws the hairline underneath. Turn it off where the content below
+ * already opens with its own border-top (the news feed, publication
+ * disclosures), so the two rules don't stack.
  */
 interface Props {
   number?: string; // "01" — omit for unnumbered headings
@@ -10,16 +15,25 @@ interface Props {
   linkLabel?: string;
   /** Heading level (defaults to h2). */
   as?: 'h2' | 'h3';
+  /** Hairline rule under the heading (defaults to on). */
+  rule?: boolean;
 }
 
-const { number, title, href, linkLabel, as: Tag = 'h2' } = Astro.props;
+const { number, title, href, linkLabel, as: Tag = 'h2', rule = true } = Astro.props;
 ---
-<div class="flex items-baseline justify-between gap-4 pb-3 border-b border-rule">
-  <Tag class="flex items-baseline gap-3 text-2xl font-semibold text-ink">
-    {number && <span class="eyebrow translate-y-[-0.2em]" aria-hidden="true">{number}</span>}
-    {title}
-  </Tag>
+<div
+  class:list={[
+    'flex items-baseline justify-between gap-4',
+    rule && 'pb-3 border-b border-rule'
+  ]}
+>
+  <div class="flex items-baseline gap-3">
+    {number && <span class="meta" aria-hidden="true">{number}</span>}
+    <Tag class="font-display text-[0.9375rem] font-normal uppercase tracking-[0.16em] text-ink">
+      {title}
+    </Tag>
+  </div>
   {href && linkLabel && (
-    <a href={href} class="text-sm shrink-0">{linkLabel} →</a>
+    <a href={href} class="link-plain font-mono text-xs text-ink-muted shrink-0">{linkLabel} →</a>
   )}
 </div>

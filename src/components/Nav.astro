@@ -12,10 +12,16 @@ const isActive = (href: string) =>
   here === href || (href !== '/' && here.startsWith(href));
 ---
 <header data-site-header class="sticky top-0 z-20 bg-bg/85 backdrop-blur-md border-b border-rule">
-  <nav class="max-w-page mx-auto px-6 h-14 flex items-center justify-between gap-3">
-    <a href="/" class="font-display font-semibold tracking-tight text-ink shrink-0">Hafsteinn Einarsson</a>
+  <nav class="max-w-page mx-auto px-6 h-15 flex items-center justify-between gap-3">
+    <!-- The wordmark is set in the display serif at its plain weight; in a
+         paper design the name doesn't need bolding to read as the masthead. -->
+    <a href="/" class="font-display text-[1.0625rem] text-ink shrink-0">Hafsteinn Einarsson</a>
 
-    <ul class="hidden md:flex items-center gap-6 text-sm">
+    <!-- Mono caps are appreciably wider than the sans they replaced, so the
+         row is tuned to survive its tightest moment: 768px, where the
+         desktop nav first appears and the theme switcher is still present.
+         Type steps up and the CV button joins only once there is room. -->
+    <ul class="hidden md:flex items-center gap-[clamp(0.75rem,1.5vw,1.625rem)] font-mono text-[0.71875rem] lg:text-[0.78125rem] uppercase tracking-[0.03em] lg:tracking-[0.04em]">
       {items.map((it) => (
         <li>
           <a
@@ -24,12 +30,18 @@ const isActive = (href: string) =>
             class:list={[
               'transition-colors pb-1',
               isActive(it.href)
-                ? 'text-ink border-b-2 border-accent-primary'
+                ? 'text-ink border-b border-accent-primary'
                 : 'text-ink-muted hover:text-ink'
             ]}
           >{it.label}</a>
         </li>
       ))}
+      <li class="hidden lg:block">
+        <a
+          href="/cv.pdf"
+          class="btn-editorial px-3 py-[0.4375rem] text-[0.78125rem]"
+        >CV ↓</a>
+      </li>
     </ul>
 
     <div class="flex items-center gap-2">
@@ -40,7 +52,7 @@ const isActive = (href: string) =>
         aria-expanded="false"
         aria-controls="mobile-menu-panel"
         aria-label="Open navigation menu"
-        class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-full border border-rule text-ink-muted hover:text-ink hover:bg-accent-primary-soft transition-colors"
+        class="md:hidden inline-flex items-center justify-center w-9 h-9 border border-rule text-ink-muted hover:text-ink hover:bg-accent-primary-soft transition-colors"
       >
         <svg
           data-menu-icon="open"
@@ -81,15 +93,15 @@ const isActive = (href: string) =>
                 href={it.href}
                 aria-current={active ? 'page' : undefined}
                 class:list={[
-                  'relative flex items-center min-h-11 px-4 rounded-md text-base transition-colors',
+                  'relative flex items-center min-h-11 px-4 font-mono text-[0.8125rem] uppercase tracking-[0.06em] transition-colors',
                   active
-                    ? 'text-accent-primary font-medium'
+                    ? 'text-accent-primary'
                     : 'text-ink hover:text-ink hover:bg-accent-primary-soft'
                 ]}
               >
                 {active && (
                   <span
-                    class="absolute left-1 top-2 bottom-2 w-0.5 rounded-full bg-accent-primary"
+                    class="absolute left-1 top-2 bottom-2 w-0.5 bg-accent-primary"
                     aria-hidden="true"
                   />
                 )}
@@ -98,6 +110,12 @@ const isActive = (href: string) =>
             </li>
           );
         })}
+        <li>
+          <a
+            href="/cv.pdf"
+            class="relative flex items-center min-h-11 px-4 font-mono text-[0.8125rem] uppercase tracking-[0.06em] text-ink hover:bg-accent-primary-soft transition-colors"
+          >CV ↓</a>
+        </li>
       </ul>
     </div>
   </div>

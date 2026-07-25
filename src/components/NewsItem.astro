@@ -7,14 +7,17 @@ interface Props {
 }
 
 const { date, text, link, newest = false } = Astro.props;
-const formatted = date.toISOString().slice(0, 7); // YYYY-MM
+const iso = date.toISOString().slice(0, 10);
+const formatted = iso.slice(0, 7); // YYYY-MM
 ---
-<li class="flex gap-4 py-2 border-t border-rule first:border-t-0">
-  <span class="font-mono text-xs text-ink-muted shrink-0 w-16 mt-1 flex items-center gap-1.5">
-    {newest && <span class="inline-block w-1.5 h-1.5 rounded-full bg-accent-energy" aria-hidden />}
+<li class="grid grid-cols-[auto_1fr] gap-x-4 sm:gap-x-[1.125rem] gap-y-2 py-[0.9375rem] border-t border-rule-soft last:border-b last:border-b-rule-soft">
+  <time datetime={iso} class="meta pt-1 flex items-center gap-1.5">
+    {newest && (
+      <span class="inline-block w-1.5 h-1.5 rounded-full bg-accent-energy" aria-hidden="true" />
+    )}
     {formatted}
-  </span>
-  <p class="text-ink">
+  </time>
+  <p class="font-prose text-[1.0625rem] leading-[1.45] text-ink">
     {link ? <a href={link}>{text}</a> : text}
   </p>
 </li>

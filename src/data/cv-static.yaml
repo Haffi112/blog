@@ -247,6 +247,18 @@ outreach:
     year: 2020
 
 media_appearances:
+  - date: 2026-07-24
+    title_is: "Skynet langt undan en íslensk stjórnvöld þurfa að vera undirbúin"
+    title_en: "Skynet is a long way off, but Icelandic authorities need to be prepared"
+    outlet: "Vísir"
+    type: article
+    url: "https://www.visir.is/g/20262913276d/skynet-langt-undan-en-is-lensk-stjorn-vold-thurfa-ad-vera-undir-buin"
+  - date: 2026-07-22
+    title_is: "Við þurfum ekki að kaupa gervigreindarfullveldið að utan"
+    title_en: "We do not need to buy AI sovereignty from abroad"
+    outlet: "Vísir"
+    type: opinion
+    url: "https://www.visir.is/g/20262912397d/vid-thurfum-ekki-ad-kaupa-gervigreindarfullveldid-ad-utan"
   - date: 2026-05-27
     title_is: "Utanríkisráðherra óttast „Brexit-augnablik“ í þjóðaratkvæðagreiðslu um ESB-aðild"
     title_en: "Iceland’s foreign minister fears ‘Brexit moment’ in EU accession referendum"

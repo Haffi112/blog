@@ -46,7 +46,9 @@ Key invariants:
 - **Two bibliographies, kept separate on purpose:**
   - `references.bib` at repo root = publications (drives `/publications/` and CV).
   - `_bibliography/references.bib` = legacy refs cited by old blog posts via `<Cite key="..." />`. Don't merge them.
-- **Theme tokens live in CSS, not JS.** `src/styles/global.css` has an `@theme` block + a `[data-theme="dark"]` override. Tailwind 4 reads CSS variables directly; there is no `tailwind.config.*` of substance. To match a color change in the CV, also edit `cv/template.typ`.
+- **Theme tokens live in CSS, not JS.** `src/styles/global.css` has an `@theme` block + a `[data-theme="dark"]` override. Tailwind 4 reads CSS variables directly; there is no `tailwind.config.*` of substance. To match a color change in the CV, also edit `cv/theme.typ` (the CV's colour tokens; `cv/template.typ` is layout).
+- **The design is "quiet paper".** Newsreader carries display, headings and body prose; IBM Plex Mono carries all metadata (eyebrows, dates, nav, tags, theme labels); IBM Plex Sans is the UI sans. Corners are square everywhere — the paper themes set daisyUI's `--radius-*` to `0`, so `rounded-card` resolves to nothing. The single accent is a warm rust; ink and hairlines do the rest of the work.
+- **Links are ink + hairline, not coloured.** The base rule gives every `<a>` `color: inherit` with a hairline `text-decoration`, and rust only on hover. Chrome links opt out automatically inside `<header>`, `<footer>` and `<nav>`, or explicitly via `.link-plain`. If you add a link that should not be underlined and it lives outside those elements, reach for `.link-plain` rather than `no-underline`.
 - **Blog URLs are date-derived.** A post at `src/content/blog/2026-05-12-foo.mdx` is served at `/2026/05/12/foo/` via `src/pages/[year]/[month]/[day]/[slug]/index.astro`. The date prefix is stripped from the slug.
 - **`/blog/` is a redirect**, not a route — it points at `/writing/` due to a stale GitHub Pages cache from the 2016 Jekyll era. New blog index is `/writing/`.
 
@@ -61,8 +63,9 @@ Key invariants:
 | Add student / course / project / talk | One YAML in the matching `src/content/{students,teaching,projects,talks}/` |
 | Change CV-only data (positions, education, awards) | `src/data/cv-static.yaml`, then `npm run cv` |
 | Tweak hero text on homepage | `src/components/Hero.astro` |
+| Tune the hero animation (density, thresholds, audio) | `src/components/PercolationField.astro` — model constants are the block near the top |
 | Tweak any page prose | `src/pages/<section>/index.astro` |
-| Tweak design tokens | `src/styles/global.css` (and mirror in `cv/template.typ` for the CV) |
+| Tweak design tokens | `src/styles/global.css` (and mirror colours in `cv/theme.typ` for the CV) |
 | Pick the social-share image for a post | Add `hero: ../../assets/<image>.png` to the post's frontmatter (otherwise a title card is generated) |
 | Add a footnote in a post | Standard GFM syntax: `[^name]` inline + `[^name]: …` block; littlefoot turns it into a hover/click popover |
 
@@ -88,6 +91,8 @@ Every `.mdx` post inherits a few things automatically. Worth knowing before touc
 - **`@layer components` loses to unlayered CSS.** Vite-imported third-party stylesheets (littlefoot, anything imported from a `<script>` block) arrive unlayered and always beat layered rules regardless of source order. Overrides for those libraries belong **outside** `@layer components` in `src/styles/global.css`.
 - **littlefoot anchor pattern.** The library's default `anchorPattern` expects kramdown-style `#fn:1` hrefs; GFM (what Astro emits) writes `#user-content-fn-…`, so the default silently matches nothing. The init in `PostLayout.astro` overrides to `/(?:user-content-)?fn[:\-_\d]/i`.
 - **SVG attribute quoting in the OG generator.** If you template a font-family list into an SVG attribute, inner double quotes terminate the attribute. Use single quotes for `'Helvetica Neue'` etc. (the outer attribute is double-quoted). sharp's error message ("tag mismatch") is misleading; the real cause is always a prematurely closed attribute.
+- **The nav's tightest moment is exactly 768px.** That is where `hidden md:flex` swaps the hamburger for the full link row while the theme switcher is still on screen. Mono caps are appreciably wider than sans at the same size, so anything added to that row must be checked at 768 specifically — the CV button is `hidden lg:block` for this reason. Check with a loop over widths (320/360/375/390/414/640/767/768/820/900/1023/1024) comparing `documentElement.scrollWidth` against the viewport, not by eye.
+- **The brand mark is still aubergine.** `public/favicon.svg`, `public/favicon.ico`, `public/og/default.png` and the OG card generator (`src/pages/og/[...slug].png.ts`, `BG = '#5B3A78'`) were deliberately left on the pre-redesign brand colour. They are the one place the site is not "quiet paper". Converting them means regenerating all four together.
 - **Favicon caches everywhere.** `public/favicon.ico` is what Chrome and Safari hit first — keep it in sync with `favicon.svg`. Regenerate from the SVG with `magick -background none -density 384 favicon.svg \( -resize 16x16 \) \( -resize 32x32 \) … favicon.ico` after design changes.
 
 ## Deploy

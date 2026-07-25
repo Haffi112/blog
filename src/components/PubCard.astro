@@ -28,29 +28,29 @@ const links = linkOrder.filter((l) => pub.links?.[l.key]);
   <div class="flex items-center gap-3 mb-2">
     <ThemeTag theme={pub.theme} />
   </div>
-  <h3 class="text-lg md:text-xl font-semibold text-ink leading-snug">
+  <h3 class="text-lg md:text-xl font-normal text-ink leading-[1.3]">
     {pub.title}
   </h3>
-  <p class="mt-1 text-sm text-ink-muted">
+  <p class="mt-1.5 font-prose italic text-[0.9375rem] leading-[1.4] text-ink-muted">
     {pub.authors.map((a, i) => (
       <Fragment>
         {isYou(a)
-          ? <strong class="text-ink">{formatAuthor(a)}</strong>
+          ? <strong class="font-medium text-ink">{formatAuthor(a)}</strong>
           : formatAuthor(a)}
         {i < pub.authors.length - 1 ? ', ' : ''}
       </Fragment>
     ))}
-    {pub.venue && <span class="text-ink-muted"> · {pub.venue}</span>}
-    {pub.year ? <span class="text-ink-muted"> · {pub.year}</span> : null}
+    {pub.venue && <span> · {pub.venue}</span>}
+    {pub.year ? <span> · {pub.year}</span> : null}
   </p>
   {pub.summary && (
-    <p class="mt-2 text-ink prose-body">{pub.summary}</p>
+    <p class="mt-2.5 prose-body text-[1rem] leading-[1.6] text-ink-muted">{pub.summary}</p>
   )}
   {links.length > 0 && (
-    <ul class="mt-3 flex flex-wrap gap-3 text-sm">
+    <ul class="mt-3 flex flex-wrap gap-3.5">
       {links.map((l) => (
         <li>
-          <a href={pub.links[l.key]} class="underline underline-offset-2 decoration-1 hover:decoration-2">{l.label} →</a>
+          <a href={pub.links[l.key]} class="font-mono text-xs">{l.label} →</a>
         </li>
       ))}
     </ul>

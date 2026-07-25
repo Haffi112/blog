@@ -13,7 +13,9 @@ const { eyebrow, title, lede } = Astro.props;
 ---
 <header class="pt-12 md:pt-16 pb-8 border-b border-rule">
   {eyebrow && <p class="eyebrow">{eyebrow}</p>}
-  <h1 class="mt-3 text-display-sm font-semibold text-ink">{title}</h1>
-  {lede && <p class="mt-4 text-ink-muted max-w-prose">{lede}</p>}
+  <h1 class="mt-3 text-display-sm font-light text-ink">{title}</h1>
+  {lede && (
+    <p class="mt-4 font-prose text-[1.0625rem] leading-[1.6] text-ink-muted max-w-prose">{lede}</p>
+  )}
   <slot />
 </header>

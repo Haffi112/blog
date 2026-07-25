@@ -1,0 +1,89 @@
+---
+import type { Publication } from '~/data/publications.schema';
+import { formatAuthor, isYou } from '~/lib/format-authors';
+import ThemeTag from './ThemeTag.astro';
+
+/**
+ * Selected-publication row as a disclosure: theme tag, serif title and an
+ * italic byline are always visible; the summary and the link rail unfold on
+ * click. Used on the homepage, where the point is a scannable shortlist
+ * rather than the full record shown by PubCard on /publications/.
+ */
+interface Props {
+  pub: Publication;
+}
+
+const { pub } = Astro.props;
+
+const linkOrder: Array<{ key: keyof Publication['links']; label: string }> = [
+  { key: 'doi', label: 'DOI' },
+  { key: 'arxiv', label: 'arXiv' },
+  { key: 'pdf', label: 'PDF' },
+  { key: 'code', label: 'Code' },
+  { key: 'huggingface', label: 'Hugging Face' },
+  { key: 'dataset', label: 'Dataset' }
+];
+
+const links = linkOrder.filter((l) => pub.links?.[l.key]);
+const byline = [pub.venue, pub.year].filter(Boolean).join(' · ');
+---
+<details class="pub-disclosure border-t border-rule-soft last:border-b last:border-b-rule-soft py-4">
+  <summary class="grid grid-cols-[1fr_auto] items-start gap-x-4 gap-y-[0.4375rem] cursor-pointer list-none">
+    <div class="col-start-1 flex flex-col gap-[0.4375rem]">
+      <ThemeTag theme={pub.theme} />
+      <span class="pub-title font-display text-lg md:text-xl font-normal leading-[1.3] text-ink">
+        {pub.title}
+      </span>
+      <span class="font-prose italic text-[0.9375rem] leading-[1.4] text-ink-muted">
+        {pub.authors.map((a, i) => (
+          <Fragment>
+            {isYou(a) ? <strong class="font-medium text-ink">{formatAuthor(a)}</strong> : formatAuthor(a)}
+            {i < pub.authors.length - 1 ? ', ' : ''}
+          </Fragment>
+        ))}
+        {byline && <Fragment> · {byline}</Fragment>}
+      </span>
+    </div>
+    <!-- The design leaves disclosure rows unmarked; a hairline mono glyph
+         costs nothing and is the difference between "there is more here"
+         being discoverable and being guessed at. -->
+    <span class="pub-marker meta col-start-2 row-start-1 mt-1 select-none" aria-hidden="true">+</span>
+  </summary>
+
+  {pub.summary && (
+    <p class="mt-3.5 prose-body text-[1rem] leading-[1.6] text-ink-muted">{pub.summary}</p>
+  )}
+
+  {links.length > 0 && (
+    <ul class="mt-3 flex flex-wrap gap-3.5">
+      {links.map((l) => (
+        <li>
+          <a href={pub.links[l.key]} class="font-mono text-xs">{l.label} →</a>
+        </li>
+      ))}
+    </ul>
+  )}
+</details>
+
+<style>
+  /* Safari still paints its own triangle unless this pseudo-element is
+     suppressed; `list-style: none` alone is not enough there. */
+  .pub-disclosure summary::-webkit-details-marker {
+    display: none;
+  }
+  .pub-disclosure summary:hover .pub-title {
+    color: var(--color-accent-primary);
+  }
+  .pub-disclosure summary:focus-visible {
+    outline: 2px solid var(--color-accent-primary);
+    outline-offset: 3px;
+  }
+  .pub-disclosure[open] .pub-marker {
+    /* An en dash, not a hyphen — it optically matches the "+" stroke. */
+    font-size: 0;
+  }
+  .pub-disclosure[open] .pub-marker::after {
+    content: '–';
+    font-size: 0.75rem;
+  }
+</style>

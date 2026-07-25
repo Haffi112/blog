@@ -1,52 +1,77 @@
 ---
 import { Picture } from 'astro:assets';
-import GraphField from './GraphField.astro';
+import PercolationField from './PercolationField.astro';
 import hafsteinnPhoto from '~/assets/hafsteinn.png';
 ---
 <section class="relative overflow-hidden border-b border-rule">
-  <!-- Animated knowledge-graph field, faded into the page background so
-       the hero text stays readable and the section ends cleanly. -->
-  <div class="absolute inset-0" aria-hidden="true">
-    <GraphField />
-    <div class="absolute inset-0 bg-linear-to-b from-bg/55 via-bg/25 to-bg"></div>
-  </div>
+  <!-- Live percolation field, its own readability wash, and the controls
+       that go with it. Everything below stacks above it. -->
+  <PercolationField />
 
-  <div class="relative max-w-page mx-auto px-6 pt-20 pb-16 md:pt-28 md:pb-24">
-    <!-- Mobile: portrait leads, centered, name block centered underneath.
-         md+: side-by-side composition centered on the page axis. -->
-    <div class="flex flex-col-reverse md:flex-row md:items-center md:justify-center items-center gap-8 md:gap-14">
-      <div class="max-w-2xl shrink text-center md:text-left rounded-card bg-bg/60 backdrop-blur-[3px] p-6 md:p-8 -m-6 md:-m-8">
-        <p class="eyebrow">Machine learning research</p>
-        <h1 class="mt-4 text-display font-semibold text-ink">
-          Hafsteinn Einarsson
+  <!-- pointer-events-none lets clicks fall through the type to the canvas
+       so the whole hero is ignitable; the CTAs opt back in. -->
+  <div class="relative pointer-events-none max-w-page mx-auto px-6 pt-16 pb-16 md:pt-24 md:pb-20">
+    <!-- Two equal columns with the portrait pinned to the *start* of the
+         second one, as in the design: it lands near the centre line and
+         leaves the right third open for the graph to breathe. -->
+    <div class="grid gap-10 md:gap-[clamp(1.75rem,4vw,3.75rem)] md:grid-cols-2 md:items-end">
+      <!-- Each block carries its own frosted plate rather than sharing one
+           card, so the cascade stays visible between the lines. -->
+      <div class="flex flex-col items-start gap-3.5 max-w-2xl">
+        <span class="plate inline-block px-3 py-1.5 eyebrow">Machine learning research</span>
+
+        <h1 class="plate inline-block px-4 py-2.5 text-display font-light text-ink">
+          Hafsteinn<br />Einarsson
         </h1>
-        <p class="mt-4 text-lg text-ink-muted">
+
+        <p class="plate inline-block px-3.5 py-2 font-prose italic font-light text-ink-muted text-[1.0625rem] md:text-[1.1875rem] leading-[1.5]">
           Associate Professor, University of Iceland<br />
           Principal Scientist, Amgen deCODE
         </p>
-        <p class="mt-6 prose-body max-w-prose text-left">
+
+        <p class="plate inline-block px-4 py-3 prose-body max-w-[50ch] text-[1.03125rem] md:text-[1.15rem]">
           I lead a research group working on natural language processing for
           Icelandic and Faroese, with active projects in computer vision for
           the natural sciences, clinical AI, and human genetics.
         </p>
-        <ul class="mt-8 flex flex-wrap justify-center md:justify-start gap-x-7 gap-y-3 text-sm font-medium">
-          <li><a href="/research/">Research →</a></li>
-          <li><a href="/publications/">Publications →</a></li>
-          <li><a href="/cv.pdf">Download CV ↓</a></li>
-        </ul>
+
+        <div class="pointer-events-auto mt-1.5 flex flex-wrap gap-2.5">
+          <a href="/research/" class="btn-editorial btn-editorial--solid">Research →</a>
+          <a href="/publications/" class="btn-editorial plate">Publications →</a>
+          <a href="/cv.pdf" class="btn-editorial plate">Download CV ↓</a>
+        </div>
       </div>
-      <Picture
-        src={hafsteinnPhoto}
-        alt="Hafsteinn Einarsson"
-        width={200}
-        height={250}
-        densities={[1, 2]}
-        formats={['avif', 'webp']}
-        fallbackFormat="png"
-        class="w-32 md:w-44 lg:w-50 shrink-0 rounded-card border border-rule shadow-sm"
-        loading="eager"
-        fetchpriority="high"
-      />
+
+      <!-- Portrait: square-cornered, desaturated to sit inside the paper
+           palette, on a hatched backing that shows through while the image
+           decodes. -->
+      <div
+        class="hero-portrait relative w-full max-w-52 sm:max-w-[18.25rem] justify-self-start aspect-4/5"
+      >
+        <Picture
+          src={hafsteinnPhoto}
+          alt="Hafsteinn Einarsson"
+          widths={[292, 584]}
+          formats={['avif', 'webp']}
+          fallbackFormat="png"
+          class="absolute inset-0 w-full h-full object-cover grayscale contrast-[1.06]"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
     </div>
   </div>
 </section>
+
+<style>
+  /* 45° hatch in the paper's own two tones — the same trick the design
+     uses to keep the portrait from floating on the canvas. */
+  .hero-portrait {
+    background: repeating-linear-gradient(
+      45deg,
+      var(--color-base-300) 0 6px,
+      var(--color-bg-elev) 6px 12px
+    );
+    box-shadow: 0 18px 44px color-mix(in oklch, var(--color-ink) 18%, transparent);
+  }
+</style>

@@ -15,8 +15,9 @@ const ecOptions = {
     preserveIndent: true
   },
   styleOverrides: {
-    borderRadius: '0.5rem',
-    codeFontFamily: '"JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace',
+    // Square frames and IBM Plex Mono, matching the paper design's chrome.
+    borderRadius: '0',
+    codeFontFamily: '"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace',
     codeFontSize: '0.875rem',
     codeLineHeight: '1.6'
   }

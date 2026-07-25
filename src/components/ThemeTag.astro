@@ -1,6 +1,13 @@
 ---
 import type { Theme } from '~/data/publications.schema';
 
+/**
+ * Research-theme label. The redesign drops the pill entirely: the tag is a
+ * line of letterspaced mono caps sitting above the title, tinted by theme.
+ * Rust is the house accent and carries the two flagship strands; the
+ * remaining themes step down through the warm secondary and plain ink so
+ * the list never reads as a colour chart.
+ */
 interface Props {
   theme?: Theme;
   size?: 'sm' | 'md';
@@ -11,27 +18,27 @@ const { theme, size = 'sm' } = Astro.props;
 const config: Record<Theme, { label: string; tone: string }> = {
   'nlp-is': {
     label: 'NLP for Icelandic & Germanic',
-    tone: 'bg-accent-warm-soft text-accent-warm'
+    tone: 'text-accent-primary'
   },
   'cv-nat': {
     label: 'Machine Learning · Natural Sciences',
-    tone: 'bg-orange-50 text-accent-energy dark:bg-orange-950/30'
+    tone: 'text-accent-energy'
   },
   'clinical-ai': {
     label: 'Clinical AI',
-    tone: 'bg-accent-warm-soft text-accent-warm'
+    tone: 'text-accent-warm'
   },
   genetics: {
     label: 'Genetics',
-    tone: 'bg-bg text-ink-muted border border-rule'
+    tone: 'text-ink-muted'
   },
   'comp-neuro': {
     label: 'Computational Neuroscience',
-    tone: 'bg-accent-primary-soft text-accent-primary'
+    tone: 'text-accent-warm'
   },
   'discrete-math': {
     label: 'Discrete Mathematics',
-    tone: 'bg-accent-warm-soft text-accent-warm'
+    tone: 'text-ink-muted'
   }
 };
 
@@ -40,8 +47,10 @@ const c = theme ? config[theme] : null;
 {c && (
   <span
     class:list={[
-      'inline-flex items-center rounded-full font-medium',
-      size === 'sm' ? 'text-xs px-2.5 py-0.5' : 'text-sm px-3 py-1',
+      'inline-block font-mono uppercase leading-none',
+      size === 'sm'
+        ? 'text-[0.6875rem] tracking-[0.1em]'
+        : 'text-xs tracking-[0.12em]',
       c.tone
     ]}
   >{c.label}</span>
