@@ -1,33 +1,38 @@
 ---
 import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
 import BaseLayout from '~/components/BaseLayout.astro';
 import PageHeader from '~/components/PageHeader.astro';
 import SectionHeading from '~/components/SectionHeading.astro';
 import NewsItem from '~/components/NewsItem.astro';
 import MediaItem from '~/components/MediaItem.astro';
+import TalkItem from '~/components/TalkItem.astro';
 import { media } from '~/lib/media';
 import { getNews } from '~/lib/news';
 import { getPostsFor, postLang, postUrl, readingMinutes } from '~/lib/posts';
-import { formatDate, useTranslations, type Lang } from '~/i18n/utils';
+import { aiSeries, seriesWatchUrlFor } from '~/data/series';
+import thumbIs from '~/assets/ai-series/thumbnail-e01-is.jpg';
+import thumbEn from '~/assets/ai-series/thumbnail-e01-en.jpg';
+import { formatDate, localizePath, outreachSections, useTranslations, type Lang } from '~/i18n/utils';
 
-/* Writing index body, shared by /writing/ and /is/writing/. The Icelandic
-   index lists the Icelandic translations, and falls back to the English
-   original (marked lang="en") for any post not translated yet. */
+/* The Outreach page (/writing/ and /is/writing/): blog posts first, then
+   the video series, media appearances, talks and news. The section order
+   comes from outreachSections(), which the nav's submenu shares.
+   The Icelandic page lists the Icelandic translations of the posts, and
+   falls back to the English original (marked lang="en") for any post not
+   translated yet. */
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
 const t = useTranslations(lang);
+const sections = outreachSections(lang);
+const heading = Object.fromEntries(sections.map((s) => [s.id, s.label])) as Record<(typeof sections)[number]['id'], string>;
 
 const posts = await getPostsFor(lang);
 /* lang/hreflang for a post written in another language than the page. */
 const foreign = (p: (typeof posts)[number]) => (postLang(p) === lang ? undefined : postLang(p));
 const anyForeign = posts.some((p) => foreign(p));
-/* Every news item, below the posts: writing stays the first thing here. */
-const news = await getNews(lang);
-/* Pieces I wrote for other outlets (op-eds, explainers), from the shared
-   media list in cv-static.yaml. */
-const elsewhere = media.filter((m) => m.type === 'opinion' || m.type === 'explainer');
 
 /* Group by year, newest year first; the year is the only structure a
    chronological list needs. */
@@ -36,65 +41,168 @@ for (const p of posts) {
   const y = p.data.date.getUTCFullYear();
   byYear.set(y, [...(byYear.get(y) ?? []), p]);
 }
-
 const shortDate = (d: Date) => formatDate(d, lang, { day: 'numeric', month: 'short' });
+
+/* The video series: the page's language leads, the other follows. */
+const other = lang === 'is' ? 'en' : 'is';
+const seriesTitle = lang === 'is' ? aiSeries.title_is : aiSeries.title_en;
+const seriesOtherTitle = lang === 'is' ? aiSeries.title_en : aiSeries.title_is;
+const watchIs = aiSeries.youtube_is && { href: aiSeries.youtube_is, label: 'Horfa á íslensku', lang: 'is' };
+const watchEn = aiSeries.youtube_en && { href: aiSeries.youtube_en, label: 'Watch in English', lang: 'en' };
+const seriesLinks = [
+  ...(lang === 'is' ? [watchIs, watchEn] : [watchEn, watchIs]),
+  { href: aiSeries.tiktok, label: t.series.tiktok },
+  { href: localizePath(aiSeries.makingOf, lang), label: t.series.makingOf }
+]
+  .filter(Boolean)
+  .map((l) => l as { href: string; label: string; lang?: string })
+  /* `lang` only where it differs from the page. */
+  .map((l) => ({ ...l, lang: l.lang === lang ? undefined : l.lang }));
+
+/* Every appearance, op-eds included (each item names its type); the most
+   recent eight are open, the rest behind a disclosure. */
+const RECENT_MEDIA = 8;
+const recentMedia = media.slice(0, RECENT_MEDIA);
+const olderMedia = media.slice(RECENT_MEDIA);
+
+const talks = (await getCollection('talks'))
+  .map((t) => t.data)
+  .sort((a, b) => b.date.getTime() - a.date.getTime());
+/* Sixty-odd talks read as a wall in one list; grouped by year, with only
+   the two most recent years open, the page stays scannable. */
+const talksByYear = new Map<number, typeof talks>();
+for (const t of talks) {
+  const y = t.date.getUTCFullYear();
+  talksByYear.set(y, [...(talksByYear.get(y) ?? []), t]);
+}
+const talkYears = [...talksByYear.keys()];
+
+const news = await getNews(lang);
 ---
 <BaseLayout title={t.writing.title} description={t.writing.description} lang={lang}>
   <section class="max-w-prose mx-auto px-6 pb-12">
     <PageHeader title={t.writing.title} lede={t.writing.lede}>
-      {anyForeign && t.writing.languageNote && <p class="mt-3 meta">{t.writing.languageNote}</p>}
-      <p class="mt-4"><a href="#news" class="link-plain font-mono text-xs text-ink-muted">{t.writing.newsJump} ↓</a></p>
-    </PageHeader>
-
-    {[...byYear].map(([year, list]) => (
-      <section class="mt-10" data-reveal aria-labelledby={`y-${year}`}>
-        <h2 id={`y-${year}`} class="meta text-[0.8125rem]">{year}</h2>
-        <ul class="mt-2">
-          {list.map((p) => (
-            <li class="py-6 border-t border-rule-soft first:border-t-0">
-              <a href={postUrl(p)} hreflang={foreign(p)} class="link-plain group grid gap-x-6 gap-y-3 sm:grid-cols-[1fr_auto] items-start">
-                <div>
-                  <p class="meta flex gap-3">
-                    <time datetime={p.data.date.toISOString().slice(0, 10)}>{shortDate(p.data.date)}</time>
-                    <span>{t.writing.minRead(readingMinutes(p))}</span>
-                  </p>
-                  <h3 lang={foreign(p)} class="mt-1.5 font-display text-[1.375rem] leading-[1.25] font-normal text-ink group-hover:text-accent-primary transition-colors text-balance">
-                    {p.data.title}
-                  </h3>
-                  {p.data.excerpt && (
-                    <p lang={foreign(p)} class="mt-2 font-prose text-[1rem] leading-[1.55] text-ink-muted line-clamp-3">{p.data.excerpt}</p>
-                  )}
-                </div>
-                {p.data.hero && (
-                  <Image
-                    src={p.data.hero}
-                    alt=""
-                    width={176}
-                    height={132}
-                    fit="cover"
-                    class="row-start-1 sm:row-start-auto w-full sm:w-[8.25rem] aspect-4/3 object-cover border border-rule grayscale-[35%] group-hover:grayscale-0 transition-[filter] duration-300"
-                    loading="lazy"
-                  />
-                )}
-              </a>
-            </li>
+      <nav aria-label={t.writing.sectionsLabel} class="mt-5">
+        <ul class="flex flex-wrap gap-x-5 gap-y-2 font-mono text-xs uppercase tracking-[0.04em]">
+          {sections.map((s) => (
+            <li><a href={`#${s.id}`} class="text-ink-muted hover:text-ink transition-colors">{s.label}</a></li>
           ))}
         </ul>
-      </section>
-    ))}
+      </nav>
+    </PageHeader>
 
-    {elsewhere.length > 0 && (
-      <section id="elsewhere" class="mt-20 scroll-mt-20" data-reveal>
-        <SectionHeading title={t.writing.elsewhereTitle} rule={false} />
-        <p class="mt-2 text-sm text-ink-muted">{t.writing.elsewhereLede}</p>
-        <ul class="mt-4">
-          {elsewhere.map((m) => <MediaItem item={m} lang={lang} />)}
-        </ul>
-      </section>
-    )}
+    <section id="posts" class="mt-12 scroll-mt-20" data-reveal>
+      <SectionHeading title={heading.posts} rule={false} />
+      <p class="mt-2 text-sm text-ink-muted">{t.writing.postsLede}</p>
+      {anyForeign && t.writing.languageNote && <p class="mt-2 meta">{t.writing.languageNote}</p>}
 
-    <section id="news" class="mt-20 scroll-mt-20" data-reveal>
-      <SectionHeading title={t.writing.newsTitle} rule={false} />
+      {[...byYear].map(([year, list]) => (
+        <section class="mt-8" aria-labelledby={`y-${year}`}>
+          <h3 id={`y-${year}`} class="meta text-[0.8125rem]">{year}</h3>
+          <ul class="mt-2">
+            {list.map((p) => (
+              <li class="py-6 border-t border-rule-soft first:border-t-0">
+                <a href={postUrl(p)} hreflang={foreign(p)} class="link-plain group grid gap-x-6 gap-y-3 sm:grid-cols-[1fr_auto] items-start">
+                  <div>
+                    <p class="meta flex gap-3">
+                      <time datetime={p.data.date.toISOString().slice(0, 10)}>{shortDate(p.data.date)}</time>
+                      <span>{t.writing.minRead(readingMinutes(p))}</span>
+                    </p>
+                    <h4 lang={foreign(p)} class="mt-1.5 font-display text-[1.375rem] leading-[1.25] font-normal text-ink group-hover:text-accent-primary transition-colors text-balance">
+                      {p.data.title}
+                    </h4>
+                    {p.data.excerpt && (
+                      <p lang={foreign(p)} class="mt-2 font-prose text-[1rem] leading-[1.55] text-ink-muted line-clamp-3">{p.data.excerpt}</p>
+                    )}
+                  </div>
+                  {p.data.hero && (
+                    <Image
+                      src={p.data.hero}
+                      alt=""
+                      width={176}
+                      height={132}
+                      fit="cover"
+                      class="row-start-1 sm:row-start-auto w-full sm:w-[8.25rem] aspect-4/3 object-cover border border-rule grayscale-[35%] group-hover:grayscale-0 transition-[filter] duration-300"
+                      loading="lazy"
+                    />
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </section>
+
+    <section id="videos" class="mt-16 scroll-mt-20" data-reveal>
+      <SectionHeading title={heading.videos} rule={false} />
+      <div class="mt-4 py-6 border-t border-rule-soft grid gap-x-6 gap-y-3 sm:grid-cols-[1fr_auto] items-start">
+        <div>
+          <h3 class="font-display text-[1.375rem] leading-[1.25] font-normal text-ink text-balance">
+            <a href={seriesWatchUrlFor(lang)} class="link-plain hover:text-accent-primary transition-colors">{seriesTitle}</a>
+          </h3>
+          <p lang={other} class="mt-0.5 font-prose italic text-[1rem] text-ink-muted">{seriesOtherTitle}</p>
+          <p class="mt-2 font-prose text-[1rem] leading-[1.55] text-ink-muted">{t.writing.videosLede}</p>
+          <ul class="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 font-mono text-xs">
+            {seriesLinks.map((l) => (
+              <li><a href={l.href} lang={l.lang} hreflang={l.lang}>{l.label}</a></li>
+            ))}
+          </ul>
+        </div>
+        <Image
+          src={lang === 'is' ? thumbIs : thumbEn}
+          alt=""
+          width={352}
+          height={198}
+          fit="cover"
+          class="row-start-1 sm:row-start-auto w-full sm:w-[11rem] aspect-video object-cover border border-rule"
+          loading="lazy"
+        />
+      </div>
+    </section>
+
+    <section id="media" class="mt-16 scroll-mt-20" data-reveal>
+      <SectionHeading title={heading.media} />
+      <p class="mt-3 text-ink-muted text-sm">{t.writing.mediaLede}</p>
+      <ul class="mt-4">
+        {recentMedia.map((m) => <MediaItem item={m} lang={lang} />)}
+      </ul>
+      {olderMedia.length > 0 && (
+        <details class="group mt-1 border-t border-rule-soft">
+          <summary class="cursor-pointer py-3 font-mono text-xs text-ink-muted hover:text-ink list-none">
+            <span class="group-open:hidden">{t.writing.showEarlier(olderMedia.length)}</span>
+            <span class="hidden group-open:inline">{t.writing.hideEarlier}</span>
+          </summary>
+          <ul>
+            {olderMedia.map((m) => <MediaItem item={m} lang={lang} />)}
+          </ul>
+        </details>
+      )}
+    </section>
+
+    <section id="talks" class="mt-16 scroll-mt-20" data-reveal>
+      <SectionHeading title={heading.talks} />
+      <p class="mt-3 text-ink-muted text-sm">
+        {t.writing.talksSummary(talks.length, talkYears.at(-1)!)}
+      </p>
+      {talkYears.map((y, i) => (
+        <details class="group mt-4 border-t border-rule" open={i < 2}>
+          <summary class="flex items-baseline justify-between cursor-pointer py-3 list-none">
+            <span class="font-display text-[1.125rem] text-ink">{y}</span>
+            <span class="meta">
+              {t.writing.talkCount(talksByYear.get(y)!.length)}
+              <span class="inline-block ml-1.5 transition-transform group-open:rotate-90" aria-hidden="true">›</span>
+            </span>
+          </summary>
+          <ul class="pb-2">
+            {talksByYear.get(y)!.map((talk) => <TalkItem {...talk} lang={lang} />)}
+          </ul>
+        </details>
+      ))}
+    </section>
+
+    <section id="news" class="mt-16 scroll-mt-20" data-reveal>
+      <SectionHeading title={heading.news} rule={false} />
       <p class="mt-2 text-sm text-ink-muted">{t.writing.newsLede}</p>
       <ul class="mt-5 list-none">
         {news.map((n) => <NewsItem {...n} />)}

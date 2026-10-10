@@ -1,5 +1,5 @@
 ---
-import { languages, localizePath, otherLang, switchHref, useTranslations, type Lang } from '~/i18n/utils';
+import { languages, localizePath, otherLang, outreachSections, switchHref, useTranslations, type Lang } from '~/i18n/utils';
 
 interface Props {
   lang?: Lang;
@@ -8,12 +8,18 @@ interface Props {
 }
 const { lang = 'en', switchTo } = Astro.props;
 const t = useTranslations(lang);
-const items = [
+interface Item {
+  href: string;
+  label: string;
+  /** Sections of the page, shown as a submenu (hover/keyboard on desktop, indented on mobile). */
+  children?: { href: string; label: string }[];
+}
+const items: Item[] = [
   { href: '/research/', label: t.nav.research },
   { href: '/publications/', label: t.nav.publications },
   { href: '/teaching/', label: t.nav.teaching },
   { href: '/group/', label: t.nav.group },
-  { href: '/writing/', label: t.nav.writing },
+  { href: '/writing/', label: t.nav.writing, children: outreachSections(lang) },
   { href: '/about/', label: t.nav.about }
 ].map((it) => ({ ...it, href: localizePath(it.href, lang) }));
 const here = Astro.url.pathname;
@@ -40,7 +46,7 @@ const otherHref = switchTo ?? switchHref(here);
          Type steps up and the CV button joins only once there is room. -->
     <ul class="hidden md:flex items-center gap-[clamp(0.75rem,1.5vw,1.625rem)] font-mono text-[0.71875rem] lg:text-[0.78125rem] uppercase tracking-[0.03em] lg:tracking-[0.04em]">
       {items.map((it) => (
-        <li>
+        <li class:list={[it.children && 'has-submenu relative']} data-submenu-parent={it.children ? '' : undefined}>
           <a
             href={it.href}
             aria-current={isActive(it.href) ? 'page' : undefined}
@@ -51,6 +57,24 @@ const otherHref = switchTo ?? switchHref(here);
                 : 'text-ink-muted hover:text-ink'
             ]}
           >{it.label}</a>
+          {/* Opens on hover (pointer devices only) or on keyboard focus of
+              the parent or a link inside; Escape dismisses it. The top
+              padding bridges the gap to the link, so the pointer can travel
+              down without the menu closing. */}
+          {it.children && (
+            <div class="submenu absolute left-0 top-full pt-5 z-30">
+              <ul class="min-w-[13.5rem] bg-bg border border-rule py-1.5 shadow-[0_8px_24px_-12px_rgb(0_0_0/0.18)]">
+                {it.children.map((c) => (
+                  <li>
+                    <a
+                      href={c.href}
+                      class="block px-4 py-2 whitespace-nowrap text-ink-muted hover:text-ink hover:bg-accent-primary-soft transition-colors"
+                    >{c.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </li>
       ))}
       <li class="hidden lg:block">
@@ -139,6 +163,20 @@ const otherHref = switchTo ?? switchHref(here);
                 )}
                 {it.label}
               </a>
+              {/* No hover on touch screens: the page's sections are listed
+                  under it, indented. */}
+              {it.children && (
+                <ul class="mb-1">
+                  {it.children.map((c) => (
+                    <li>
+                      <a
+                        href={c.href}
+                        class="flex items-center min-h-10 pl-9 pr-4 font-mono text-[0.75rem] uppercase tracking-[0.06em] text-ink-muted hover:text-ink hover:bg-accent-primary-soft transition-colors"
+                      >{c.label}</a>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </li>
           );
         })}
@@ -210,5 +248,54 @@ const otherHref = switchTo ?? switchHref(here);
     const mq = window.matchMedia('(min-width: 768px)');
     const onChange = (e) => { if (e.matches) setOpen(false); };
     mq.addEventListener ? mq.addEventListener('change', onChange) : mq.addListener(onChange);
+
+    /* Desktop submenu: Escape hides it and returns focus to its parent
+       link; it comes back once the pointer leaves or focus moves into it
+       again. Visibility itself is CSS (see <style> below). */
+    document.querySelectorAll('[data-submenu-parent]').forEach((li) => {
+      const parent = li.querySelector(':scope > a');
+      li.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        li.setAttribute('data-dismissed', '');
+        parent?.focus();
+      });
+      li.querySelectorAll('.submenu a').forEach((a) => {
+        a.addEventListener('focus', () => li.removeAttribute('data-dismissed'));
+      });
+      li.addEventListener('pointerleave', () => li.removeAttribute('data-dismissed'));
+      li.addEventListener('focusout', (e) => {
+        if (!li.contains(e.relatedTarget)) li.removeAttribute('data-dismissed');
+      });
+    });
   })();
 </script>
+
+<style>
+  .submenu {
+    opacity: 0;
+    pointer-events: none;
+    translate: 0 0.25rem;
+    transition: opacity 150ms ease-out, translate 150ms ease-out;
+  }
+  /* Hover only where hover exists: on a touch screen, a tap on the parent
+     should navigate, not first reveal a menu (iOS spends the tap on that). */
+  @media (hover: hover) {
+    .has-submenu:hover > .submenu {
+      opacity: 1;
+      pointer-events: auto;
+      translate: 0 0;
+    }
+  }
+  .has-submenu:has(:focus-visible) > .submenu {
+    opacity: 1;
+    pointer-events: auto;
+    translate: 0 0;
+  }
+  .has-submenu[data-dismissed] > .submenu {
+    opacity: 0;
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .submenu { transition: none; }
+  }
+</style>

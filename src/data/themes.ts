@@ -49,9 +49,9 @@ export const themes: ThemeText[] = [
     },
     heading: {
       en: 'Machine learning for the natural sciences',
-      is: 'Vélrænt nám í náttúruvísindum'
+      is: 'Vélnám í náttúruvísindum'
     },
-    tag: { en: 'Machine Learning · Natural Sciences', is: 'Vélrænt nám · náttúruvísindi' }
+    tag: { en: 'Machine Learning · Natural Sciences', is: 'Vélnám · náttúruvísindi' }
   },
   {
     code: 'clinical-ai',
@@ -77,7 +77,7 @@ export const themes: ThemeText[] = [
     },
     body: {
       en: 'Research-scientist position at Amgen deCODE. Genome-wide-association work on common conditions where the analysis intersects with NLP-style methods, including a Nature Communications paper on BMI-associated variants and disease risk.',
-      is: 'Starf mitt sem vísindamaður hjá Íslenskri erfðagreiningu. Víðtækar erfðamengisrannsóknir (GWAS) á algengum sjúkdómum þar sem greiningin skarast við aðferðir úr máltækni, meðal annars grein í Nature Communications um breytileika sem tengjast líkamsþyngdarstuðli og sjúkdómsáhættu.'
+      is: 'Starf mitt sem sérfræðingur hjá Íslenskri erfðagreiningu. Víðtækar erfðamengisrannsóknir (GWAS) á algengum sjúkdómum þar sem greiningin skarast við aðferðir úr máltækni, meðal annars grein í Nature Communications um breytileika sem tengjast líkamsþyngdarstuðli og sjúkdómsáhættu.'
     },
     heading: {
       en: 'Human genetics and computational biology',

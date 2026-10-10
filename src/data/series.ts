@@ -1,7 +1,7 @@
 /**
  * "Gæti gervigreindin grandað okkur?" / "Could AI destroy us?" — the
  * seven-episode explainer series on AI risk (October 2026). Used by the
- * homepage feature, the Research page and the making-of post.
+ * homepage feature, the Outreach page, About and the making-of post.
  *
  * Playlist URLs: leave a field undefined rather than guessing; every
  * consumer hides a link it doesn't have.

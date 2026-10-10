@@ -108,6 +108,20 @@ export function useTranslations(lang: Lang): Dict {
   return ui[lang];
 }
 
+/**
+ * The sections of the Outreach page (/writing/) in page order: its own
+ * "on this page" links and the nav's submenu both come from here, so the
+ * order and labels can't drift apart. The ids are the sections' anchors.
+ */
+export function outreachSections(lang: Lang) {
+  const labels = ui[lang].writing.sections;
+  return (Object.keys(labels) as (keyof typeof labels)[]).map((id) => ({
+    id,
+    label: labels[id],
+    href: localizePath(`/writing/#${id}`, lang)
+  }));
+}
+
 /** The Icelandic field when on an Icelandic page and it exists, else the English one. */
 export function pick<T>(lang: Lang, en: T, is: T | undefined): T {
   return lang === 'is' && is !== undefined && is !== null && is !== '' ? is : en;

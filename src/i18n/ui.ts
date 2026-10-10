@@ -33,7 +33,7 @@ const en = {
     publications: 'Publications',
     teaching: 'Teaching',
     group: 'Group',
-    writing: 'Writing',
+    writing: 'Outreach',
     about: 'About',
     cv: 'CV ↓',
     openMenu: 'Open navigation menu',
@@ -110,20 +110,13 @@ const en = {
   },
   research: {
     title: 'Research',
-    description: "Research themes, open-source projects, and talks by Hafsteinn Einarsson's group.",
-    lede: 'My group works across six themes. Below them are the datasets and models we have released, my public writing and interviews about AI, and talks.',
+    description: "Research themes and the open datasets and models of Hafsteinn Einarsson's group.",
+    lede: 'My group works across six research themes. Below is a short description of each, followed by the datasets and models we have released.',
     themes: 'Themes',
     relatedPubs: 'Related publications →',
     projects: 'Open-source projects',
     projectsIntro:
-      'Datasets, models, and tools released by the group. Most live on Hugging Face or GitHub; see the linked publication for context.',
-    media: 'In the media',
-    showEarlier: (n: number) => `Show ${n} earlier appearances`,
-    hideEarlier: 'Hide earlier appearances',
-    talks: 'Talks & outreach',
-    talksSummary: (n: number, since: number) =>
-      `${n} talks since ${since}, from research venues to schools, hospitals and professional associations.`,
-    talkCount: (n: number) => `${n} ${n === 1 ? 'talk' : 'talks'}`
+      'Datasets, models, and tools released by the group. Most live on Hugging Face or GitHub; see the linked publication for context.'
   },
   media: {
     types: {
@@ -218,28 +211,42 @@ const en = {
     },
     mainSupervisor: 'Main supervisor:'
   },
+  /* The /writing/ page: posts, the video series, media, talks and news.
+     `sections` also feeds the nav's submenu, in page order. */
   writing: {
-    title: 'Writing',
-    description: 'Notes on building things with AI, bootstrap percolation, and computational neuroscience.',
-    lede: 'Notes on things I build with AI, and the occasional detour into the maths of networks. The 2016 posts are from my PhD years.',
+    title: 'Outreach',
+    description: 'Blog posts, videos, media appearances and talks by Hafsteinn Einarsson.',
+    lede: 'Writing, videos, interviews and talks about my work and about AI.',
+    sectionsLabel: 'On this page',
+    sections: {
+      posts: 'Blog',
+      videos: 'Videos',
+      media: 'In the media',
+      talks: 'Talks',
+      news: 'News'
+    },
+    postsLede: 'Notes on things I build with AI, and the occasional detour into the maths of networks. The 2016 posts are from my PhD years.',
     minRead: (n: number) => `${n} min read`,
     /** Shown on pages whose posts are not in the page language. */
     languageNote: '',
-    newsJump: 'News and announcements',
-    elsewhereTitle: 'Elsewhere',
-    elsewhereLede: 'Op-eds and explainers I have written for other outlets, mostly in Icelandic.',
-    newsTitle: 'News',
+    videosLede: 'A seven-part explainer series on AI risk that I made in October 2026, in Icelandic and English.',
+    mediaLede: 'Interviews, op-eds and broadcasts, mostly in Icelandic and mostly about AI and society.',
+    showEarlier: (n: number) => `Show ${n} earlier appearances`,
+    hideEarlier: 'Hide earlier appearances',
+    talksSummary: (n: number, since: number) =>
+      `Since ${since} I have given ${n} talks at research venues, schools, healthcare institutions and professional associations.`,
+    talkCount: (n: number) => `${n} ${n === 1 ? 'talk' : 'talks'}`,
     newsLede: 'Papers, grants, talks and interviews, newest first. New posts are listed above.'
   },
   post: {
-    back: 'All writing',
+    back: 'All posts',
     older: 'Older',
     newer: 'Newer',
     references: 'References',
     tags: 'Tags',
     /** Shown on a translated post, linking to the original. */
     original: 'Originally written in English',
-    moreWriting: 'More writing',
+    moreWriting: 'More posts',
     author: 'Hafsteinn Einarsson'
   },
   about: {
@@ -275,7 +282,7 @@ export type Dict = typeof en;
 const is: Dict = {
   meta: {
     description:
-      'Hafsteinn Einarsson – dósent við Háskóla Íslands og vísindamaður hjá Íslenskri erfðagreiningu.',
+      'Hafsteinn Einarsson – dósent við Háskóla Íslands og sérfræðingur hjá Íslenskri erfðagreiningu.',
     skipToContent: 'Fara beint í efnið'
   },
   nav: {
@@ -283,7 +290,7 @@ const is: Dict = {
     publications: 'Ritaskrá',
     teaching: 'Kennsla',
     group: 'Hópurinn',
-    writing: 'Skrif',
+    writing: 'Miðlun',
     about: 'Um mig',
     cv: 'Ferilskrá ↓',
     openMenu: 'Opna valmynd',
@@ -296,7 +303,7 @@ const is: Dict = {
   },
   footer: {
     blurb:
-      'Rannsóknir í vélrænu námi við Háskóla Íslands og hjá Íslenskri erfðagreiningu: máltækni, tölvusjón, klínísk gervigreind og mannerfðafræði.',
+      'Rannsóknir í vélnámi við Háskóla Íslands og hjá Íslenskri erfðagreiningu: máltækni, tölvusjón, klínísk gervigreind og mannerfðafræði.',
     explore: 'Á síðunni',
     elsewhere: 'Annars staðar',
     sectionsLabel: 'Hlutar síðunnar',
@@ -304,10 +311,10 @@ const is: Dict = {
     downloadCv: 'Sækja ferilskrá (á ensku) ↓'
   },
   hero: {
-    eyebrow: 'Rannsóknir í vélrænu námi',
+    eyebrow: 'Rannsóknir í vélnámi',
     affiliation: [
       'Dósent og deildarforseti, Háskóli Íslands',
-      'Vísindamaður, Íslensk erfðagreining'
+      'Sérfræðingur, Íslensk erfðagreining'
     ],
     bioBefore:
       'Ég stýri rannsóknarhópi sem vinnur að máltækni fyrir íslensku og færeysku, auk verkefna í tölvusjón fyrir náttúruvísindi, klínískri gervigreind og mannerfðafræði. Ég fjalla líka mikið um gervigreind á opinberum vettvangi, nú síðast í ',
@@ -356,21 +363,13 @@ const is: Dict = {
   },
   research: {
     title: 'Rannsóknir',
-    description:
-      'Rannsóknarsvið, opin gögn og hugbúnaður, fjölmiðlaumfjöllun og erindi rannsóknarhóps Hafsteins Einarssonar.',
-    lede: 'Hópurinn minn vinnur á sex sviðum. Hér fyrir neðan eru líka gagnasöfnin og líkönin sem við höfum gefið út, greinar mínar og viðtöl um gervigreind og erindi sem ég hef haldið.',
+    description: 'Rannsóknarsvið, opin gögn og hugbúnaður rannsóknarhóps Hafsteins Einarssonar.',
+    lede: 'Hópurinn minn vinnur á sex rannsóknarsviðum. Hér fyrir neðan er stutt lýsing á hverju þeirra og yfirlit yfir þau gagnasöfn og líkön sem við höfum gefið út.',
     themes: 'Rannsóknarsvið',
     relatedPubs: 'Tengdar greinar →',
     projects: 'Opin gögn og hugbúnaður',
     projectsIntro:
-      'Gagnasöfn, líkön og tól sem hópurinn hefur gefið út. Flest eru á Hugging Face eða GitHub og nánar er fjallað um þau í tengdum greinum.',
-    media: 'Í fjölmiðlum',
-    showEarlier: (n: number) => `Sýna ${n} eldri viðtöl og greinar`,
-    hideEarlier: 'Fela eldri viðtöl og greinar',
-    talks: 'Erindi og kynningar',
-    talksSummary: (n: number, since: number) =>
-      `${n} erindi frá árinu ${since}, á vísindaráðstefnum, í skólum, á sjúkrahúsum og hjá fagfélögum.`,
-    talkCount: (n: number) => `${n} erindi`
+      'Gagnasöfn, líkön og tól sem hópurinn hefur gefið út. Flest eru á Hugging Face eða GitHub og nánar er fjallað um þau í tengdum greinum.'
   },
   media: {
     types: {
@@ -415,7 +414,7 @@ const is: Dict = {
     languageNote: 'Titlar eru á frummálinu.',
     authorship: 'Um röð höfunda',
     authorshipBody:
-      'Í máltækni og vélrænu námi er síðasti höfundur yfirleitt sá sem stýrir verkefninu og fyrsti höfundur sá sem vann verkið að mestu (oft nemandi sem ég leiðbeini). Í hjartalækningum, matvælafræði og mannerfðafræði hefur röðin aðra merkingu: þar er fyrsti höfundur yfirleitt sá sem leiðir rannsóknina og höfundar í miðjunni leggja til gögn, aðferðir eða greiningu.',
+      'Í máltækni og vélnámi er síðasti höfundur yfirleitt sá sem stýrir verkefninu og fyrsti höfundur sá sem vann verkið að mestu (oft nemandi sem ég leiðbeini). Í hjartalækningum, matvælafræði og mannerfðafræði hefur röðin aðra merkingu: þar er fyrsti höfundur yfirleitt sá sem leiðir rannsóknina og höfundar í miðjunni leggja til gögn, aðferðir eða greiningu.',
     selected: 'Valdar greinar',
     all: 'Allar greinar'
   },
@@ -464,26 +463,37 @@ const is: Dict = {
     mainSupervisor: 'Aðalleiðbeinandi:'
   },
   writing: {
-    title: 'Skrif',
-    description:
-      'Pistlar um að smíða hluti með gervigreind, bootstrap percolation og reiknileg taugavísindi.',
-    lede: 'Pistlar um það sem ég smíða með gervigreind og stöku útúrdúrar í stærðfræði neta. Færslurnar frá 2016 eru frá doktorsárunum.',
+    title: 'Miðlun',
+    description: 'Pistlar, myndbönd, fjölmiðlaumfjöllun og erindi Hafsteins Einarssonar.',
+    lede: 'Skrif, myndbönd, viðtöl og erindi um rannsóknir mínar og gervigreind.',
+    sectionsLabel: 'Á þessari síðu',
+    sections: {
+      posts: 'Pistlar',
+      videos: 'Myndbönd',
+      media: 'Í fjölmiðlum',
+      talks: 'Erindi og kynningar',
+      news: 'Fréttir'
+    },
+    postsLede: 'Hér skrifa ég um það sem ég smíða með gervigreind og fer stöku sinnum út í stærðfræði neta. Færslurnar frá 2016 eru frá doktorsárunum.',
     minRead: (n: number) => `${n} mín. lestur`,
     languageNote: 'Sumar færslur eru enn bara til á ensku.',
-    newsJump: 'Fréttir og tilkynningar',
-    elsewhereTitle: 'Annars staðar',
-    elsewhereLede: 'Pistlar og fræðsluefni sem ég hef skrifað fyrir aðra miðla.',
-    newsTitle: 'Fréttir',
+    videosLede: 'Sjö þátta fræðsluröð um áhættu af gervigreind sem ég gerði í október 2026, á íslensku og ensku.',
+    mediaLede: 'Viðtöl, aðsendar greinar og útvarps- og sjónvarpsþættir, flest um gervigreind og samfélagið.',
+    showEarlier: (n: number) => `Sýna ${n} eldri viðtöl og greinar`,
+    hideEarlier: 'Fela eldri viðtöl og greinar',
+    talksSummary: (n: number, since: number) =>
+      `Frá árinu ${since} hef ég haldið ${n} erindi á vísindaráðstefnum, í skólum, á heilbrigðisstofnunum og hjá fagfélögum.`,
+    talkCount: (n: number) => `${n} erindi`,
     newsLede: 'Greinar, styrkir, erindi og viðtöl, nýjast efst. Nýjar færslur eru taldar upp hér fyrir ofan.'
   },
   post: {
-    back: 'Öll skrif',
+    back: 'Allir pistlar',
     older: 'Eldri',
     newer: 'Nýrri',
     references: 'Heimildir',
     tags: 'Efnisorð',
     original: 'Upprunalega skrifað á ensku',
-    moreWriting: 'Fleiri skrif',
+    moreWriting: 'Fleiri pistlar',
     author: 'Hafsteinn Einarsson'
   },
   about: {
