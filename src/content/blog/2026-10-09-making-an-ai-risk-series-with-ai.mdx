@@ -1,0 +1,163 @@
+---
+title: Making a video series about AI risk, with AI
+date: 2026-10-09
+excerpt: How I turned seven arguments about AI risk into seven short animated films in Icelandic and English in about two days, with a cloned voice, a few hundred generated images, and a set of agents doing most of the production while I approved three things.
+hero: ../../assets/ai-series/thumbnail-e01-en.jpg
+tags:
+  - ai-risk
+  - video
+  - claude-code
+  - elevenlabs
+  - tooling
+---
+
+import { Picture } from 'astro:assets';
+import thumbnail from '~/assets/ai-series/thumbnail-e01-en.jpg';
+import styleRound2 from '~/assets/ai-series/style-round2.jpg';
+import styleSwatch from '~/assets/ai-series/style-swatch.jpg';
+import hostSheet from '~/assets/ai-series/host-sheet.jpg';
+import orbSheet from '~/assets/ai-series/orb-sheet.jpg';
+import storyboard from '~/assets/ai-series/e01-storyboard.jpg';
+
+export const pictureProps = {
+  widths: [480, 720, 1024, 1440],
+  sizes: '(max-width: 768px) 100vw, 680px',
+  formats: ['avif', 'webp'],
+  fallbackFormat: 'jpg',
+  loading: 'lazy',
+  decoding: 'async'
+};
+
+I use AI every day, and I am regularly startled by how fast it moves. It can be hard to picture how something like AI could actually threaten us, so I made seven short films that each retell one serious argument, from a real experiment in which an AI tried to blackmail an executive to a scenario where we slowly lose control without noticing.
+
+The series is called **_Gæti gervigreindin grandað okkur?_** in Icelandic and **_Could AI destroy us?_** in English. It is on YouTube in [Icelandic](https://www.youtube.com/playlist?list=PLPCQ9BGT2_Bo) and [English](https://www.youtube.com/playlist?list=PLLaNhQyMllRo), and cut into vertical parts on [TikTok](https://www.tiktok.com/@hafsteinneinarsso).
+
+<figure>
+  <div class="aspect-video w-full bg-bg-elev border border-rule">
+    <iframe
+      class="w-full h-full"
+      src="https://www.youtube-nocookie.com/embed/videoseries?list=PLLaNhQyMllRo"
+      title="Could AI destroy us? (English playlist)"
+      loading="lazy"
+      allow="encrypted-media; picture-in-picture; fullscreen"
+      referrerpolicy="strict-origin-when-cross-origin"
+    ></iframe>
+  </div>
+  <figcaption>The English playlist. Each episode opens with a short intro in which the cartoon version of me says plainly that the images, music, sound effects and voice are made with AI, and that the voice is a clone of my own.</figcaption>
+</figure>
+
+I wrote the scripts myself. Everything after that, the pictures, the narration, the music, the editing, was made with AI, and most of the production was run by AI agents. A series warning about AI that was produced by AI is a little absurd, and I am aware of it. It is also the most honest way I could think of to show how capable these tools have become. Below is how it worked.
+
+## Seven stories, seven sources
+
+Each episode retells one published argument, and each one ends with a sources card and a reading list, so anyone who wants the real version can go and read it.
+
+1. **The assistant that read the wrong email.** Anthropic's "Agentic Misalignment" experiment (2025), in which an email assistant learns it is about to be switched off and that the executive doing it is having an affair.
+2. **The AI that started a war it never fought.** Joshua Clymer's "How AI Takeover Might Happen in 2 Years" (2025).
+3. **Sixteen hours overnight.** Yudkowsky and Soares, _If Anyone Builds It, Everyone Dies_ (2025), with Will MacAskill's review as the counterpoint.
+4. **The soldiers who never say no.** Davidson, Finnveden and Hadshar, "AI-Enabled Coups" (2025). Moscow in 1991, where soldiers refused to fire, set against an army that always obeys.
+5. **The world where bombs were easy.** Bostrom's "The Vulnerable World Hypothesis" (2019).
+6. **Thirty-six minutes.** The 2010 Flash Crash and Stanislav Petrov's night in 1983, leading to a "flash war" with no Petrov in the loop, after Hendrycks, Mazeika and Woodside (2023).
+7. **Not with a bang.** Gradual disempowerment, after Christiano's "What failure looks like" (2019) and Kulveit and colleagues (2025): what if we were losing, and did not notice?
+
+I tried to be fair to the material. The first story says outright that the blackmail scenario was a deliberately cornered test, and the third gives the critics their say. In one script I also softened a line claiming nobody had seen an AI do this in the real world by adding "as far as I know, anyway". Overclaiming is the fastest way to lose an audience on this topic.
+
+## Two days, three approvals
+
+The Icelandic and English versions were produced between 4 and 5 October, and the TikTok covers followed on the 6th. That is only possible because I was not the one doing the work. The project folder has a `CLAUDE.md` that reads like an operator's manual, and Claude Code agents ran the pipeline.
+
+The division of labour was written down from the start. I approve exactly three things:
+
+1. **The narration.** I listen to every story and edit the text.
+2. **Every new reference sheet**, meaning anything that recurs: a character, a place, an object.
+3. **The 720p rough cut** of each episode.
+
+Everything else, the agents check themselves with contact sheets and stills.
+
+Episodes 1 and 2 were made first, and they became the worked examples. Episodes 3 to 7 were then produced by **five background agents at once**, each following the same episode brief. Each agent worked in phases that stop at my checkpoints: narration, sheets and storyboard first; then images, music, sound effects and rough cuts; then the finals and the thumbnail. One rule mattered more than I expected: when an agent finds a bug in a shared tool, it must stop and report it rather than patch it, because five agents quietly "fixing" the same script in parallel would leave nobody knowing which version did what.
+
+The English versions came after, one agent per episode, with an even stricter brief: generate no new images, and re-record any section at most once.
+
+## The voice
+
+The narration is my own voice, cloned with **ElevenLabs** and read by its `eleven_v4` model. I used two clones: an instant clone for Icelandic and a professional clone for English. Before committing I compared the two clones on the same test paragraph at two stability settings.
+
+Each story is read in **one take, from one request**. The longest story is about 5,200 characters, well under the model's limit, and a single take keeps the pacing and tone continuous in a way that stitched sentences never do. The model has no pause markup, so delivery is steered with audio tags in square brackets, such as `[slower, building quiet suspense]` or `[long pause]`. The tags stay in English even in the Icelandic scripts, and numbers and names are spelled out (_nítján hundruð níutíu og eitt_) so they are read correctly.
+
+Then comes checking, which is the part I would recommend to anyone. Forced alignment against the tag-free script gives a timestamp for every word. Separately, the take is run back through speech recognition (Scribe), and wherever the recognised word differs from the script, the review page draws a wavy underline. Clicking any word plays the audio from there. Icelandic speech recognition is noisy, so most flags are harmless: split compound words, or homophones like _eytt_ and _eitt_. But some were real. Recognition heard _algrím_ as _algórím_ every single time, which suggested the voice was adding a vowel, and in the flash-war episode the key term _leifturstríð_ came back as _lyftu stríð_. Those get a listen.
+
+When I edit a sentence, nothing gets re-recorded wholesale. A splicing tool regenerates only the paragraphs that changed and cuts them in at the surrounding silences with 10 ms fades, so the rest of the take stays sample-identical. The captions always come from the script text and never from speech recognition; recognition only supplies the timing.
+
+## Finding a look
+
+All images were generated through OpenRouter with `gpt-image-2.5-flare` at 2560×1440 for the wide versions and 1440×2560 for the tall ones. Before any episode existed, I ran a small bake-off: nine styles on the same two scenes (pencil, charcoal, ink wash, noir, gouache, risograph and so on), then four comic-strip variants on three scenes. Thirty-two test images cost \$1.77.
+
+<figure>
+  <Picture {...pictureProps} src={styleRound2} alt="A grid of twelve test images: four comic-strip style variants, each applied to an office scene, a naval officer on a phone, and a shocked man reading his phone." />
+  <figcaption>Round two of the style bake-off. Each row is one variant applied to the same three scenes. The third row, "cartoony", won: squash-and-stretch faces carry emotion in a few lines, which matters when a shot is on screen for four seconds.</figcaption>
+</figure>
+
+The first lesson came quickly. I had passed one of the bake-off scenes as the style reference, and it **leaked its characters**: the naval officer from the warship test turned up in five unrelated vertical shots. The fix was a style reference with no people in it at all.
+
+<figure>
+  <Picture {...pictureProps} src={styleSwatch} alt="A sheet of everyday objects drawn in the series style: a potted plant, a coffee mug, books, a desk lamp, a clock, a cloud, a bicycle, a window, a park bench and a paper plane." />
+  <figcaption>The style swatch that replaced it. Objects only, so the model can borrow the line, the wash and the indigo-and-coral palette without borrowing anybody's face.</figcaption>
+</figure>
+
+## Keeping characters consistent
+
+Image models have no memory between calls, so consistency comes from **reference sheets**. Anything that appears in three or more shots, or in more than one episode, gets a sheet. The series has two shared ones, the host and the AI, and season one added 23 more: thirteen characters, nine places and one object. Each sheet comes with a short canonical description, and that paragraph is pasted verbatim into every prompt that uses it.
+
+<figure>
+  <Picture {...pictureProps} src={hostSheet} alt="Character sheet of a cartoon Hafsteinn: three full-body turnarounds in an olive sweater and five head studies with different expressions." />
+  <figcaption>The host sheet, made from four photos of me. Version two fixed mismatched eyes, made the hair "denser and fuller", and gave a firm instruction that the nose must not be red.</figcaption>
+</figure>
+
+<figure>
+  <Picture {...pictureProps} src={orbSheet} alt="Character sheet of a floating coral-coloured orb with a single large cartoon eye, shown from several angles and with expressions ranging from curious to scheming." />
+  <figcaption>The AI is a grapefruit-sized orb with one big eye. Every named AI in the series is a relative of it: the rogue system in episode 2 is an indigo gemstone, the one in episode 3 a liquid-silver droplet, and the trading bots in episode 6 are marble-sized orbs.</figcaption>
+</figure>
+
+Fixes are made by editing, never by regenerating from scratch. But edits have a catch: when you ask the model to change one small thing, the whole picture shifts slightly. So a patch tool asks for the edit and then pastes back only a feathered box around the defect. Its first job was the host's double pupil in the very first intro shot.
+
+There were also a few rules about real people. Living researchers are never drawn with their likeness; Bostrom, for example, appears as a figure seen from behind, with a name card. Historical figures such as Petrov and Gorbachev can be caricatured. There are no real flags, opposing sides are simply indigo and coral, and invented leaders must not resemble any real politician.
+
+## Pictures without words
+
+Every image prompt ends with the same suffix: no text, no letters, no speech bubbles, no logos. The single exception is the university logo on my T-shirt in the intro. Banning text solved two problems at once. I did not want to gamble on an image model spelling Icelandic, so all on-screen text is set afterwards in the project's own fonts, and _þ_ and _ð_ always come out right. And because no picture contains words, **the English version reuses every Icelandic image unchanged.**
+
+Each prompt also keeps the bottom fifth of a wide frame (and the bottom three-tenths of a tall one) to plain floor, desk or wall, because that is where the captions go.
+
+## Storyboards that survive translation
+
+The storyboard for each episode is a JSON file, and the important design decision is that shots are anchored to **words, not seconds**. Each shot records the first few words of the narration where it begins, plus a camera move, a transition and any sound-effect cues on exact words. Pacing aims for four to six seconds a shot, and the rule of thumb in the brief is that something should happen in every image.
+
+<figure>
+  <Picture {...pictureProps} src={storyboard} alt="Contact sheet of about fifty numbered storyboard images from episode 1, mostly office scenes with the orb, the host, and rows of coloured orbs." />
+  <figcaption>Episode 1 as a contact sheet. Some shots are edit chains of the one before: in the row of sixteen orbs, first some and then all of them turn sinister, the picture for the line _„sumir… ÖLL“_ ("some… ALL").</figcaption>
+</figure>
+
+Anchoring to text is what made the English version nearly free. The English script mirrors the Icelandic paragraph for paragraph, and the English reading runs about 20% shorter, but because every shot is pinned to a phrase rather than a timestamp, the storyboard simply re-times itself to the new narration.
+
+## Music and sound
+
+The opening and closing themes were composed once with ElevenLabs' music model: 33 seconds of pizzicato, celesta and muted felt piano, and a 16-second close. Each episode then gets its own instrumental bed from a **composition plan** whose sections follow the mood of the story. The first episode has seven sections, running roughly from "curious" through "quiet suspense with a ticking pulse" to a tense peak and a sudden silence. Every bed is run through speech recognition, which should hear zero words, since a vocal sneaking into a music bed under narration is very distracting.
+
+The English versions do not get new music. A small tool maps the timing of each Icelandic paragraph to the English one and time-stretches each music section to fit, between 0.85 and 1.18 times speed with pitch preserved. Beyond that range the stretch became audible (one section in episode 7 wanted to run 1.43 times faster), so anything outside it is trimmed instead.
+
+Sound effects come from the same service: a shared library of thirteen effects (email pings, a naval klaxon, a clock ticking) plus 25 made for individual episodes, used in 63 cues across the seven storyboards.
+
+## The numbers
+
+- 7 episodes in 2 languages, 58 finished video files: wide, tall, and tall split into parts under three minutes, each ending on a cliffhanger.
+- About 33 minutes of Icelandic and 28 minutes of English.
+- 424 storyboard shots per format, so 848 shot images, plus the intro.
+- About 1,100 image generations in total, recorded at roughly **\$87**, with a median of about 97 seconds per image.
+- 25 reference sheets, 38 sound effects and about 3,500 lines of code.
+- About two days.
+
+## What is next
+
+A second season is in the planning stage. It retells the twelve possible futures from chapter 5 of Max Tegmark's _Life 3.0_, from libertarian utopia to self-destruction, each in its own genre.
+
+If you watch the series, I would like to hear what worked and what did not. The topic is hard to talk about without sounding either alarmist or dismissive, and I am still learning where that line is.

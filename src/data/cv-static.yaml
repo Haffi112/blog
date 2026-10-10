@@ -246,6 +246,42 @@ outreach:
     year: 2020
 
 media_appearances:
+  - date: 2026-10-05
+    title_is: "Hlaðvarp Kára Stef: Mun gervigreindin tortíma okkur eða bjarga?"
+    title_en: "Kári Stefánsson's podcast: will AI destroy us or save us?"
+    outlet: "mbl.is (Hlaðvarp Kára Stef)"
+    type: podcast
+    url: "https://www.mbl.is/frettir/taekni/2026/10/05/hladvarp_kara_stef_mun_gervigreindin_tortima_okkur_/"
+  - date: 2026-10-05
+    title_is: "Rauða borðið 5. okt: Efnahagsmál, SÁÁ, geðlyf, ofbeldi og gervigreind"
+    title_en: "The Red Table, 5 October: the economy, SÁÁ, psychiatric drugs, violence and AI"
+    outlet: "Samstöðin (Rauða borðið)"
+    type: podcast
+    url: "https://samstodin.simplecast.com/episodes/manudagur-5-oktober-efnahagsmal-saa-gelyf-ofbeldi-og-gervigreind-PA2jye_t"
+  - date: 2026-10-05
+    title_is: "Hvenær var fyrsta GPT-mállíkanið kynnt til sögunnar?"
+    title_en: "When was the first GPT language model introduced?"
+    outlet: "Vísindavefurinn"
+    type: explainer
+    url: "https://www.visindavefur.is/svar.php?id=89764"
+  - date: 2026-10-02
+    title_is: "Hvenær og hvar hófst þróun stórra mállíkana?"
+    title_en: "When and where did the development of large language models begin?"
+    outlet: "Vísindavefurinn"
+    type: explainer
+    url: "https://www.visindavefur.is/svar.php?id=89763"
+  - date: 2026-09-28
+    title_is: "Hvernig geta stór mállíkön leyst verkefni sem þeim hefur ekki verið kennt sérstaklega að leysa?"
+    title_en: "How can large language models solve tasks they were never specifically taught?"
+    outlet: "Vísindavefurinn"
+    type: explainer
+    url: "https://www.visindavefur.is/svar.php?id=89681"
+  - date: 2026-09-26
+    title_is: "Tortímir gervigreindin mannkyninu?"
+    title_en: "Will AI destroy humanity?"
+    outlet: "Vísir"
+    type: article
+    url: "https://www.visir.is/g/20262939056d/tor-timir-gervi-greindin-mann-kyninu-"
   - date: 2026-07-24
     title_is: "Skynet langt undan en íslensk stjórnvöld þurfa að vera undirbúin"
     title_en: "Skynet is a long way off, but Icelandic authorities need to be prepared"
@@ -258,6 +294,18 @@ media_appearances:
     outlet: "Vísir"
     type: opinion
     url: "https://www.visir.is/g/20262912397d/vid-thurfum-ekki-ad-kaupa-gervigreindarfullveldid-ad-utan"
+  - date: 2026-07-08
+    title_is: "Gervigreind notar oft ótraustar heimildir samkvæmt nýrri rannsókn"
+    title_en: "AI often relies on unreliable sources, a new study finds"
+    outlet: "Blaðamannafélag Íslands (press.is)"
+    type: article
+    url: "https://www.press.is/is/felagid-og-fagid/utgefid-efni/frettir/gervigreind-notar-oft-otraustar-heimildir-samkvaemt-nyrri-rannsokn"
+  - date: 2026-06-09
+    title_is: "Er hægt að treysta gervigreindinni í samtali um ESB?"
+    title_en: "Can AI be trusted in a conversation about the EU?"
+    outlet: "RÚV (Þetta helst)"
+    type: radio
+    url: "https://www.ruv.is/utvarp/spila/thetta-helst/33405/bjtrfa"
   - date: 2026-05-27
     title_is: "Utanríkisráðherra óttast „Brexit-augnablik“ í þjóðaratkvæðagreiðslu um ESB-aðild"
     title_en: "Iceland’s foreign minister fears ‘Brexit moment’ in EU accession referendum"
@@ -270,12 +318,6 @@ media_appearances:
     outlet: "Vísir"
     type: article
     url: "https://www.visir.is/g/20262877598d/gervigreindin-gaeti-haft-a-hrif-a-esb-atkvaedagreidsluna"
-  - date: 2026-04-15
-    title_is: "Kokkakonur, krakkfaraldur, Auddi Blö og gervigreindarmisskilningur"
-    title_en: "Female chefs, a kratom epidemic, Auddi Blö, and AI misconceptions"
-    outlet: "RÚV (Morgunútvarpið)"
-    type: radio
-    url: "https://www.ruv.is/utvarp/spila/morgunutvarpid/23822/bilic7"
   - date: 2026-04-08
     title_is: "Gífurlegir hagsmunir í húfi ef tæknin kemst í rangar hendur"
     title_en: "Enormous interests at stake if the technology falls into the wrong hands"
@@ -294,6 +336,12 @@ media_appearances:
     outlet: "Vísir (Bítið)"
     type: podcast
     url: "https://www.visir.is/k/8c00d615-796f-4b6d-91e0-0c162009358a-1765874624724/hefur-thu-sokkid-i-gervigreindarfen-"
+  - date: 2025-12-09
+    title_is: "Gervigreind er ekki gallalaus en hún er komin til að vera"
+    title_en: "AI is not flawless, but it is here to stay"
+    outlet: "Vísir (Bítið)"
+    type: radio
+    url: "https://www.visir.is/k/9118c4e1-9f65-43c4-a3a0-a75e3a667a48-1765268946463/gervigreind-er-ekki-gallalaus-en-hun-er-komin-til-ad-vera"
   - date: 2025-11-23
     title_is: "Stærsti þjófnaður allra tíma"
     title_en: "The largest theft of all time"
@@ -306,6 +354,12 @@ media_appearances:
     outlet: "Vísir"
     type: article
     url: "https://www.visir.is/g/20252797136d/getur-gervigreindarsmjadur-leitt-til-gervigreindargedrofs-"
+  - date: 2025-10-09
+    title_is: "Getur gervigreind skrifað greinar á Vísindavefnum?"
+    title_en: "Can AI write articles for the Science Web?"
+    outlet: "Vísindavefurinn"
+    type: video
+    url: "https://www.visindavefur.is/svar.php?id=88128"
   - date: 2025-09-26
     title_is: "Dauðakaffi, hvað býr að baki gervigreind? og það nýjasta úr heimi konungsfjölskyldna"
     title_en: "Death cafés, what is behind AI?, and the latest from the royal families"
@@ -318,12 +372,36 @@ media_appearances:
     outlet: "Vísir"
     type: livestream
     url: "https://www.visir.is/g/20252779177d/bein-utsending-gervigreind-og-visindamidlun"
+  - date: 2025-09-24
+    title_is: "Hvaða stærðfræði liggur að baki gervigreind?"
+    title_en: "What mathematics lies behind AI?"
+    outlet: "Vísindavefurinn"
+    type: explainer
+    url: "https://www.visindavefur.is/svar.php?id=87549"
   - date: 2025-09-14
     title_is: "Veit um fjögur sjálfsvíg tengd gervigreind"
     title_en: "Aware of four suicides linked to AI"
     outlet: "Vísir"
     type: article
     url: "https://www.visir.is/g/20252775406d/veit-um-fjogur-sjalfs-vig-tengd-gervi-greind"
+  - date: 2025-09-10
+    title_is: "Fjárlagafrumvarp, íslenska og kærleikur"
+    title_en: "The budget bill, Icelandic and kindness"
+    outlet: "RÚV (Morgunútvarpið)"
+    type: radio
+    url: "https://www.ruv.is/utvarp/spila/morgunutvarpid/23822/b7q95a"
+  - date: 2025-08-25
+    title_is: "Slor út um allt"
+    title_en: "Slop everywhere"
+    outlet: "RÚV (Lestin)"
+    type: radio
+    url: "https://www.ruv.is/utvarp/spila/lestin/23619/b72p5j"
+  - date: 2025-08-11
+    title_is: "ESB, meindýr og gervigreind"
+    title_en: "The EU, pests and AI"
+    outlet: "RÚV (Morgunútvarpið)"
+    type: radio
+    url: "https://www.ruv.is/utvarp/spila/morgunutvarpid/23822/b7q94k"
   - date: 2025-07-31
     title_is: "Óheppilegt ef fölsk mynd varpar sök á saklausan mann"
     title_en: "Unfortunate if a fake image casts blame on an innocent person"
@@ -336,18 +414,48 @@ media_appearances:
     outlet: "Vísir"
     type: article
     url: "https://www.visir.is/g/20252756082d/styttist-i-ha-throud-gervi-greindar-svindl-a-is-lensku"
+  - date: 2025-06-12
+    title_is: "LA, þingið og Grænland"
+    title_en: "Los Angeles, parliament and Greenland"
+    outlet: "RÚV (Morgunútvarpið)"
+    type: radio
+    url: "https://www.ruv.is/utvarp/spila/morgunutvarpid/23822/b7q949"
   - date: 2025-05-07
     title_is: "Kapphlaup gervigreindarinnar, Sérsveitin, velsæld o.fl."
     title_en: "The AI race, the special forces, well-being and more"
     outlet: "RÚV (Morgunútvarpið)"
     type: radio
     url: "https://www.ruv.is/utvarp/spila/morgunutvarpid/23822/b7q93h"
+  - date: 2025-04-11
+    title_is: "Ferðaþjónusta, gervigreind og málverkafalsanir"
+    title_en: "Tourism, AI and art forgeries"
+    outlet: "RÚV (Morgunútvarpið)"
+    type: radio
+    url: "https://www.ruv.is/utvarp/spila/morgunutvarpid/23822/b7q934"
+  - date: 2025-02-12
+    title_is: "Brimbretti, gervigreind og afbrot"
+    title_en: "Surfing, AI and crime"
+    outlet: "RÚV (Morgunútvarpið)"
+    type: radio
+    url: "https://www.ruv.is/utvarp/spila/morgunutvarpid/23822/b7q91q"
   - date: 2025-02-02
     title_is: "Vatnsnotkun gervigreindar áætluð allt að 6,6 milljarðar rúmmetra árið 2027"
     title_en: "AI water usage projected at up to 6.6 billion cubic metres by 2027"
     outlet: "RÚV"
     type: article
     url: "https://www.ruv.is/frettir/innlent/2025-02-02-vatnsnotkun-gervigreindar-aaetlud-allt-ad-66-milljardar-rummetra-arid-2027-434576"
+  - date: 2025-01-29
+    title_is: "Lykt á 19. öld, DeepSeek, svefn barna og fleira"
+    title_en: "Smells of the 19th century, DeepSeek, children's sleep and more"
+    outlet: "RÚV (Morgunútvarpið)"
+    type: radio
+    url: "https://www.ruv.is/utvarp/spila/morgunutvarpid/23822/b7q91g"
+  - date: 2025-01-21
+    title_is: "HM í handbolta, gervigreind og jöklar"
+    title_en: "The handball World Cup, AI and glaciers"
+    outlet: "RÚV (Morgunútvarpið)"
+    type: radio
+    url: "https://www.ruv.is/utvarp/spila/morgunutvarpid/23822/b7q91a"
   - date: 2024-10-03
     title_is: "Af fordómum gervigreindar, Gísla Marteini og því sem þú getur gert til að hafa áhrif!"
     title_en: "On AI prejudice, Gísli Marteinn, and what you can do to make an impact"
