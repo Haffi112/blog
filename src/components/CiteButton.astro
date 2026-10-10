@@ -1,0 +1,51 @@
+---
+import { useTranslations, type Lang } from '~/i18n/utils';
+
+/**
+ * "Cite" control for one publication: copies the entry's BibTeX to the
+ * clipboard and says so. Where the clipboard is unavailable (no JS, an
+ * insecure context, a denied permission) the BibTeX is revealed in a <pre>
+ * to select by hand — it is in the page either way.
+ */
+interface Props {
+  bibtex: string;
+  lang?: Lang;
+}
+const { bibtex, lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+---
+<div class="cite" data-cite>
+  <button
+    type="button"
+    class="font-mono text-xs text-ink-muted hover:text-accent-primary cursor-pointer"
+    data-cite-button
+    data-copied={t.pub.copied}
+    data-select={t.pub.select}
+    aria-live="polite"
+  >{t.pub.cite}</button>
+  <pre class="cite-source mt-2 p-3 bg-bg-elev border border-rule font-mono text-[0.71875rem] leading-[1.5] text-ink whitespace-pre-wrap break-all" hidden>{bibtex}</pre>
+</div>
+
+<script>
+  // Bundled once per page however many Cite buttons there are; a single
+  // delegated listener serves them all.
+  document.addEventListener('click', async (e) => {
+    const btn = (e.target as Element | null)?.closest<HTMLButtonElement>('[data-cite-button]');
+    const pre = btn?.closest('[data-cite]')?.querySelector<HTMLPreElement>('.cite-source');
+    if (!btn || !pre) return;
+    const label = (btn.dataset.label ??= btn.textContent ?? '');
+    try {
+      await navigator.clipboard.writeText((pre.textContent ?? '').trim());
+      btn.textContent = btn.dataset.copied ?? label;
+      setTimeout(() => (btn.textContent = label), 2200);
+    } catch {
+      pre.hidden = false;
+      btn.textContent = btn.dataset.select ?? label;
+      const range = document.createRange();
+      range.selectNodeContents(pre);
+      const sel = window.getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+    }
+  });
+</script>

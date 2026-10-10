@@ -115,6 +115,36 @@ export function parseBib(bibSource: string): RawEntry[] {
   }));
 }
 
+/**
+ * The source text of each entry, keyed by citation id, for the "Cite"
+ * button on the publications page. Entries are cut out by brace depth, so
+ * nested {…} in titles are fine; @string, @preamble and @comment blocks
+ * are skipped.
+ */
+export function extractBibtexSources(bibSource: string): Map<string, string> {
+  const out = new Map<string, string>();
+  const head = /@(\w+)\s*\{\s*([^,\s]+)\s*,/g;
+  let m: RegExpExecArray | null;
+  while ((m = head.exec(bibSource))) {
+    const type = m[1].toLowerCase();
+    if (type === 'string' || type === 'preamble' || type === 'comment') continue;
+    let depth = 0;
+    let end = -1;
+    for (let i = bibSource.indexOf('{', m.index); i < bibSource.length; i++) {
+      const c = bibSource[i];
+      if (c === '{') depth++;
+      else if (c === '}' && --depth === 0) {
+        end = i + 1;
+        break;
+      }
+    }
+    if (end === -1) break; // unbalanced: stop rather than swallow the rest
+    out.set(m[2], bibSource.slice(m.index, end).trim());
+    head.lastIndex = end;
+  }
+  return out;
+}
+
 function loadOverrides(): Record<string, Partial<Publication>> {
   if (!existsSync(OVERRIDES_PATH)) return {};
   const raw = readFileSync(OVERRIDES_PATH, 'utf8');
@@ -126,6 +156,7 @@ function merge(raw: RawEntry, overrides: Partial<Publication> = {}): Publication
     ...raw,
     theme: overrides.theme,
     summary: overrides.summary,
+    summary_is: overrides.summary_is,
     selected: overrides.selected ?? false,
     links: overrides.links ?? {},
     notes: overrides.notes
@@ -139,7 +170,11 @@ async function processBibFile(
 ) {
   const bibSource = readFileSync(bibPath, 'utf8');
   const raw = parseBib(bibSource);
-  const merged = raw.map((entry) => merge(entry, overrides[entry.id]));
+  const sources = extractBibtexSources(bibSource);
+  const merged = raw.map((entry) => ({
+    ...merge(entry, overrides[entry.id]),
+    bibtex: sources.get(entry.id)
+  }));
   merged.sort((a, b) => b.year - a.year || a.id.localeCompare(b.id));
   writeFileSync(outPath, JSON.stringify(merged, null, 2));
   console.log(`Wrote ${merged.length} publications to ${outPath}`);

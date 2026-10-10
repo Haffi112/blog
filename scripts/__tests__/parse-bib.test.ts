@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { parseBib } from '../parse-bib';
+import { extractBibtexSources, parseBib } from '../parse-bib';
 
 const FIXTURE = readFileSync(
   path.resolve(__dirname, '../fixtures/sample.bib'),
@@ -56,5 +56,35 @@ describe('parseBib', () => {
     const out = parseBib(FIXTURE);
     expect(out[1].authors[0].last).toBe('Einarsson');
     expect(out[1].authors[0].first).toMatch(/Hafsteinn/);
+  });
+});
+
+describe('extractBibtexSources', () => {
+  it('returns one source per entry, keyed by id', () => {
+    const sources = extractBibtexSources(FIXTURE);
+    expect([...sources.keys()]).toEqual(parseBib(FIXTURE).map((e) => e.id));
+  });
+
+  it('cuts each entry at its own closing brace', () => {
+    const src = extractBibtexSources(FIXTURE).get('snaebjarnarson2022warm')!;
+    expect(src.startsWith('@')).toBe(true);
+    expect(src.endsWith('}')).toBe(true);
+    expect(src.match(/@\w+\s*\{/g)).toHaveLength(1);
+  });
+
+  it('keeps nested braces and skips @string and @comment blocks', () => {
+    const bib = [
+      '@string{lrec = {LREC}}',
+      '@comment{ignore me}',
+      '@article{a1, title = {The {IceBERT} family}, year = {2022}}',
+      '@inproceedings{b2,',
+      '  title = {Second},',
+      '  year = {2023}',
+      '}'
+    ].join('\n');
+    const sources = extractBibtexSources(bib);
+    expect([...sources.keys()]).toEqual(['a1', 'b2']);
+    expect(sources.get('a1')).toBe('@article{a1, title = {The {IceBERT} family}, year = {2022}}');
+    expect(sources.get('b2')).toContain('year = {2023}');
   });
 });

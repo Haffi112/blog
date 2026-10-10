@@ -2,31 +2,34 @@
 import type { Publication } from '~/data/publications.schema';
 import { formatAuthor, isYou } from '~/lib/format-authors';
 import ThemeTag from './ThemeTag.astro';
+import CiteButton from './CiteButton.astro';
+import { fallbackLang, pick, useTranslations, type Lang } from '~/i18n/utils';
 
 interface Props {
   pub: Publication;
   variant?: 'selected' | 'list';
+  lang?: Lang;
 }
 
-const { pub, variant = 'list' } = Astro.props;
+const { pub, variant = 'list', lang = 'en' } = Astro.props;
 
-const linkOrder: Array<{ key: keyof Publication['links']; label: string }> = [
-  { key: 'doi', label: 'DOI' },
-  { key: 'arxiv', label: 'arXiv' },
-  { key: 'pdf', label: 'PDF' },
-  { key: 'code', label: 'Code' },
-  { key: 'huggingface', label: 'Hugging Face' },
-  { key: 'dataset', label: 'Dataset' }
-];
+const t = useTranslations(lang);
+const linkOrder: Array<keyof Publication['links']> = ['doi', 'arxiv', 'pdf', 'code', 'huggingface', 'dataset'];
 
-const links = linkOrder.filter((l) => pub.links?.[l.key]);
+const links = linkOrder
+  .filter((key) => pub.links?.[key])
+  .map((key) => ({ key, label: t.pub.links[key] }));
+/* The Icelandic summary on /is/ pages; the English one, marked as such,
+   if a publication has none yet. */
+const summary = pick(lang, pub.summary, pub.summary_is);
+const summaryLang = pub.summary ? fallbackLang(lang, pub.summary_is) : undefined;
 ---
 <article class:list={[
   variant === 'list' && 'py-5 border-t border-rule first:border-t-0',
   variant === 'selected' && 'border-l-2 border-accent-primary pl-5 md:pl-6 py-4 mb-7 last:mb-0'
 ]}>
   <div class="flex items-center gap-3 mb-2">
-    <ThemeTag theme={pub.theme} />
+    <ThemeTag theme={pub.theme} lang={lang} />
   </div>
   <h3 class="text-lg md:text-xl font-normal text-ink leading-[1.3]">
     {pub.title}
@@ -43,16 +46,17 @@ const links = linkOrder.filter((l) => pub.links?.[l.key]);
     {pub.venue && <span> · {pub.venue}</span>}
     {pub.year ? <span> · {pub.year}</span> : null}
   </p>
-  {pub.summary && (
-    <p class="mt-2.5 prose-body text-[1rem] leading-[1.6] text-ink-muted">{pub.summary}</p>
+  {summary && (
+    <p class="mt-2.5 prose-body text-[1rem] leading-[1.6] text-ink-muted" lang={summaryLang}>{summary}</p>
   )}
-  {links.length > 0 && (
-    <ul class="mt-3 flex flex-wrap gap-3.5">
+  {(links.length > 0 || pub.bibtex) && (
+    <ul class="mt-3 flex flex-wrap items-baseline gap-3.5">
       {links.map((l) => (
         <li>
           <a href={pub.links[l.key]} class="font-mono text-xs">{l.label} →</a>
         </li>
       ))}
+      {pub.bibtex && <li class="basis-full sm:basis-auto"><CiteButton bibtex={pub.bibtex} lang={lang} /></li>}
     </ul>
   )}
 </article>

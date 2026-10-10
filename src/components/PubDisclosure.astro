@@ -2,6 +2,8 @@
 import type { Publication } from '~/data/publications.schema';
 import { formatAuthor, isYou } from '~/lib/format-authors';
 import ThemeTag from './ThemeTag.astro';
+import CiteButton from './CiteButton.astro';
+import { fallbackLang, pick, useTranslations, type Lang } from '~/i18n/utils';
 
 /**
  * Selected-publication row as a disclosure: theme tag, serif title and an
@@ -11,26 +13,27 @@ import ThemeTag from './ThemeTag.astro';
  */
 interface Props {
   pub: Publication;
+  lang?: Lang;
 }
 
-const { pub } = Astro.props;
+const { pub, lang = 'en' } = Astro.props;
 
-const linkOrder: Array<{ key: keyof Publication['links']; label: string }> = [
-  { key: 'doi', label: 'DOI' },
-  { key: 'arxiv', label: 'arXiv' },
-  { key: 'pdf', label: 'PDF' },
-  { key: 'code', label: 'Code' },
-  { key: 'huggingface', label: 'Hugging Face' },
-  { key: 'dataset', label: 'Dataset' }
-];
+const t = useTranslations(lang);
+const linkOrder: Array<keyof Publication['links']> = ['doi', 'arxiv', 'pdf', 'code', 'huggingface', 'dataset'];
 
-const links = linkOrder.filter((l) => pub.links?.[l.key]);
+const links = linkOrder
+  .filter((key) => pub.links?.[key])
+  .map((key) => ({ key, label: t.pub.links[key] }));
+/* The Icelandic summary on /is/ pages; the English one, marked as such,
+   if a publication has none yet. */
+const summary = pick(lang, pub.summary, pub.summary_is);
+const summaryLang = pub.summary ? fallbackLang(lang, pub.summary_is) : undefined;
 const byline = [pub.venue, pub.year].filter(Boolean).join(' · ');
 ---
 <details class="pub-disclosure border-t border-rule-soft last:border-b last:border-b-rule-soft py-4">
   <summary class="grid grid-cols-[1fr_auto] items-start gap-x-4 gap-y-[0.4375rem] cursor-pointer list-none">
     <div class="col-start-1 flex flex-col gap-[0.4375rem]">
-      <ThemeTag theme={pub.theme} />
+      <ThemeTag theme={pub.theme} lang={lang} />
       <span class="pub-title font-display text-lg md:text-xl font-normal leading-[1.3] text-ink">
         {pub.title}
       </span>
@@ -50,17 +53,18 @@ const byline = [pub.venue, pub.year].filter(Boolean).join(' · ');
     <span class="pub-marker meta col-start-2 row-start-1 mt-1 select-none" aria-hidden="true">+</span>
   </summary>
 
-  {pub.summary && (
-    <p class="mt-3.5 prose-body text-[1rem] leading-[1.6] text-ink-muted">{pub.summary}</p>
+  {summary && (
+    <p class="mt-3.5 prose-body text-[1rem] leading-[1.6] text-ink-muted" lang={summaryLang}>{summary}</p>
   )}
 
-  {links.length > 0 && (
-    <ul class="mt-3 flex flex-wrap gap-3.5">
+  {(links.length > 0 || pub.bibtex) && (
+    <ul class="mt-3 flex flex-wrap items-baseline gap-3.5">
       {links.map((l) => (
         <li>
           <a href={pub.links[l.key]} class="font-mono text-xs">{l.label} →</a>
         </li>
       ))}
+      {pub.bibtex && <li class="basis-full sm:basis-auto"><CiteButton bibtex={pub.bibtex} lang={lang} /></li>}
     </ul>
   )}
 </details>
