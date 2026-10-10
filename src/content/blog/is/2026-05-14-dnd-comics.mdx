@@ -1,0 +1,245 @@
+---
+title: Upptökum af D&D-spilakvöldum breytt í myndasögur
+date: 2026-05-14
+excerpt: Lítið verkflæði sem tekur spilakvöld upp á Zoom H1 Essential, breytir íslenska hljóðinu í texta með ElevenLabs og teiknar hvert kvöld upp sem myndasögu með gpt-image-2 og safni viðmiðunarmynda sem halda persónunum eins milli síðna.
+hero: ../../../assets/dnd/page-01.png
+tags:
+  - dnd
+  - comics
+  - claude-code
+  - tooling
+---
+
+import { Picture } from 'astro:assets';
+import refParty from '~/assets/dnd/ref-party.png';
+import refBjarki from '~/assets/dnd/ref-bjarki.png';
+import refTrausti from '~/assets/dnd/ref-trausti.png';
+import page01 from '~/assets/dnd/page-01.png';
+import page08 from '~/assets/dnd/page-08.png';
+import page12 from '~/assets/dnd/page-12.png';
+
+export const pictureProps = {
+  widths: [480, 720, 1024, 1440],
+  sizes: '(max-width: 768px) 100vw, 680px',
+  formats: ['avif', 'webp'],
+  fallbackFormat: 'png',
+  loading: 'lazy',
+  decoding: 'async'
+};
+
+Ég spila í heimasmíðaðri **Birthright**-herferð á _íslensku_, með tveimur öðrum spilurum og stjórnanda (DM). Fyrir nokkrum vikum byrjaði ég að breyta hverju spilakvöldi í myndasögu á ensku. Uppsetningin er ekki flóknari en svo að ein færsla dugar til að lýsa henni.
+
+## Af hverju sérstakt upptökutæki
+
+Ég keypti mér **[Zoom H1 Essential](https://zoomcorp.com/en/us/handheld-recorders/handheld-recorders/h1essential/)** og hef það bara á borðinu á litlum þrífæti. Það má alveg nota síma, en síminn er í mörgu í einu. Um leið og maður fer að kíkja á hann, fletta upp reglu eða senda einhverjum skilaboð rekst maður í hljóðnemann eða snýr honum, og gæðin versna. Sérstakt tæki gerir bara eitt og fær að gera það í friði. Ég ýti á upptöku þegar spilakvöldið byrjar og læt það ganga til enda.
+
+## Íslensk talgreining sem virkar í alvöru
+
+Svo set ég hljóðið í gegnum [talgreininguna hjá ElevenLabs](https://elevenlabs.io/speech-to-text). Áður hafði ég prófað að láta Google Gemini búa til samantektir beint úr hljóðinu. Það er fínt í stutta tveggja mínútna samantekt, en á heilli 3–4 tíma upptöku týnist það einhvers staðar í miðjunni. Það er betra að hafa afrit til að vinna út frá.
+
+Afritið frá ElevenLabs er **vísbending**, ekki heilagur sannleikur. Ég var jú sjálfur á staðnum og mitt minni á að hafa síðasta orðið. En miðað við villutíðnina eins og hún er núna er afritið samt nokkuð traust heimild um allt sem gerist á einu spilakvöldi, sérstaklega um það í hvaða röð hlutirnir gerast.
+
+Sérnöfn eiga það til að brenglast, íslensk heiti á kynþáttum í Birthright eins og `rjúfi` eða `anúri` geta komið út sem bull, og nöfn spilapersónanna okkar flakka á milli þriggja eða fjögurra stafsetninga. En uppbygging hverrar senu heldur sér.
+
+## Afrit → myndasöguhandrit
+
+Hér kemur Claude Code inn. Verkflæðið lítur svona út:
+
+1. **Lesa allt afritið.** Stór hluti þess er spjall utan leiks (pólitík, ræktin og hver ætlar að hella upp á kaffi). Það er allt skorið burt. Eftir stendur sagan eins og hún gerðist inni í leiknum.
+2. **Gera yfirlit yfir síðurnar.** Númeraður listi af síðum, ein lína á hverja síðu. Ég samþykki yfirlitið áður en nokkur síða er skrifuð.
+3. **Skrifa eina síðu í einu.** Hver síða er brotin niður í ramma með samtölum, skýringartextum, hljóðorðum og stundum lítilli chibi-mynd af stjórnandanum á spássíunni. Ég fer yfir hverja síðu og laga hana áður en sú næsta er skrifuð. Það er yfirleitt ekki mikil vinna en sparar mikið fram og til baka seinna.
+4. **Búa til myndirnar.** Eitt Python-fall les myndasöguhandritið, sækir réttu viðmiðunarmyndirnar og kallar á `gpt-image-2` fyrir hverja síðu.
+
+Ég þarf að taka eina síðu í einu af því að afritið segir sjaldnast **hver gerði hvað.** Þegar við spilum segjum við yfirleitt ekki „Bjarki kastar eldkúlu“. Oftar öskrar einhver bara „eldkúla!“ og ElevenLabs er ekki endilega með það á hreinu hver sagði það. Bara ég man að það var Bjarki sem kastaði eldkúlunni[^attribution]. Þegar ég fer yfir hverja síðu næ ég svona villum snemma, áður en búin er til ný mynd sem þarf svo að henda.
+
+[^attribution]: Ég gæti að vísu breytt spilastílnum mínum og farið oftar að lýsa því sem ég geri í þriðju persónu, en það yrði líklega skrýtið og drægi úr innlifuninni í leiknum.
+
+## Viðmiðunarmyndir halda persónunum eins
+
+`gpt-image-2` býr til fína ramma, en líkanið hefur ekkert minni og man ekkert frá síðasta kalli. Samræmið kemur úr viðmiðunarmyndunum sem fylgja hverju kalli. Hver spilapersóna, og allar aukapersónur sem koma oftar en einu sinni fyrir í sögunni, fá sitt eigið **persónublað**.
+
+<figure>
+  <Picture {...pictureProps} src={refParty} alt="Viðmiðunarmynd af hópnum: Skarphéðinn, Bjarki með íkornann Pú á öxlinni og Brand, teiknuð sem persónublað með merkingum." />
+  <figcaption>Viðmiðunarmyndin <code>_party</code>: merkt uppstilling af spilapersónunum þremur og íkornanum Pú. Líkanið tekur við allt að sextán viðmiðunarmyndum í hverju kalli, svo þrjár stakar myndir kæmust alveg fyrir. En ein samsett uppstilling heldur hlutföllum, litum og útlínum betur saman en þrjár stakar myndir sem togast á um myndbygginguna, og sparar auk þess aðeins af inntakstókum.</figcaption>
+</figure>
+
+<figure>
+  <Picture {...pictureProps} src={refBjarki} alt="Persónublað fyrir Bjarka, með mynd af honum í fullri stærð, höfðinu frá nokkrum hliðum og merkingum á helsta búnaðinum hans." />
+  <figcaption>Viðmiðunarmynd fyrir eina spilapersónu. Andlitið frá nokkrum sjónarhornum og öll persónan í fullri stærð gefa líkaninu nóg til að teikna sömu manneskjuna í hvaða stellingu sem er án þess að hún fari að breytast.</figcaption>
+</figure>
+
+Aukapersónur fá sömu meðferð. Hér fyrir neðan er Trausti van Gilt, nemi á öðru ári sem fiktar við speglagaldur og birtist seinna á spilakvöldinu.
+
+<figure>
+  <Picture {...pictureProps} src={refTrausti} alt="Persónublað fyrir Trausta van Gilt, með mynd í fullri stærð, andlitsmynd á ská og silfurspeglinum sem hann ber alltaf um hálsinn." />
+  <figcaption>Persónublað fyrir aukapersónu. Um leið og viðmiðunarmynd af Trausta er komin á diskinn tekur hver síða sem nefnir hann í <code>NPCS_ON_PAGE</code> hana sjálfkrafa með, og andlitið á honum helst eins milli ramma.</figcaption>
+</figure>
+
+Síðugerðin fer eftir myndasöguhandritinu. Á hverri síðu kemur fram hvaða persónur eru á henni (`CHARACTERS_ON_PAGE: _party`, `NPCS_ON_PAGE: trausti`) og forritið notar það til að velja réttu PNG-myndirnar af disknum. Ef persóna tekur upp hlut sem sést eða fær sýnilegan áverka sem helst yfir nokkrar síður býr kerfið til aukaviðmiðunarmynd út frá aðalmyndinni (t.d. `bjarki_wounded`) og notar hana þar til ástandið er gengið yfir.
+
+## Hvernig síðurnar líta út
+
+Fyrsta síðan frá fjórða spilakvöldinu er þögul opnunarmynd. Hópurinn hvílir sig í inngangi galdradýflissunnar, sem lokast sjálfkrafa sex dögum eftir að hún var opnuð. Íkorninn Pú situr á öxlinni á Bjarka. Guli textinn segir hvar myndin gerist, kassinn sem líkist bókfelli með d20-merkinu er rödd stjórnandans, og litla chibi-teikningin á milli rammanna eru athugasemdir sem stjórnandinn skaut inn á meðan við spiluðum.
+
+<figure>
+  <Picture {...pictureProps} src={page01} alt="Myndasögusíða: þrír ævintýramenn og íkorni sitja við ljóskerabirtu inni í dýflissu. Skýringartextar segja að þetta sé dagur tvö af fjórum." />
+  <figcaption>Síða 1 frá spilakvöldinu 5. maí. Fjórar tegundir texta (talblaðra, gulur skýringarkassi, bókfellskassi með frásögn stjórnandans og chibi-krot af stjórnandanum með bláum penna) fá hver sitt útlit. Það er skilgreint einu sinni í stílleiðbeiningum sem er sjálfkrafa bætt framan við fyrirmælin fyrir hverja síðu.</figcaption>
+</figure>
+
+Háværari síða frá sama kvöldi. Skarphéðinn kastar flösku af gullgerðareldi inn í herbergi fullt af risaköngulóm, stjórnandinn hvíslar „There were two. There is one.“ á spássíunni og rammarnir fá að anda.
+
+<figure>
+  <Picture {...pictureProps} src={page08} alt="Myndasögusíða: persóna kastar flösku af gullgerðareldi inn í herbergi fullt af köngulóm. Stórt hljóðorð: FWOOOM!" />
+  <figcaption>Hljóðorðin eru felld inn í sjálfa myndina. Stóri miðramminn er viljandi breiðari en hinir. Þegar yfirlitið gefur einu augnabliki heila síðu læt ég háværasta rammann fá mest af plássinu.</figcaption>
+</figure>
+
+Gátusíða undir lokin. Hópurinn kemur inn í herbergi fullt af speglahlutum og áttar sig á því að kveðjugjöf dýflissunnar er sá hversdagslegi hlutur sem á sér samsvörun í einni af silfureftirmyndunum.
+
+<figure>
+  <Picture {...pictureProps} src={page12} alt="Myndasögusíða: hópurinn skoðar speglahluti í hvelfingu, meðal annars silfurstyttu af hundi. Íkorninn Pú fylgist með af öxlinni á Bjarka." />
+  <figcaption>Samfellu milli síðna er haldið með því að láta eina eða tvær síður sem þegar eru tilbúnar fylgja með sem viðbótarviðmið þegar ný síða er búin til. Líkaninu er sagt að nota þær <em>eingöngu</em> fyrir lýsingu og útlit textans, aldrei fyrir uppsetningu eða myndbyggingu.</figcaption>
+</figure>
+
+## Hvar þetta klikkar og hvað ég geri í því
+
+Nokkrir staðir þar sem þetta hefur raunverulega klikkað:
+
+- **Síurnar bregðast við orðum tengdum warlock-klassanum.** „Pact“, „patron“ og jafnvel „Hex“ duga til að síðunni sé hafnað. Ef „Hex“ kemur fyrir ásamt mynd af lifandi manneskju má búast við tafarlausri höfnun og að síðan læsist. Ég set „bargain“ í stað „Pact“, „mentor“ í stað „Patron“ og „magical curse“ í stað „Hex“. Högg sem fer „through“ líkamann er stoppað, en „across“ sleppur í gegn ef ekkert blóð eða sár fylgja.
+- **Spilapersónur sem líkjast hver annarri skipta um stað.** Tvær skeggjaðar persónur í skikkjum skiptust á hlutverkum frá einni síðu til annarrar, alveg þar til ég lét hvern ramma tilgreina sérstaklega hvaða persónur eru *í þeim ramma*. Þess vegna bætti ég við sviðinu `CHARACTERS IN FRAME` fyrir hvern ramma.
+- **Stjórnandinn er aldrei inni í ramma.** Stjórnandinn er sögumaður sem er eingöngu á spássíunni og í frásagnarkössunum. Engar undantekningar, hann tekur ekki þátt í atburðunum. Chibi-viðmiðunarmyndin fylgir sjálfkrafa með þegar fyrirmælin innihalda spássíukrot.
+
+## Hvert ég stefni með þetta
+
+Eins og er nota ég þetta til að gera **samantekt** á hverju spilakvöldi. Ég fæ 16 síðna yfirlit yfir það sem gerðist, það fer inn á hópspjallið okkar fyrir næsta kvöld og hjálpar okkur að muna hvar við vorum stödd. Með smá tíma mætti gera úr þessu alvöru myndasögubók og gefa hana út, en það er ekki það sem ég er að sækjast eftir. Markmiðið er að eiga eftirminnilega heimild um spilakvöldin sem er skemmtilegra að lesa en afritið.
+
+## Skill-ið, ef þú vilt fara sömu leið
+
+Hér er stytt útgáfa af `CLAUDE.md` úr verkefninu mínu. Endurnefndu hana bara `SKILL.md`, settu hana í nýja möppu með svipaðri uppbyggingu og hér fyrir neðan, og þá geturðu byrjað! Skráin sjálf er á ensku, enda er hún hugsuð til að afrita beint.
+
+````markdown
+---
+name: session-to-comic
+description: Turn a recorded TTRPG session into a graphic-novel comic. Use when a new YYYY_MM_DD/ folder appears with a script.txt transcript. Reconciles cast, drafts a page-by-page script with per-page approval, and generates final pages with gpt-image-2.
+---
+
+# Session-to-comic pipeline
+
+## Project layout
+
+```
+project/
+├── characters/<slug>/profile.md       # PCs and DM, with REF_LABELS section
+├── characters/<slug>/refs/ref_main.png
+├── characters/_party/refs/ref_main.png  # composed group lineup
+├── npcs/<slug>/profile.md             # in-world recurring NPCs
+├── npcs/<slug>/refs/ref_main.png
+├── world/style_guide.md               # canonical visual style + lettering spec
+├── generate_image.py                  # CLI: character | npc | chibi | page
+└── YYYY_MM_DD/
+    ├── script.txt                     # raw STT (the only required input)
+    ├── comic_script.txt               # produced by this skill
+    └── pages/page_NN.png              # produced by this skill
+```
+
+## Working principles, read first
+
+The user was actually present at the session. The transcript is noisy and
+loses attribution and location. The user's memory is authoritative; the
+transcript is a hint.
+
+- **Ask, don't invent.** When the transcript is ambiguous about who, where,
+  what, or how, ask one short question before resolving the ambiguity.
+- **Be explicit about what you are leaving out.** In every page outline,
+  list in-character beats you are deliberately omitting (out-of-character
+  chitchat doesn't count).
+- **Get per-page approval before drafting the next page** by default. Offer
+  the user the option to switch to "draft all the way through" once page 1
+  is approved.
+- **Surface uncertainty as a question, not a guess.**
+
+## Workflow
+
+1. **Read the entire transcript.** Identify only the in-character story beats.
+2. **Reconcile cast state.** Update each PC's `profile.md` for new items,
+   visible wounds, session changelog. Regenerate any ref whose appearance
+   changed, then regenerate the `_party` group ref.
+3. **Identify and create new NPCs.** Any named NPC with more than a passing
+   mention gets `npcs/<slug>/profile.md` with a REF_LABELS section, plus a
+   generated ref.
+4. **Write `comic_script.txt`.**
+   - **Gate 4a:** propose a page outline (numbered list, one line per page,
+     plus list of omitted beats). Wait for approval.
+   - **Gate 4b:** ask whether to draft page-by-page or all the way through.
+     Default to page-by-page for page 1, then offer the choice.
+   - Each panel declares `CHARACTERS IN FRAME` with a one-line visual
+     reminder per character. Without this, similar-looking PCs swap
+     identities between panels.
+5. **Final review.** Present the full `comic_script.txt` and any new refs.
+   Wait for an explicit "go ahead, generate"; per-page drafting approval
+   does not imply image-generation approval.
+6. **Generate every page** in script order (not parallel), so each page can
+   chain the previous one or two as continuity references. Run in the
+   background, monitor for errors, retry moderation failures with the
+   substitutions below.
+
+## Page format
+
+```
+=== PAGE N ===
+CHARACTERS_ON_PAGE: _party
+NPCS_ON_PAGE: <slug>, <slug>
+
+PROMPT: <one-sentence framing for the whole page>
+
+PANEL N (size, position):
+  CHARACTERS IN FRAME: <slug (visual reminder)>, <slug (visual reminder)>
+  SCENE: <action and composition>
+  CAPTION: "<terse scene-setting, yellow box>"
+  DM NARRATION: "<world-lore narrator voice, parchment box>"
+  CHARACTER_NAME: "<dialogue, speech bubble>"
+  SFX: "<sound effect, integrated into art>"
+
+DM MARGIN DOODLE (between panels X and Y): "<chibi DM + handwriting>"
+```
+
+## Moderation substitutions (apply before the first attempt)
+
+| Don't write | Use instead |
+|---|---|
+| Molotov, firebomb, rag-wick | "alchemical fire-flask," "alchemical fuse" |
+| Patron, pact, Hex, Invoke Doom | "old mentor," "old bargain," "three new spells" |
+| Pact weapon | "summoned blade" |
+| Anatomical pierce-through (sword through head, etc.) | Clean stylized across-body strike; add "no gore, no blood, no anatomical detail of the strike itself" |
+
+When a real photo is attached as character-ref input, frame the prompt as
+"an artist's character design sheet for a tabletop role-playing game" and
+treat the photo as "loose inspiration." Never combine a real photo with
+warlock-class language in the same prompt.
+
+## Commands
+
+```bash
+python3 generate_image.py character --name <slug> [--force]
+python3 generate_image.py npc       --name <slug> [--force]
+python3 generate_image.py chibi     --name <slug> [--force]
+python3 generate_image.py character --name _party --force
+python3 generate_image.py page      --session YYYY_MM_DD --page N [--force]
+```
+````
+
+Forritið `generate_image.py` sjálft er stutt, um 600 línur af Python sem bætir stílleiðbeiningunum framan við fyrirmælin, velur viðmiðunarmyndir af disknum eftir því hvaða persónur eru skráðar á síðuna og sendir allt á OpenAI Images API. Það er auðvelt að endurgera það út frá API-lýsingunni hjá OpenAI.
+
+## Hvernig á að vísa í þetta
+
+Ef þessi lýsing hjálpar þér að setja upp eitthvað svipað og þú vilt geta hennar einhvers staðar:
+
+```bibtex
+@misc{einarsson2026dndcomics,
+  author       = {Einarsson, Hafsteinn},
+  title        = {Turning recorded {D\&D} sessions into comics},
+  year         = {2026},
+  month        = may,
+  howpublished = {Blog post},
+  url          = {https://hafst1.is/2026/05/14/dnd-comics/}
+}
+```

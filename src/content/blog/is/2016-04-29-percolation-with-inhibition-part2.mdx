@@ -1,0 +1,119 @@
+---
+title: Percolation með hömlun – 2. hluti
+date: 2016-04-29
+excerpt: Percolation með hömlun sett fram sem Markov-keðja á mætti eins hnúts, með gagnvirkri D3-mynd af keðjunni, stuðlariti yfir stöðvunartíma og jafnóðum uppfærðu mati á líkunum á virkjun.
+cited: []
+---
+
+import 'katex/dist/katex.min.css';
+import Simulation from '~/components/Simulation.astro';
+
+Þetta er annar hluti greinaraðarinnar um percolation með hömlun. Ef þú hefur
+ekki lesið fyrsta hlutann finnurðu hann [hér](/is/2016/04/25/percolation-with-inhibition/).
+
+Í þessari færslu reynum við að fá tilfinningu fyrir því hversu margir hnútar
+verða á endanum virkir í ferlinu. Gerum ráð fyrir að hnútarnir séu $n$
+talsins, að $n^+$ þeirra sendi jákvæð skilaboð og að $n^-$ þeirra sendi
+neikvæð skilaboð.
+
+Tökum fyrir einn ákveðinn hnút í netinu. Við getum gert ráð fyrir að hann
+viti ekki hvort nágrannar hans eru jákvæðir eða neikvæðir. Þar sem hann fær í
+mesta lagi ein skilaboð frá hverjum nágranna getum við litið svo á að hver
+skilaboð séu, óháð hinum, jákvæð með líkum $n^+/n$ og neikvæð með líkum
+$n^-/n$. Strangt til tekið eru þessir atburðir ekki óháðir, en tengslin milli
+þeirra eru veik, svo það er í lagi að gera ráð fyrir því til að fá tilfinningu
+fyrir ferlinu.
+
+Þá getum við lýst ferlinu sem Markov-keðju. Ef þú þekkir ekki Markov-keðjur
+er til fín myndræn útskýring á þeim
+[hér](http://setosa.io/blog/2014/07/26/markov-chains/). Markov-keðjan okkar
+hefur *óendanlega* mörg ástönd, og þau tákna mætti þessa eina hnúts sem við
+erum að skoða. Ástöndin eru gefin með menginu
+$\{\ldots,-2,-1,0,1,2,\ldots,K\}$ og svara til gildisins á mætti hnútsins.
+Eins og allir hnútar sem eru ekki virkir í upphafi byrjar hann með mættið í
+ástandi 0, og ferlið getur aðeins stöðvast ef hann nær einhvern tíma ástandi
+$K$. Umskiptalíkurnar eru líkurnar á því að mættið hækki eða lækki, eins og
+lýst var í efnisgreininni hér á undan.
+
+Hér fyrir neðan er gagnvirk útgáfa af ferlinu. Sjálfslykkjan á ástandi $K$
+sýnir að það er gleypiástand. Þar sem ekki er pláss fyrir óendanlega mörg
+ástönd stendur ástandið lengst til vinstri fyrir öll ástönd sem eru $-K$ eða
+minni. Þú getur ímyndað þér að keðjan haldi endalaust áfram til vinstri. Auk
+þess endurræsum við ferlið ef því er ekki lokið eftir 10 skref (þú getur
+breytt þeirri tölu hér fyrir neðan). Ef $n^-<n^+$ ætti ferlið alltaf að ná
+$K$ að lokum, séu skrefin nógu mörg. Ef $n^- > n^+$ er hins vegar rek til
+vinstri. Það þýðir að ef mættið verður of lítið eru litlar sem engar líkur á
+að það nái sér aftur á strik. Prófaðu til dæmis að velja $n^- = 100$ og
+$n^+ = 50$.
+
+<Simulation
+  label="Gagnvirk hermun"
+  scripts={['/js/d3/d3.min.js', '/js/percolation_inhibition_part2.js']}
+  styles={['/css/markov.css']}
+  needsJquery={false}
+>
+  <div id="chain"></div>
+
+  <form onsubmit="change_params(); return false;" style="margin-bottom:20px">
+    <input type="button" value="Uppfæra stika" onclick="change_params()" />
+    <table style="max-width: 720px; font-size:75%; margin-bottom:10px">
+      <tr>
+        <td>
+          <label for="nodeCount">Fjöldi jákvæðra hnúta</label>
+        </td>
+        <td>
+          <input id="nodeCount" type="text" value="50" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="inodeCount">Fjöldi neikvæðra hnúta </label>
+        </td>
+        <td>
+          <input id="inodeCount" type="text" value="50" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="maximumSteps">Hámarksfjöldi skrefa</label>
+        </td>
+        <td>
+          <input id="maximumSteps" type="text" value="10" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="kPerc">Virkjunarþröskuldur (<i>K</i>)</label>
+        </td>
+        <td>
+          <input id="kPerc" type="text" value="2" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="delay">Hraði hreyfimyndar í ms (lægri tala er hraðari)</label>
+        </td>
+        <td>
+          <input id="delay" type="text" value="50" style="width: 50px;" />
+        </td>
+      </tr>
+    </table>
+  </form>
+
+  Hér fyrir neðan má sjá tölfræði úr hermunum á Markov-keðjunni.
+  Stuðlaritið sýnir eftir hve mörg skref mættið náði $K$. Taktu eftir því
+  að þegar $n^-\gg n^+$ er líklegast að ferlið fari beint upp í $K$.
+
+  <div id="hist"></div>
+
+  Ritið hér fyrir neðan sýnir hve stór hluti allra hermananna nær $K$ innan
+  gefins fjölda skrefa. Þú getur notað það til að meta hve stór hluti
+  hnútanna verður virkur í bootstrap percolation-ferlinu. Stilltu bara
+  hámarksfjölda skrefa í Markov-keðjunni á meðalgráðu netsins.
+
+  Þegar þú ýtir á hnappinn *Uppfæra stika* hefst ný hermun og nýr
+  ferill er teiknaður. Sá gamli hverfur þó ekki, svo þú getur borið saman
+  mismunandi stika.
+
+  <div id="stats"></div>
+</Simulation>

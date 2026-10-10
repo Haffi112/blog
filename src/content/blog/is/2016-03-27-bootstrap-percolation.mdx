@@ -1,0 +1,183 @@
+---
+title: Bootstrap percolation
+date: 2016-03-27
+excerpt: Einfalt líkan af því hvernig virkni breiðist út um net, með gagnvirkri hermun í vis.js á Erdős–Rényi-slembineti.
+cited:
+  - amini2014inhomogeneous
+  - chalupa1979bootstrap
+  - balogh2012sharp
+  - einarsson2014bootstrap
+  - janson2012bootstrap
+---
+
+import Cite from '~/components/Cite.astro';
+import Simulation from '~/components/Simulation.astro';
+
+Ef þú hefur einhvern tímann rekist á enska orðið
+*[percolation](https://en.wikipedia.org/wiki/Percolation "Percolation á Wikipediu")*
+hefur það kannski verið í tengslum við kaffi. Þegar hellt er upp á kaffi með
+því að láta vatn renna í gegnum malaðar kaffibaunir viljum við jú að vatnið
+komist á endanum í gegn. Kornin þurfa því að vera nógu stór til að efnið sé
+gljúpt og vatnið nái að seytla (e. *percolate*) í gegn. Þessi grein fjallar
+ekki um kaffigerð, nema þú viljir verða mjög skapandi, en hafðu samt í huga að
+ómælt magn af koffíni kom við sögu þegar hún var skrifuð.
+
+*Hvers konar percolation ertu þá að tala um? Útskýrðu þetta eins og ég sé
+fimm ára.*
+
+Ímyndaðu þér að vinur þinn hafi verið að fá nýtt og glansandi leikfang. Hann
+sýnir þér það og þig langar í það. Þú biður foreldra þína um það en þau segja
+nei. Smám saman eignast fleiri vinir þínir leikfangið og þig langar enn í það.
+Foreldrar þínir segja áfram nei, en þau átta sig á að þetta yrði frábær gjöf og
+kaupa leikfangið handa þér í næstu afmælisgjöf.
+
+{/*
+og þú tilkynnir foreldrum þínum að öll hugmynd þín um hvað skipti máli í
+heiminum hafi gjörbreyst. Foreldrar þínir standa fast á sínu, þú ert
+niðurbrotinn en lífið heldur áfram. Skyndilega eignast fleiri vinir þínir
+nýja leikfangið. Staðan er gjörbreytt, þú ert orðinn utangarðs og staða þín
+er ekki meiri en peðs. Enginn leikur við þig lengur, þú ert einn í heiminum
+og gömlu leikföngin eru einskis virði. Nú klæðist þú svörtu og berð hvítan
+farða. Starfsfólkið á leikskólanum fer að hafa áhyggjur þegar þú byrjar að
+kyrja myrkar særingarþulur í útiverunni. Að lokum, eftir að hafa áttað sig á
+að þunglyndislyf eru ekki árangursrík meðferð við þessu ástandi, gefa
+foreldrar þínir eftir fyrir félagslegum þrýstingi og kaupa handa þér nýja
+leikfangið. Jafnvægi heimsins er endurreist.
+*/}
+
+Þú hefur sennilega þegar séð hvernig þetta litla dæmi tengist
+kaffiuppáhellingu. Ef ekki skal ég útskýra. Hugsaðu um sjálfan þig sem tómt
+hólf sem afmarkast af fínmöluðum kaffikornunum í kringum þig. Ef það er ekki
+of óþægileg tilhugsun geturðu hugsað um vini þína sem aðliggjandi hólf. Þegar
+einn vina þinna fékk nýtt leikfang fylltist hólfið hans af vatni, í þessari
+líkingu. Ef aðeins eitt aðliggjandi hólf er fullt af vatni nægir þrýstingurinn
+ekki til að vatnið komist inn í þitt hólf, en þegar nógu mörg aðliggjandi hólf
+hafa fyllst fyllist þitt líka.
+
+Percolation hefur sem sagt eitthvað með það að gera hvernig upplýsingar
+dreifast um net. Önnur góð dæmi eru slúður og orðrómur, og líka
+auglýsingaherferðir: þar skiptir máli að vita hvaða einstaklingum í félagsneti
+borgar sig að greiða fyrir að auglýsa vöru til að ná til sem flestra mögulegra
+viðskiptavina (þú mátt alveg byrja að senda mér ókeypis vörur). Það er líka
+dýrmætt að vita hvort bankakerfi sé stöðugt og hversu margir þurfa að lenda í
+vanskilum með lánin sín til að kerfið hrynji
+<Cite key="amini2014inhomogeneous" />. Enn eitt gott dæmi er útbreiðsla
+sjúkdóma. Í hvert sinn sem maður hittir smitaðan einstakling aukast líkurnar á
+að smitast. Uppáhaldsdæmið mitt um bootstrap percolation (keðjuverkun þar sem
+hnútur virkjast þegar nógu margir nágrannar hans eru virkir) er hvernig
+taugafrumur í heilanum eiga samskipti. Taugafrumur tala saman með því að senda
+[taugaboð](https://en.wikipedia.org/wiki/Neural_coding) til nágranna sinna. Ef
+taugafruma fær nokkur taugaboð sendir hún sjálf frá sér taugaboð og lætur
+þannig alla nágranna sína vita, sem er alveg magnað. Loks má lýsa percolation
+með [frumusjálfvirkja](https://en.wikipedia.org/wiki/Cellular_automaton)
+(e. *cellular automaton*), en það var í því samhengi sem ferlið var fyrst
+rannsakað <Cite key="chalupa1979bootstrap" /> (reyndar með eðlisfræði að
+leiðarljósi), og síðan þá hefur það verið rannsakað ítarlega á grindum í
+hversu mörgum víddum sem er <Cite key="balogh2012sharp" />.
+
+Eins og þú hefur kannski áttað þig á er percolation bókstaflega allt í kringum
+okkur. Það kemur því ekki á óvart að áhuginn á fyrirbærinu hafi seytlað víða.
+Hér á eftir skilgreini ég ferlið nákvæmar. Þar fer þetta að verða örlítið
+tæknilegt. Ef þú vilt sleppa tæknilegu hlutunum geturðu bara skrunað neðst í
+greinina og leikið þér með JavaScript-hermunina.
+
+*Bootstrap percolation* (líka þekkt sem *iterative retrieval*) er einfalt
+líkan af því hvernig virkni breiðist út í neti. Hnútarnir í ferlinu geta verið
+í tveimur ástöndum, annaðhvort *virkir* eða *óvirkir*. Hefðbundið er að ferlið
+gangi í umferðum. Látum *K*>0 vera þröskuld. Í hverri umferð verða allir
+óvirkir hnútar virkir sem hafa að minnsta kosti *K* virka nágranna frá fyrri
+umferðum. Þegar hnútur er orðinn virkur helst hann virkur það sem eftir er
+ferlisins. Orðið *bootstrap* vísar einfaldlega til upphafsmengisins, þ.e.
+hnútanna sem eru virkir í upphafi, og *percolation* til útbreiðslu virkninnar.
+
+Þetta er algengasta skilgreiningin, en til eru ýmis afbrigði af ferlinu sem ég
+fer ekki út í hér. Þegar hnútur verður virkur í lýsingunni hér að ofan má
+hugsa sér að hann segi öllum nágrönnum sínum frá því, og að það taki þessi
+*skilaboð* eina umferð að berast.
+
+Yfirleitt er ferlið rannsakað með formlegum hætti á tilteknum flokkum neta, og
+eins og ég nefndi hér að ofan voru grindur þær fyrstu sem urðu fyrir valinu.
+Ég hef verið svo heppinn að vinna með frábæru fólki að nokkrum verkefnum um
+bootstrap percolation <Cite key="einarsson2014bootstrap" />, sem verða efni í
+seinni færslu. Kveikjan að rannsókn okkar voru niðurstöður Janson, Luczak,
+Turova og Vallier <Cite key="janson2012bootstrap" />, sem greindu bootstrap
+percolation, ferlið hér að ofan, á
+[Erdős–Rényi-slembinetinu](https://en.wikipedia.org/wiki/Erdős–Rényi_model).
+Slembinetið er frekar einfalt: hver leggur er til staðar, óháð hinum, með
+einhverjum líkum *p*, sem eru stiki líkansins. Með *n* hnúta er væntigildi
+fjölda nágranna því *np*. Janson og félagar uppgötvuðu að percolation hefur
+*þröskuldseiginleika* á slembinetinu. Ef upphafsmengið er undir þröskuldinum
+verða nær engir fleiri hnútar virkir. En ef það er yfir þröskuldinum breiðist
+virknin út, þ.e. nær allir hnútar verða virkir.
+
+Hér fyrir neðan geturðu leikið þér með ferlið á slembinetinu. Þú velur
+stikana hér fyrir neðan og getur auk þess skipt hnútum milli þess að vera
+virkir og óvirkir með því að smella á þá. Hermunin var gerð með
+[visjs](http://visjs.org) og kóðinn er aðgengilegur á GitHub-síðunni minni.
+Athugaðu að eins og er vex keyrslutími kóðans með *n* í öðru veldi, svo
+hermun fyrir stór gildi á *n* verður hæg. Auk þess á uppröðun netsins erfitt
+með að ná stöðugu ástandi þegar hnútarnir eru margir og netið er ekki strjált.
+
+Í [næstu færslu](/is/2016/04/08/asynchronous-percolation/) skoða ég afbrigði
+af ferlinu sem gengur ekki í umferðum.
+
+<Simulation
+  label="Gagnvirk hermun"
+  scripts={['/js/vis.min.js', '/js/vis_utils.js', '/js/bootstrap_percolation_visjs.js']}
+  styles={['/css/vis.min.css']}
+>
+  <div id="mynetwork" style="max-width: 720px; height: 720px;border: 1px solid lightgray;"></div>
+
+  <form onsubmit="draw(); return false;" style="margin-bottom:20px">
+    <table style="max-width: 720px; font-size:75%; margin-bottom:10px">
+      <tr>
+        <td>
+          <label for="nodeCount">Fjöldi hnúta (<i>n</i>)</label>
+        </td>
+        <td>
+          <input id="nodeCount" type="text" value="25" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="nNeighbours">Vænt stig hnúts (<i>np</i>), þ.e. meðalfjöldi nágranna</label>
+        </td>
+        <td>
+          <input id="nNeighbours" type="text" value="5" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="kPerc">Virkjunarþröskuldur (<i>K</i>)</label>
+        </td>
+        <td>
+          <input id="kPerc" type="text" value="2" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="pBootstrap">Líkur á að hnútur sé virkur í upphafi</label>
+        </td>
+        <td>
+          <input id="pBootstrap" type="text" value="0.2" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="timeStep">Lengd tímaskrefs í millisekúndum (1000 <i>ms</i> = 1 sekúnda)</label>
+        </td>
+        <td>
+          <input id="timeStep" type="text" value="1000" style="width: 50px;" />
+        </td>
+      </tr>
+    </table>
+    <input type="button" value="Smíða net" onclick="draw()" />
+    <input type="button" value="Keyra ferlið" onclick="percolate()" />
+  </form>
+
+  <p class="message" id="message" style="visibility:hidden;"></p>
+</Simulation>
+
+## Þakkir
+
+Ég þakka Guðmundi fyrir að lesa yfir drög að þessari færslu.

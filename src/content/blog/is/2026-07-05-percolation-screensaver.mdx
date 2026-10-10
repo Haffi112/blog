@@ -1,0 +1,26 @@
+---
+title: Percolation sem skjáhvíla
+date: 2026-07-05
+excerpt: Bootstrap percolation-hreyfimyndin af forsíðu vefsins, endursmíðuð sem alvöru macOS-skjáhvíla með sex litaþemum og almennilegum stillingum.
+tags:
+  - percolation
+  - screensaver
+  - macos
+  - claude-code
+---
+
+Árið 2016 skrifaði ég nokkrar færslur um [bootstrap percolation](/is/2016/03/27/bootstrap-percolation/), ferli þar sem virkni breiðist út um net og hnútur verður virkur um leið og nógu margir nágrannar hans eru orðnir það. Þegar ég endurhannaði vefinn setti ég litla hermun af þessu efst á forsíðuna: hnútar svífa um, kvikna og senda skilaboð eftir leggjunum, og á eftir hverju skipti sem hnútur kviknar kemur óvirknitími, svo virknin berst áfram í bylgjum í stað þess að leggja undir sig allt netið. Ég stóð mig að því að horfa á þetta lengur en ég kæri mig um að viðurkenna, og það er nokkurn veginn starfslýsing skjáhvílu. Svo nú er þetta orðið skjáhvíla. Kóðinn er á [GitHub](https://github.com/Haffi112/percolation_screensaver).
+
+## Hvað hún keyrir
+
+Reglurnar eru þær sömu og í hreyfimyndinni á forsíðunni. Hnútur í hvíld þarf að fá tvö skilaboð til að kvikna (klassíski bootstrap-þröskuldurinn), og lítill hleðslubogi sýnir hve langt hann er kominn. Þegar hann kviknar glóir hann, sendir skilaboð til næstu nágranna sem eru í hvíld og jafnar sig svo í nokkrar sekúndur á meðan bogi fyllist aftur í kringum hann. Á vefnum er hægt að koma af stað keðjuverkun með bendlinum, en skjáhvíla lokast um leið og maður snertir músina, svo hér eru það sjálfsprottnar bylgjur sem bera sýninguna uppi: á nokkurra sekúndna fresti kvikna tveir nágrannahnútar samtímis, og það eru sameiginlegir nágrannar þeirra sem koma bylgjunni yfir þröskuldinn svo hún rúllar yfir skjáinn áður en hún deyr út.
+
+## Stillingar
+
+Í boði eru sex litaþemu (ljósa og dökka litaspjaldið af þessum vef og fjögur ný) og sleðar fyrir þéttleika hnúta, tíðni bylgna, hraða hreyfimyndarinnar og batatíma hnútanna. Sú stilling sem mér þykir vænst um er hraði skilaboðanna. „Constant“ lætur öll skilaboð ferðast á sama hraða, svo bylgjurnar breiðast út með hreinum framlínum. „Random“ dregur í staðinn tímann sem það tekur að fara eftir hverjum legg úr veldisdreifingu, og þá verður úr þessu öllu first-passage percolation: framlínurnar verða tættar og lífrænar, og stöku sinnum berast hæg skilaboð nógu seint til að kveikja aftur í svæði sem var búið að róast.
+
+## Um smíðina
+
+Þetta er skjáhvíla skrifuð í Swift beint fyrir macOS (ScreenSaver-umgjörðin ásamt Core Graphics), og hermunin sjálf er í litlum pakka með einingaprófum sem veit ekkert um teikningu. Ég smíðaði hana með aðstoð Claude Code, sem kom líka auga á tvennt sem ég myndi vara alla við sem ætla að smíða skjáhvílu. Í fyrsta lagi keyrir macOS skjáhvílur frá þriðja aðila með einföldum tímamæli sem er ekki samstilltur endurnýjun skjásins, svo hreyfingin rykkist sama hve hröð teikningin er; það lagast ef rammarnir eru keyrðir frá `CADisplayLink` inni í view-hlutnum. Í öðru lagi verður eitt Core Graphics-kall á hvern hnút hægara einmitt þegar hreyfimyndin fer að verða áhugaverð, því meiri virkni þýðir fleiri boga og agnir. Ef allt sem hefur sama lit er teiknað sem einn ferill helst tíminn á hvern ramma stöðugur.
+
+Ef þú vilt fá hana á þinn eigin Mac: klónaðu [kóðasafnið](https://github.com/Haffi112/percolation_screensaver), keyrðu `make install` og veldu Percolation undir Screen Saver í System Settings. Hún þarf macOS 13 eða nýrra og Xcode til að byggja hana.

@@ -1,0 +1,131 @@
+---
+title: Taugafrumulíkanið leaky integrate-and-fire (LIF)
+date: 2016-05-15
+excerpt: Einfalt og mikið notað himnuspennulíkan af líffræðilegum taugafrumum. Við sýnum hvernig það á rætur í tilraunum Hodgkins og Huxleys, skrifum niður diffurjöfnurnar og skoðum hegðun líkansins í gagnvirkri D3-hermun.
+cited:
+  - hodgkin1952quantitative
+  - meffin2004analytical
+---
+
+import 'katex/dist/katex.min.css';
+import Cite from '~/components/Cite.astro';
+import Simulation from '~/components/Simulation.astro';
+
+<blockquote>
+Í þessari færslu geng ég út frá grunnþekkingu á taugafrumum. Stutta kynningu
+má finna í <a href="https://simple.wikipedia.org/wiki/Neuron">þessari Wikipedia-grein um taugafrumur</a>.
+</blockquote>
+
+Til eru
+[mörg](https://en.wikipedia.org/wiki/Biological_neuron_model) líkön af
+líffræðilegum taugafrumum og sum þeirra stangast jafnvel á. Í þessari færslu
+skoðum við líkanið *leaky integrate-and-fire* (LIF), sem er mikið notað í
+hermunum sem líkja eftir tauganetum heilans. Nafnið lýsir líkaninu ágætlega:
+taugafruman safnar upp inntaki (e. integrate), sendir frá sér taugaboð þegar
+nóg hefur safnast (e. fire), en það sem hefur safnast lekur smám saman burt
+(e. leaky). Kosturinn við líkanið er að það er einfalt en nær samt helstu
+dráttunum í því hvernig ein taugafruma starfar.
+
+Rétt er að taka fram að ekki allar frumur í heilanum senda frá sér
+*taugaboð* (þ.e. stafræn merki) og hegða sér eins og sú sem við fjöllum um
+hér á eftir. Flestar frumur sem við köllum taugafrumur gera það þó. Almennt
+er viðurkennt að boðin sem þær senda sín á milli séu undirstaða
+upplýsingamiðlunar og útreikninga í heilanum.
+
+LIF-taugafruman er það sem kallað er *himnuspennulíkan*. Það á rætur í
+[tilraunum](https://en.wikipedia.org/wiki/Squid_giant_axon) sem
+[Hodgkin](https://en.wikipedia.org/wiki/Alan_Lloyd_Hodgkin) og
+[Huxley](https://en.wikipedia.org/wiki/Andrew_Huxley) gerðu fyrstir um 1950
+<Cite key="hodgkin1952quantitative" />, þar sem spennumunurinn milli innra og
+ytra borðs taugafrumu var mældur. Hugmyndin er einföld: við gefum
+taugafrumunni inntak í formi rafstraums og fylgjumst með því hvernig spennan
+yfir himnuna breytist með tímanum.
+
+Áður en Hodgkin og Huxley gerðu tilraunir sínar hafði líkanið
+*integrate-and-fire* (taktu eftir að *leaky* vantar framan á) þegar verið sett
+fram. Það er í raun afbrigði af líkaninu sem við höfum notað í fyrri færslum
+um [bootstrap percolation](/is/2016/04/25/percolation-with-inhibition/). Í því
+líkani *gleymir* taugafruma aldrei inntaki sem hún hefur fengið. Ef hún þarf
+tvö taugaboð til að senda sjálf frá sér taugaboð má jafnvel líða heilt ár á
+milli þeirra. Í raunveruleikanum er þetta allt annað mál og öll ummerki fyrra
+boðsins væru horfin nokkrum millisekúndum síðar. Integrate-and-fire-líkön eru
+þó enn gagnleg, til dæmis þegar líkt er eftir fyrirbærum sem gerast á mjög
+stuttum tímaskala.
+
+Að taugafrumur gleymi gömlum taugaboðum er það sem *leaky* í nafninu vísar
+til. Hugsaðu þér taugafrumu sem fötu. Þegar hún fær inntak bætist smá vatn í
+fötuna. Þegar fatan fyllist sendir hún frá sér taugaboð, og það boð bætir
+smá vatni í allar nágrannaföturnar. En það er einn hængur á: það er gat á
+botni fötunnar svo vatnið lekur út.
+
+Ef þú vilt sleppa stærðfræðinni er núna rétti tíminn til að skruna neðst á
+síðuna, þar sem er lifandi, gagnvirk hermun af LIF-taugafrumu.
+
+Vatnshæðin í fötunni svarar til himnuspennu taugafrumunnar. Taugafruman vill
+helst vera örlítið skautuð og *hvíldarspenna* hennar (sem svarar til tómrar
+fötu) er um $-70$ mV. Í hvert sinn sem taugafruman fær taugaboð opnast
+jónagöng í himnunni og jónir streyma í gegn, sem afskautar frumuna. Í
+himnunni eru líka jónadælur sem dæla þessum jónum virkt út aftur, og það
+svarar til *lekans*.
+
+Þar sem himnuspennan breytist með tímanum getum við lýst henni með
+diffurjöfnu. Slík jafna segir okkur hvernig himnuspennan breytist frá einu
+augnabliki til annars. Við táknum spennuna á tíma $t$ með $V(t)$ og
+hvíldarspennuna með $E_L$ (hún er líka kölluð *viðsnúningsspenna lekans*,
+e. leak reversal potential). Auk þess táknum við inntak taugafrumunnar á tíma
+$t$ með $g_e(t)$ og örvandi viðsnúningsspennuna með $E_E$, en það er sú
+himnuspenna sem inntakið togar taugafrumuna í átt að.
+
+Yfir stutt tímabil $\Delta t$ breytist spennan sem hér segir
+
+$$
+\begin{align*}
+V(t+\Delta t) =& V(t)\\& - \Delta t \cdot A\cdot g_L\cdot (V(t)-E_L) \\
+&- \Delta t\cdot B \cdot g_e(t)\cdot (V(t)-E_E)
+\end{align*}
+$$
+
+þar sem $A$ og $B$ eru jákvæðir fastar. Spennan $V(t)$ togast því annars
+vegar í átt að $E_L$ vegna stöðuga lekans og hins vegar í átt að $E_E$ vegna
+inntaksstraumsins (sem hér er líkt eftir sem leiðni). Algeng leið til að lýsa
+leiðni inntaksins er með veldisrýrnun, og þá hegðar leiðnin sér einfaldlega
+svona
+
+$$
+\begin{align*}
+g_e(t+\Delta t) =& g_e(t) -\Delta t\cdot C\cdot g_e(t)
+\end{align*}
+$$
+
+þar sem $C$ er líka jákvæður fasti. Í hvert sinn sem taugafruman fær inntak
+hækkum við auk þess $g_e(t)$ um eitthvert gildi $w$, þar sem $w$ svarar til
+vægis taugamótanna sem inntakið berst um. Þetta lýsir samt ekki enn hvernig
+taugafruman sendir frá sér taugaboð. Eins og í integrate-and-fire-líkaninu
+þarf hún bara að fara yfir einhvern þröskuld, sem við táknum með $V_{th}$. Í
+hvert sinn sem $V(t)$ fer yfir $V_{th}$ sendir taugafruman frá sér taugaboð.
+Eftir það tekur við *óvirknitími* þar sem hún hunsar öll innkomandi taugaboð.
+Að honum loknum er himnuspennan færð á fast gildi, $V_{\text{reset}}$, sem
+kallast *endurstillingarspenna*.
+
+Hér fyrir neðan er gagnvirk hermun af LIF-taugafrumu sem fylgir hegðuninni
+sem lýst er hér að ofan. Þú getur smellt á inntakstaugafrumuna til vinstri
+til að senda taugaboð til úttakstaugafrumunnar til hægri. Radíus hringsins
+sem táknar úttakstaugafrumuna sýnir himnuspennu hennar. Himnuspennan breytist
+100 sinnum hægar en í raunveruleikanum (annars sæist lítið gerast) og
+stikarnir hér að ofan hafa nokkurn veginn raunhæf gildi. Tíminn sem það
+tekur boðið að berast á milli taugafrumnanna tveggja og lengd óvirknitímans
+eru þó ýkt svo betur sjáist hvað er að gerast. Ef þú vilt keyra stórar
+hermanir með þessari gerð taugafrumu geturðu notað
+[nest-simulator](http://www.nest-initiative.org/) og taugafrumulíkanið
+<a href="https://github.com/nest/nest-simulator/blob/master/models/iaf_cond_exp.cpp" aria-label="Taugafrumulíkanið iaf_cond_exp í nest-simulator">$\mathtt{iaf\_cond\_exp}$</a>
+sem þar er að finna <Cite key="meffin2004analytical" />. Færibreyturnar hér
+að ofan eru einmitt fengnar þaðan.
+
+<Simulation
+  label="Gagnvirk hermun"
+  scripts={['/js/d3/d3.min.js', '/js/lif_neuron.js']}
+  styles={['/css/lifneuron.css']}
+  needsJquery={false}
+>
+  <div id="neuron"></div>
+</Simulation>

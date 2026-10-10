@@ -1,0 +1,110 @@
+---
+title: Percolation með hömlun – 1. hluti
+date: 2016-04-25
+excerpt: Hamlandi hnútum bætt við bootstrap percolation. Gagnvirk hermun með grænum og rauðum hnútum sýnir hvernig jákvæð og neikvæð skilaboð togast á og móta virknina í netinu.
+cited:
+  - einarsson2014bootstrap
+---
+
+import 'katex/dist/katex.min.css';
+import Cite from '~/components/Cite.astro';
+import Simulation from '~/components/Simulation.astro';
+
+Í fyrri færslum höfum við fjallað um
+[samstillta](/is/2016/03/27/bootstrap-percolation/) og
+[ósamstillta](/is/2016/04/08/asynchronous-percolation/) útgáfu af bootstrap
+percolation, keðjuverkun þar sem hnútur í neti virkjast þegar nógu margir
+nágrannar hans eru virkir. Þessi ferli lýsa því hvernig upplýsingar dreifast
+um net.
+
+Í þessum líkönum skoðuðum við eingöngu hnúta sem gátu örvað nágranna sína.
+Það er gott grunnlíkan fyrir útbreiðslu sjúkdóma eða slúðurs. Í öðrum
+aðstæðum geta hins vegar verið öfl sem vinna hvert gegn öðru. Skilaboðin gætu
+til dæmis staðið fyrir meðmæli vina með einhverri vöru. Ef allir vinir þínir
+mæla með tilteknu vörumerki gæti það ýtt þér út í að kaupa það. En ef sumir
+vina þinna mæla með öðru gætirðu skipt um skoðun á því hvað þú kaupir, eða
+einfaldlega orðið ráðvilltur. Á sama hátt eru sumar taugafrumur í heilanum
+örvandi og senda jákvæð skilaboð, á meðan aðrar eru hamlandi og senda neikvæð
+skilaboð. Hamlandi taugafrumurnar skipta miklu máli, því ef örvunin verður of
+mikil getur virknin farið úr böndunum, sem getur leitt til flogakasta.
+
+Þá liggur beint við að spyrja hvað gerist ef við leyfum sumum hnútunum að vera
+neikvæðir. Það er einmitt það sem við gerðum í
+<Cite key="einarsson2014bootstrap" />. Við gerðum nokkrar áhugaverðar
+athuganir sem ég fjalla um í næstu færslum.
+
+Hér fyrir neðan er útfærsla á ósamstilltri bootstrap percolation með hömlun,
+gerð með [d3js](https://d3js.org). Grænu hnútarnir senda jákvæð skilaboð og
+þeir rauðu neikvæð. Hver hnútur heldur utan um hversu mörg jákvæð skilaboð
+hann hefur fengið, að frádregnum fjölda neikvæðra skilaboða. Við köllum þetta
+*mætti* hnútsins. Hnútur verður virkur (og helst virkur) ef mætti hans nær
+einhvern tímann $K$. Þú getur reynt að stýra því hve stór hluti grænu
+hnútanna verður virkur með því að breyta fjölda neikvæðra hnúta. Þegar mætti
+hnúts verður neikvætt litum við hann bláan. Hnútar sem lenda í þessu ástandi
+eru ólíklegri til að verða nokkurn tímann virkir. Það getur gerst, en flestir
+þeirra eru í raun frosnir.
+
+<Simulation
+  label="Gagnvirk hermun"
+  scripts={['/js/d3/d3.min.js', '/js/async_percolation_with_inhibition.js']}
+  styles={['/css/async_percolation.css']}
+>
+  <div id="simulation"></div>
+
+  <form onsubmit="create_graph(); return false;" style="margin-bottom:20px">
+    <input type="button" value="Smíða net" onclick="create_graph()" />
+    <input type="button" value="Keyra ferlið" onclick="percolate()" />
+    <table style="max-width: 720px; font-size:75%; margin-bottom:10px">
+      <tr>
+        <td>
+          <label for="nodeCount">Fjöldi jákvæðra hnúta (grænir)</label>
+        </td>
+        <td>
+          <input id="nodeCount" type="text" value="30" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="inodeCount">Fjöldi neikvæðra hnúta (rauðir) </label>
+        </td>
+        <td>
+          <input id="inodeCount" type="text" value="30" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="nNeighbours">Vænt stig hnúts (<i>np</i>), þ.e. meðalfjöldi nágranna</label>
+        </td>
+        <td>
+          <input id="nNeighbours" type="text" value="6" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="kPerc">Virkjunarþröskuldur (<i>K</i>)</label>
+        </td>
+        <td>
+          <input id="kPerc" type="text" value="2" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="pBootstrap">Líkur á að hnútur sé virkur í upphafi</label>
+        </td>
+        <td>
+          <input id="pBootstrap" type="text" value="0.2" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="delay">Vænt töf á legg (sekúndur)</label>
+        </td>
+        <td>
+          <input id="delay" type="text" value="1.0" style="width: 50px;" />
+        </td>
+      </tr>
+    </table>
+  </form>
+
+  <p class="message" id="message" style="visibility:hidden;"></p>
+</Simulation>

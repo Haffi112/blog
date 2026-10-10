@@ -1,0 +1,115 @@
+---
+title: Ósamstillt bootstrap percolation
+date: 2016-04-08
+excerpt: Bootstrap percolation án samstilltra umferða. Þegar tafir á leggjum eru slembnar breiðist virknin mun hraðar út og tekur að jafnaði aðeins fastan tíma.
+cited:
+  - einarsson2014bootstrap
+  - janson2012bootstrap
+---
+
+import 'katex/dist/katex.min.css';
+import Cite from '~/components/Cite.astro';
+import Simulation from '~/components/Simulation.astro';
+
+Í [síðustu færslu](/is/2016/03/27/bootstrap-percolation/) fjölluðum við um
+bootstrap percolation, keðjuverkun þar sem hnútur í neti virkjast þegar nógu
+margir nágrannar hans eru virkir. Ferlið lýsir því hvernig upplýsingar
+dreifast um net. Í þessari færslu skoðum við lítið afbrigði af því.
+Hefðbundin skilgreining á percolation gerir ráð fyrir að ferlið gangi í
+umferðum. Í raunveruleikanum eru ferli á borð við útbreiðslu orðróms, smit
+sjúkdóma og taugaboð hins vegar yfirleitt ekki samstillt. Það leiðir okkur að
+ósamstilltri útgáfu af ferlinu (skrunaðu niður ef þú getur ekki beðið eftir að
+sjá hermunina).
+
+Eins og áður má hugsa sér að þegar hnútur verður virkur sendi hann skilaboð
+til allra nágranna sinna um nýja ástandið sitt (eða smiti þá af einhverjum
+sjúkdómi). Skilaboðin berast ekki samstundis. Í samstillta ferlinu þurftum
+við að bíða í eina umferð eftir þeim, sem samsvarar töf upp á 1. Í ósamstillta
+ferlinu geta tafirnar verið hvað sem er. Í <Cite key="einarsson2014bootstrap" />
+skoðuðum við til dæmis tilvikið þar sem töf hvers leggjar er dregin úr
+veldisdreifingu með væntigildi 1. Munum að eins og í
+<Cite key="janson2012bootstrap" /> rannsökuðum við ferlið á $G_{n,p}$, sem er
+[Erdős–Rényi-slembinetið](https://en.wikipedia.org/wiki/Erdős–Rényi_model). Í
+ljós kom að þessi litla breyting hafði áhugaverð megindleg áhrif á ferlið.
+Virknin breiddist miklu hraðar út!
+
+Við sýndum að þegar netið stækkar er væntur tími þar til allir hnútar eru
+orðnir virkir aðeins fasti, á meðan samstillta ferlið getur þurft allt að
+$\sim\log\log(np)$ umferðir að jafnaði. Hraðinn skýrist af því að þegar nógu
+mörg skilaboð eru á leiðinni er nánast öruggt að einhver þeirra verði mjög
+hröð, og það knýr ferlið enn frekar áfram. Það má hugsa sér ferlið í þremur
+fösum: *ræsingarfasanum*, sem ræður því hvort virknin lifir af eða ekki,
+*sprengifasanum*, þar sem nær allir hnútar verða virkir (og sem skýrir að
+mestu tvöfaldan veldisvöxt ferlisins sem gengur í umferðum), og loks
+*frágangsfasanum*, þar sem síðustu hnútarnir verða virkir. Í okkar líkani
+gerist sprengifasinn samstundis. Formlega tekur það tíma $o(1)$ (minna en
+fasta) að virkja nær alla hnútana, eftir fyrstu hindrunina, sem er að koma
+ferlinu af stað.
+
+Hér fyrir neðan er útfærsla á ósamstilltu útgáfunni af bootstrap percolation
+þar sem vænt töf skilaboða er í upphafi stillt á fimm sekúndur (þú getur
+leikið þér með stikana í reitunum hér fyrir neðan, en of margir hnútar geta
+hægt verulega á öllu). Ef þú velur stikana vel sérðu að hægu skilaboðin eru
+yfirleitt of sein til að skipta nokkru máli. Hermunin var gerð með
+[d3js](https://d3js.org). Þar sem JavaScript er ósamstillt hentar það
+fullkomlega í svona hermanir.
+
+Í [næstu færslu](/is/2016/04/25/percolation-with-inhibition/) bæti ég
+hamlandi hnútum við ferlið.
+
+<Simulation
+  label="Gagnvirk hermun"
+  scripts={['/js/d3/d3.min.js', '/js/async_percolation.js']}
+  styles={['/css/async_percolation.css']}
+>
+  <div id="simulation"></div>
+
+  <form onsubmit="create_graph(); return false;" style="margin-bottom:20px">
+    <input type="button" value="Smíða net" onclick="create_graph()" />
+    <input type="button" value="Keyra ferlið" onclick="percolate()" />
+    <table style="max-width: 720px; font-size:75%; margin-bottom:10px">
+      <tr>
+        <td>
+          <label for="nodeCount">Fjöldi hnúta (<i>n</i>)</label>
+        </td>
+        <td>
+          <input id="nodeCount" type="text" value="50" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="nNeighbours">Vænt stig hnúts (<i>np</i>), þ.e. meðalfjöldi nágranna</label>
+        </td>
+        <td>
+          <input id="nNeighbours" type="text" value="6" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="kPerc">Virkjunarþröskuldur (<i>K</i>)</label>
+        </td>
+        <td>
+          <input id="kPerc" type="text" value="2" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="pBootstrap">Líkur á að hnútur sé virkur í upphafi</label>
+        </td>
+        <td>
+          <input id="pBootstrap" type="text" value="0.2" style="width: 50px;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="delay">Vænt töf á legg (sekúndur)</label>
+        </td>
+        <td>
+          <input id="delay" type="text" value="5.0" style="width: 50px;" />
+        </td>
+      </tr>
+    </table>
+  </form>
+
+  <p class="message" id="message" style="visibility:hidden;"></p>
+</Simulation>
