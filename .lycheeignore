@@ -1,0 +1,15 @@
+# Links the weekly checker (.github/workflows/links.yml) should not test.
+# Sites here answer automated requests with 403/429/999 even when the page
+# is fine, so a failure would be noise.
+^https?://(www\.)?mbl\.is/
+^https?://(www\.)?linkedin\.com/
+^https?://(www\.)?(twitter|x)\.com/
+^https?://(www\.)?tiktok\.com/
+^https?://scholar\.google\.com/
+^https?://(www\.)?boardgamegeek\.com/
+# The live site itself: canonical and social-card URLs point at pages that
+# only exist after the next deploy.
+^https?://hafst1\.is/
+# mailto and the local dev server
+^mailto:
+^https?://localhost

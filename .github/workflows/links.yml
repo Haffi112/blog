@@ -1,0 +1,43 @@
+name: Check links
+
+# Weekly sweep of every link in the built site, internal and external, so
+# dead interview/paper/talk links are caught before a visitor finds them.
+# A failing run shows in the Actions tab and GitHub emails the repo owner.
+on:
+  schedule:
+    - cron: '17 6 * * 1' # Mondays, 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # The CV PDFs are committed, so skip the Typst step of `npm run build`.
+      - name: Build site
+        run: npm run parse-bib && npx astro build
+
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          fail: true
+          args: >-
+            --no-progress
+            --max-concurrency 8
+            --max-retries 3
+            --timeout 30
+            --root-dir ${{ github.workspace }}/dist
+            './dist/**/*.html'
