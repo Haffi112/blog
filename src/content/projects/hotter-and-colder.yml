@@ -10,3 +10,8 @@ tags:
   - dataset
   - sentiment
 status: maintenance
+summary_is: >-
+  Íslensk málheild athugasemda af bloggsíðum, merkt með fínlegum
+  flokkum fyrir viðhorf, tilfinningar, eitrað orðfæri, kaldhæðni,
+  hatursorðræðu, samúð og fleira. Háskóli Íslands dreifir henni og
+  aðferðagreinin var kynnt á NoDaLiDa / Baltic-HLT 2025.

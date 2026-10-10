@@ -9,3 +9,8 @@ tags:
   - tool
   - qa
 status: maintenance
+summary_is: >-
+  Leikjavætt smáforrit til að safna gagnasöfnum fyrir spurningasvörun
+  á mörgum sviðum með hjálp almennings. Kynnt á EACL 2023 System
+  Demonstrations og notað til að safna RUQuAD-1,
+  lesskilningsgagnasafni fyrir íslensku.

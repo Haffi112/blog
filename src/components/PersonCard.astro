@@ -1,4 +1,6 @@
 ---
+import { useTranslations, type Lang } from '~/i18n/utils';
+
 interface Props {
   name: string;
   role: string;        // human-readable label, e.g. "PhD candidate" or "MSc 2025"
@@ -6,8 +8,10 @@ interface Props {
   link?: string;       // personal page, ORCID, etc.
   nowAt?: string;      // for alumni: "Now PhD student at X"
   supervisor?: string; // main supervisor when I served on the committee
+  lang?: Lang;
 }
-const { name, role, title, link, nowAt, supervisor } = Astro.props;
+const { name, role, title, link, nowAt, supervisor, lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
 ---
 <article class="py-4 border-t border-rule first:border-t-0">
   <div class="flex flex-col gap-1">
@@ -16,7 +20,7 @@ const { name, role, title, link, nowAt, supervisor } = Astro.props;
     </p>
     <p class="text-sm text-ink-muted">{role}</p>
     {title && <p class="text-sm text-ink">{title}</p>}
-    {supervisor && <p class="text-xs text-ink-muted">Main supervisor: {supervisor}</p>}
+    {supervisor && <p class="text-xs text-ink-muted">{t.group.mainSupervisor} {supervisor}</p>}
     {nowAt && <p class="text-xs text-ink-muted italic">{nowAt}</p>}
   </div>
 </article>

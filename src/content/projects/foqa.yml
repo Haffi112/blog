@@ -11,3 +11,10 @@ tags:
   - dataset
   - qa
 status: active
+summary_is: >-
+  Fyrsta gagnasafnið fyrir spurningasvörun á færeysku, í tveimur
+  útgáfum: annarri þar sem svarið er tekið beint úr textanum og hinni
+  þar sem það er samið frá grunni. Það var búið til með því að þýða og
+  aðlaga fyrirliggjandi prófsöfn fyrir spurningasvörun, móðurmálshafar
+  fóru yfir það, og því fylgja grunnniðurstöður fyrir fjöltyngd og
+  færeysk mállíkön. Gefið út samhliða grein á RESOURCEFUL 2025.

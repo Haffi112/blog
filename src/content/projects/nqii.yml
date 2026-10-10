@@ -9,3 +9,8 @@ tags:
   - dataset
   - qa
 status: maintenance
+summary_is: >-
+  Gagnasafn fyrir opna spurningasvörun á íslensku, aðlagað eftir enska
+  prófsafninu Natural Questions. Það hefur komið út í tveimur útgáfum
+  (v1.0 á LREC 2022 og uppfærð v1.1) og Háskóli Íslands dreifir því
+  til að meta íslensk spurningasvörunarkerfi.

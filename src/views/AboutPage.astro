@@ -1,0 +1,220 @@
+---
+import BaseLayout from '~/components/BaseLayout.astro';
+import JsonLdPerson from '~/components/JsonLdPerson.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import Prose from '~/components/Prose.astro';
+import { aiSeries, seriesWatchUrlFor } from '~/data/series';
+import { localizePath, useTranslations, type Lang } from '~/i18n/utils';
+
+/* About page body, shared by /about/ and /is/about/. The prose is written
+   out per language (it is first-person and carries inline links), the
+   contact list is shared. */
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const watchUrl = seriesWatchUrlFor(lang);
+const media = localizePath('/research/#media', lang);
+const cvPage = localizePath('/cv/', lang);
+---
+<BaseLayout title={t.about.title} description={t.about.description} lang={lang}>
+  <JsonLdPerson slot="head" />
+  <section class="max-w-prose mx-auto px-6 pb-12">
+    <PageHeader title={t.about.title} />
+    <div class="mt-8" data-reveal>
+      {lang === 'is' ? (
+        <Prose>
+          <p>
+            Ég er dósent í tölvunarfræði við Háskóla Íslands og hef frá 2026
+            einnig verið deildarforseti Iðnaðarverkfræði-, vélaverkfræði- og
+            tölvunarfræðideildar. Ég er vísindamaður hjá Íslenskri
+            erfðagreiningu og einn stofnenda KatlaCode. Hópurinn minn vinnur að
+            máltækni fyrir germönsk mál sem hafa lítið af stafrænum málföngum,
+            einkum íslensku og færeysku, og að skyldum verkefnum í tölvusjón
+            fyrir náttúruvísindi, klínískri gervigreind og mannerfðafræði.
+          </p>
+
+          <p>
+            Ég lauk doktorsprófi frá ETH Zürich árið 2017 og fékkst þar við
+            stærðfræðileg líkön af taugakerfum. Eftir nýdoktorsstöðu í
+            kerfistaugavísindum og tvö ár sem gagnavísindamaður í banka kom ég
+            til Háskóla Íslands árið 2020 til að byggja upp rannsóknarhóp um
+            mállíkön og gagnasöfn fyrir tungumál sem lítið er til af málföngum
+            fyrir. Í hópnum eru nú þrír doktorsnemar. Áður var ég einn
+            stofnenda Prescriby (2019–2023).
+          </p>
+
+          <h2>Að tala um gervigreind</h2>
+          <p>
+            Sífellt stærri hluti af starfi mínu fer fram utan vísindagreina. Ég
+            nota gervigreind á hverjum degi og það kemur mér reglulega á óvart
+            hversu hratt hún þróast, svo ég skrifa greinar í blöð, held erindi
+            fyrir alla frá hjúkrunarfræðingum til seðlabankafólks og mæti í
+            útvarp og sjónvarp til að ræða hvað þetta þýðir fyrir Ísland. Lista
+            yfir viðtöl og greinar er að finna á <a href={media}>rannsóknarsíðunni</a>.
+          </p>
+          <p>
+            Í október 2026 gerði ég <a href={watchUrl}><em>{aiSeries.title_is}</em></a>,
+            sjö stuttmyndir sem endursegja hver eina alvarlega röksemdafærslu
+            fyrir því hvernig gervigreind gæti farið illa með okkur. Þær eru á
+            YouTube á <a href={aiSeries.youtube_is}>íslensku</a> og
+            <a href={aiSeries.youtube_en} hreflang="en">ensku</a> og á
+            <a href={aiSeries.tiktok}>TikTok</a>. Ég skrifaði líka um það
+            <a href={aiSeries.makingOf} hreflang="en">hvernig þær urðu til</a> (á ensku).
+          </p>
+
+          <h2>Bakgrunnur</h2>
+          <p>
+            Ég kom inn í rannsóknir í gegnum áhuga á stærðfræði og
+            tölvunarfræði. Síðan tók við langur útúrdúr í taugavísindi þar sem
+            ég spurði hvernig litlar, nánast eins rásir geta af sér þann
+            flókna heim sem heilabörkurinn er. Ég á ekki von á að finna
+            „hina dæmigerðu örrás“ (<em lang="en">canonical microcircuit</em>) á
+            starfsferlinum, en stærðfræðilegi grunnurinn sem ég lagði á þessum
+            fyrstu árum fylgir mér enn og mótar hvernig ég vinn að máltækni og
+            gervigreind í dag. Lengi býr að fyrstu gerð.
+          </p>
+
+          <h2>Ferilskrá</h2>
+          <p>
+            <a href="/cv.pdf" hreflang="en">Stutt ferilskrá (PDF)</a> · <a href="/cv-long.pdf" hreflang="en">Ítarleg ferilskrá með öllum greinum (PDF)</a> · <a href={cvPage}>Skoða á síðunni</a>.
+            Ferilskráin er á ensku.
+          </p>
+
+          <h2 id="fjolmidlar">Fyrir fjölmiðla</h2>
+          <p>
+            Ég ræði gjarnan við fjölmiðla um gervigreind og samfélagið, stór
+            mállíkön, gervigreind í skólastarfi, áhættu og öryggi gervigreindar
+            og máltækni fyrir íslensku. Fljótlegast er að senda mér tölvupóst á
+            <a href="mailto:hafsteinne@hi.is">hafsteinne@hi.is</a>. Fyrri viðtöl
+            og greinar eru á <a href={localizePath('/research/#media', lang)}>rannsóknasíðunni</a>.
+          </p>
+          <p><strong>Stutt kynning</strong></p>
+          <blockquote class="press-bio"><p>Hafsteinn Einarsson er dósent í tölvunarfræði og deildarforseti Iðnaðarverkfræði-, vélaverkfræði- og tölvunarfræðideildar Háskóla Íslands og vísindamaður hjá Íslenskri erfðagreiningu. Rannsóknir hans snúa að máltækni fyrir íslensku, mati og öryggi gervigreindarkerfa og vélnámi í vísindum og læknisfræði.</p></blockquote>
+          <p><strong>Á ensku</strong></p>
+          <blockquote class="press-bio" lang="en"><p>Hafsteinn Einarsson is an associate professor of computer science and Head of the Faculty of Industrial Engineering, Mechanical Engineering and Computer Science at the University of Iceland, and a principal scientist at Amgen deCODE. His research covers language technology for Icelandic, the evaluation and safety of AI systems, and machine learning in science and medicine.</p></blockquote>
+          <p>
+            <a href="/img/hafsteinn-einarsson.jpg" download="hafsteinn-einarsson.jpg">Sækja mynd</a> (960 × 1280)
+            (frjálst að nota með umfjöllun um mig).
+          </p>
+
+          <h2>Hafa samband</h2>
+          <ul>
+            <li>Netfang · <a href="mailto:hafsteinne@hi.is">hafsteinne@hi.is</a></li>
+            <li>ORCID · <a href="https://orcid.org/0000-0001-5072-3678">0000-0001-5072-3678</a></li>
+            <li>Google Scholar · <a href="https://scholar.google.com/citations?user=QH69Qk8AAAAJ&hl=en">síðan mín</a></li>
+            <li>GitHub · <a href="https://github.com/Haffi112">@Haffi112</a></li>
+            <li>X · <a href="https://twitter.com/hafsteinn">@hafsteinn</a></li>
+            <li>YouTube · <a href={aiSeries.youtubeChannel}>rásin mín</a></li>
+            <li>TikTok · <a href={aiSeries.tiktok}>@hafsteinneinarsso</a></li>
+            <li>LinkedIn · <a href="https://www.linkedin.com/in/hafsteinn-einarsson-619a3711">síðan mín</a></li>
+            <li>BoardGameGeek · <a href="https://boardgamegeek.com/collection/user/hafst1">spilasafnið mitt</a></li>
+            <li>PGP · <a href="/pgp.asc">dreifilykill</a> · fingrafar <code>3111 9177 9A70 1D7D C531  E99E 9B84 4AFD 0ADC F3C7</code></li>
+          </ul>
+        </Prose>
+      ) : (
+        <Prose>
+          <p>
+            I am an Associate Professor of Computer Science at the University of
+            Iceland, where since 2026 I have also been Head of the Faculty of
+            Industrial Engineering, Mechanical Engineering and Computer Science.
+            I am a Principal Scientist at Amgen deCODE and a co-founder of
+            KatlaCode. My group works on natural-language processing for
+            low-resource Germanic languages, primarily Icelandic and Faroese,
+            with adjacent work on computer vision for the natural sciences,
+            clinical AI, and human genetics.
+          </p>
+
+          <p>
+            I trained at ETH Zurich (PhD 2017) in mathematical models of neural
+            systems. After a postdoc in systems neuroscience and two years as a
+            data scientist in banking, I joined the University of Iceland in 2020
+            to build a group around language models and datasets for
+            under-resourced languages. The group currently has three PhD
+            students. I previously co-founded Prescriby (2019–2023).
+          </p>
+
+          <h2>Talking about AI</h2>
+          <p>
+            A growing part of my work happens outside papers. I use AI every day
+            and am regularly startled by how fast it moves, so I write op-eds,
+            give talks to anyone from nurses to central bankers, and turn up on
+            radio and television to discuss what it means for Iceland. A list of
+            interviews and articles is on the <a href={media}>research page</a>.
+          </p>
+          <p>
+            In October 2026 I made <a href={watchUrl}><em>{aiSeries.title_en}</em></a>
+            (<span lang="is"><em>{aiSeries.title_is}</em></span>), seven short films that
+            each retell one serious argument about how AI could go badly wrong.
+            They are on YouTube in <a href={aiSeries.youtube_is} lang="is">Icelandic</a>
+            and <a href={aiSeries.youtube_en}>English</a>, and on
+            <a href={aiSeries.tiktok}>TikTok</a>. I also wrote up
+            <a href={aiSeries.makingOf}>how they were made</a>.
+          </p>
+
+          <h2>Beyond research</h2>
+          <p>
+            I came to research through an interest in mathematics and computer
+            science. A long detour into neuroscience followed, asking how small,
+            almost identical circuits give rise to the complexity of cortex. I
+            don't expect to find the "canonical microcircuit" in my career, but
+            the mathematical foundations laid in those early years stayed with
+            me, and they shape how I work on language and AI today. There's an
+            Icelandic saying for it: <em lang="is">lengi býr að fyrstu gerð</em>, what is
+            first shaped lasts long.
+          </p>
+
+          <h2>CV</h2>
+          <p>
+            <a href="/cv.pdf">Short CV (PDF)</a> · <a href="/cv-long.pdf">Full CV with all publications (PDF)</a> · <a href={cvPage}>View inline</a>
+          </p>
+
+          <h2 id="press">For journalists</h2>
+          <p>
+            I am happy to talk to the media about AI and society, large
+            language models, AI in education, AI risk and safety, and language
+            technology for Icelandic. Email is the quickest way to reach me:
+            <a href="mailto:hafsteinne@hi.is">hafsteinne@hi.is</a>. Earlier
+            interviews and articles are on the <a href={localizePath('/research/#media', lang)}>research page</a>.
+          </p>
+          <p><strong>Short bio</strong></p>
+          <blockquote class="press-bio"><p>Hafsteinn Einarsson is an associate professor of computer science and Head of the Faculty of Industrial Engineering, Mechanical Engineering and Computer Science at the University of Iceland, and a principal scientist at Amgen deCODE. His research covers language technology for Icelandic, the evaluation and safety of AI systems, and machine learning in science and medicine.</p></blockquote>
+          <p><strong>In Icelandic</strong></p>
+          <blockquote class="press-bio" lang="is"><p>Hafsteinn Einarsson er dósent í tölvunarfræði og deildarforseti Iðnaðarverkfræði-, vélaverkfræði- og tölvunarfræðideildar Háskóla Íslands og vísindamaður hjá Íslenskri erfðagreiningu. Rannsóknir hans snúa að máltækni fyrir íslensku, mati og öryggi gervigreindarkerfa og vélnámi í vísindum og læknisfræði.</p></blockquote>
+          <p>
+            <a href="/img/hafsteinn-einarsson.jpg" download="hafsteinn-einarsson.jpg">Download a photo</a> (960 × 1280)
+            (free to use alongside coverage of my work).
+          </p>
+
+          <h2>Contact</h2>
+          <ul>
+            <li>Email · <a href="mailto:hafsteinne@hi.is">hafsteinne@hi.is</a></li>
+            <li>ORCID · <a href="https://orcid.org/0000-0001-5072-3678">0000-0001-5072-3678</a></li>
+            <li>Google Scholar · <a href="https://scholar.google.com/citations?user=QH69Qk8AAAAJ&hl=en">profile</a></li>
+            <li>GitHub · <a href="https://github.com/Haffi112">@Haffi112</a></li>
+            <li>X · <a href="https://twitter.com/hafsteinn">@hafsteinn</a></li>
+            <li>YouTube · <a href={aiSeries.youtubeChannel}>channel</a></li>
+            <li>TikTok · <a href={aiSeries.tiktok}>@hafsteinneinarsso</a></li>
+            <li>LinkedIn · <a href="https://www.linkedin.com/in/hafsteinn-einarsson-619a3711">profile</a></li>
+            <li>BoardGameGeek · <a href="https://boardgamegeek.com/collection/user/hafst1">collection</a></li>
+            <li>PGP · <a href="/pgp.asc">public key</a> · fingerprint <code>3111 9177 9A70 1D7D C531  E99E 9B84 4AFD 0ADC F3C7</code></li>
+          </ul>
+        </Prose>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Press bios sit in a quiet panel so they read as copy-ready text. */
+  .press-bio {
+    margin: 0.5rem 0 1.25rem;
+    padding: 0.875rem 1.125rem;
+    border-left: 2px solid var(--color-accent-primary);
+    background: var(--color-bg-elev);
+  }
+  .press-bio p {
+    margin: 0;
+  }
+</style>

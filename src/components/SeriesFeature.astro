@@ -1,0 +1,100 @@
+---
+import { Picture } from 'astro:assets';
+import SectionHeading from './SectionHeading.astro';
+import { aiSeries } from '~/data/series';
+import introHost from '~/assets/ai-series/intro-host.jpg';
+import { useTranslations, type Lang } from '~/i18n/utils';
+
+/**
+ * Homepage feature for the AI-risk video series. The episodes are numbered
+ * because they are one: a sequence of seven stories meant to be watched in
+ * order.
+ *
+ * The series exists in both languages. The page's language leads (title,
+ * episode list, first watch button); the other language's title sits
+ * under the heading, and each language's watch button is labelled in its
+ * own language.
+ */
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+const other = lang === 'is' ? 'en' : 'is';
+const title = lang === 'is' ? aiSeries.title_is : aiSeries.title_en;
+const otherTitle = lang === 'is' ? aiSeries.title_en : aiSeries.title_is;
+
+const watchEn = aiSeries.youtube_en && { href: aiSeries.youtube_en, label: 'Watch in English', lang: 'en' };
+const watchIs = aiSeries.youtube_is && { href: aiSeries.youtube_is, label: 'Horfa á íslensku', lang: 'is' };
+const watch = [
+  ...(lang === 'is' ? [watchIs, watchEn] : [watchEn, watchIs]),
+  { href: aiSeries.tiktok, label: t.series.tiktok }
+]
+  .filter(Boolean)
+  .map((w) => w as { href: string; label: string; lang?: string })
+  /* `lang` only where it differs from the page. */
+  .map((w) => ({ ...w, lang: w.lang === lang ? undefined : w.lang }));
+---
+<section class="bg-bg px-6 py-10 md:px-10 md:py-14" aria-labelledby="series-title">
+  <SectionHeading title={t.series.heading} rule={false} />
+  <div class="mt-8 grid gap-8 lg:gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] items-start">
+    <figure class="series-figure relative">
+      <Picture
+        src={introHost}
+        alt={t.series.figAlt}
+        widths={[480, 720, 1040]}
+        sizes="(min-width: 1024px) 480px, 100vw"
+        formats={['avif', 'webp']}
+        class="block w-full aspect-[16/7.3] object-cover object-top border border-rule"
+        loading="lazy"
+      />
+      <figcaption class="meta mt-2.5">
+        {t.series.figCaption}
+      </figcaption>
+    </figure>
+
+    <div>
+      <h2 id="series-title" class="text-[clamp(1.75rem,1.3rem+1.6vw,2.5rem)] font-light leading-[1.08] text-ink">
+        {title}
+      </h2>
+      <p lang={other} class="mt-1.5 font-prose italic text-[1.125rem] text-ink-muted">{otherTitle}</p>
+      <p class="mt-4 prose-body max-w-[52ch] text-pretty">
+        {t.series.description}
+      </p>
+
+      <ol class="series-list mt-6 grid gap-x-8 sm:grid-cols-2">
+        {aiSeries.episodes.map((e) => (
+          <li class="grid grid-cols-[1.25rem_1fr] gap-x-2 py-2 border-t border-rule-soft">
+            <span class="meta pt-0.5">{e.n}</span>
+            <span class="font-prose text-[0.96875rem] leading-[1.4] text-ink">{lang === 'is' ? e.title_is : e.title_en}</span>
+          </li>
+        ))}
+      </ol>
+
+      <div class="mt-7 flex flex-wrap gap-2.5">
+        {watch.map((w, i) => (
+          <a
+            href={w.href}
+            lang={w.lang}
+            class:list={['btn-editorial', i === 0 && 'btn-editorial--solid']}
+          >{w.label}</a>
+        ))}
+        <a href={aiSeries.makingOf} hreflang={lang === 'en' ? undefined : 'en'} class="btn-editorial">{t.series.makingOf}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* A slight paper tilt is the one playful gesture here: it reads as a
+     still pinned to the page, and straightens on hover. */
+  @media (prefers-reduced-motion: no-preference) and (min-width: 1024px) {
+    .series-figure {
+      transform: rotate(-1.2deg);
+      transition: transform var(--motion-slow) var(--ease-out);
+    }
+    .series-figure:hover {
+      transform: rotate(0deg);
+    }
+  }
+</style>

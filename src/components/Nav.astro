@@ -1,21 +1,38 @@
 ---
+import { languages, localizePath, otherLang, switchHref, useTranslations, type Lang } from '~/i18n/utils';
+
+interface Props {
+  lang?: Lang;
+  /** The other language's twin of this page, when the page knows it (posts). */
+  switchTo?: string;
+}
+const { lang = 'en', switchTo } = Astro.props;
+const t = useTranslations(lang);
 const items = [
-  { href: '/research/', label: 'Research' },
-  { href: '/publications/', label: 'Publications' },
-  { href: '/teaching/', label: 'Teaching' },
-  { href: '/group/', label: 'Group' },
-  { href: '/writing/', label: 'Writing' },
-  { href: '/about/', label: 'About' }
-];
+  { href: '/research/', label: t.nav.research },
+  { href: '/publications/', label: t.nav.publications },
+  { href: '/teaching/', label: t.nav.teaching },
+  { href: '/group/', label: t.nav.group },
+  { href: '/writing/', label: t.nav.writing },
+  { href: '/about/', label: t.nav.about }
+].map((it) => ({ ...it, href: localizePath(it.href, lang) }));
 const here = Astro.url.pathname;
+/* A blog post lives at /YYYY/MM/DD/slug/ (or under /is/), outside /writing/,
+   but it is still "Writing" as far as the reader is concerned. */
+const isPost = /^(\/is)?\/\d{4}\/\d{2}\/\d{2}\//.test(here);
 const isActive = (href: string) =>
-  here === href || (href !== '/' && here.startsWith(href));
+  here === href || (href !== '/' && here.startsWith(href)) || (isPost && href.endsWith('/writing/'));
+
+/* Language switcher: the other language's twin of this page (or its home /
+   writing index when there is no twin). Labelled in its own language. */
+const other = languages[otherLang(lang)];
+const otherHref = switchTo ?? switchHref(here);
 ---
 <header data-site-header class="sticky top-0 z-20 bg-bg/85 backdrop-blur-md border-b border-rule">
   <nav class="max-w-page mx-auto px-6 h-15 flex items-center justify-between gap-3">
     <!-- The wordmark is set in the display serif at its plain weight; in a
          paper design the name doesn't need bolding to read as the masthead. -->
-    <a href="/" class="font-display text-[1.0625rem] text-ink shrink-0">Hafsteinn Einarsson</a>
+    <a href={localizePath('/', lang)} class="font-display text-[1.0625rem] text-ink shrink-0">Hafsteinn Einarsson</a>
 
     <!-- Mono caps are appreciably wider than the sans they replaced, so the
          row is tuned to survive its tightest moment: 768px, where the
@@ -39,19 +56,34 @@ const isActive = (href: string) =>
       <li class="hidden lg:block">
         <a
           href="/cv.pdf"
+          hreflang={lang === 'en' ? undefined : 'en'}
           class="btn-editorial px-3 py-[0.4375rem] text-[0.78125rem]"
-        >CV ↓</a>
+        >{t.nav.cv}</a>
       </li>
     </ul>
 
     <div class="flex items-center gap-2">
+      <!-- Language switcher. From md it sits beside the theme toggle,
+           stretched to the toggle's height (self-stretch: the hamburger,
+           the only taller item, is gone by then); below md it lives in the
+           mobile menu, where there is room to spell the language out. -->
+      <a
+        href={otherHref}
+        hreflang={other.hreflang}
+        lang={other.hreflang}
+        aria-label={other.name}
+        title={other.name}
+        class="hidden md:inline-flex self-stretch items-center px-2.5 font-mono text-[0.75rem] tracking-[0.04em] text-ink-muted hover:text-ink hover:bg-accent-primary-soft border border-rule transition-colors"
+      >{other.short}</a>
       <slot name="end" />
       <button
         type="button"
         id="mobile-menu-button"
         aria-expanded="false"
         aria-controls="mobile-menu-panel"
-        aria-label="Open navigation menu"
+        aria-label={t.nav.openMenu}
+        data-label-open={t.nav.openMenu}
+        data-label-close={t.nav.closeMenu}
         class="md:hidden inline-flex items-center justify-center w-9 h-9 border border-rule text-ink-muted hover:text-ink hover:bg-accent-primary-soft transition-colors"
       >
         <svg
@@ -113,8 +145,17 @@ const isActive = (href: string) =>
         <li>
           <a
             href="/cv.pdf"
+            hreflang={lang === 'en' ? undefined : 'en'}
             class="relative flex items-center min-h-11 px-4 font-mono text-[0.8125rem] uppercase tracking-[0.06em] text-ink hover:bg-accent-primary-soft transition-colors"
-          >CV ↓</a>
+          >{t.nav.cv}</a>
+        </li>
+        <li class="border-t border-rule-soft mt-1 pt-1">
+          <a
+            href={otherHref}
+            hreflang={other.hreflang}
+            lang={other.hreflang}
+            class="relative flex items-center gap-3 min-h-11 px-4 font-mono text-[0.8125rem] tracking-[0.06em] text-ink-muted hover:text-ink hover:bg-accent-primary-soft transition-colors"
+          ><span class="text-ink-faint" aria-hidden="true">{other.short}</span>{other.name}</a>
         </li>
       </ul>
     </div>
@@ -132,7 +173,7 @@ const isActive = (href: string) =>
 
     const setOpen = (state) => {
       btn.setAttribute('aria-expanded', state ? 'true' : 'false');
-      btn.setAttribute('aria-label', state ? 'Close navigation menu' : 'Open navigation menu');
+      btn.setAttribute('aria-label', state ? btn.dataset.labelClose : btn.dataset.labelOpen);
       panel.style.gridTemplateRows = state ? '1fr' : '0fr';
       iconOpen?.classList.toggle('hidden', state);
       iconClose?.classList.toggle('hidden', !state);

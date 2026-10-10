@@ -8,3 +8,8 @@ tags:
   - dataset
   - qa
 status: maintenance
+summary_is: >-
+  Spurningasvörunargagnasafn Háskólans í Reykjavík fyrir íslensku
+  (Reykjavik University Question-Answering Dataset), lesskilningspróf
+  í anda SQuAD sem var safnað með GameQA-smáforritinu. Háskóli Íslands
+  dreifir því.

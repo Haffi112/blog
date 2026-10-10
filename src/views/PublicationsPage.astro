@@ -1,0 +1,80 @@
+---
+import BaseLayout from '~/components/BaseLayout.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import SectionHeading from '~/components/SectionHeading.astro';
+import PubCard from '~/components/PubCard.astro';
+import pubsData from '~/data/publications.json';
+import type { Publication, Theme } from '~/data/publications.schema';
+import { themes } from '~/data/themes';
+import { formatDate, useTranslations, type Lang } from '~/i18n/utils';
+
+/* Publications page body, shared by /publications/ and /is/publications/.
+   Titles, authors, venues and summaries stay as published (English). */
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const all = pubsData as unknown as Publication[];
+const selected = all.filter((p) => p.selected);
+
+const byTheme: Record<Theme, Publication[]> = {
+  'nlp-is': [],
+  'cv-nat': [],
+  'clinical-ai': [],
+  genetics: [],
+  'comp-neuro': [],
+  'discrete-math': []
+};
+for (const p of all) {
+  if (p.theme) byTheme[p.theme].push(p);
+}
+// Within each theme entries are already sorted by year desc (parse-bib).
+
+const lastBuild = new Date();
+const updated =
+  lang === 'en'
+    ? lastBuild.toISOString().slice(0, 10)
+    : formatDate(lastBuild, lang, { day: 'numeric', month: 'long', year: 'numeric' });
+---
+<BaseLayout title={t.publications.title} description={t.publications.description} lang={lang}>
+  <section class="max-w-prose mx-auto px-6 pb-12">
+    <PageHeader title={t.publications.title}>
+      <p class="mt-4 text-ink-muted text-sm">
+        {t.publications.count(all.length)} · {t.publications.lastUpdated} {updated} ·
+        <a href="https://orcid.org/0000-0001-5072-3678" class="underline underline-offset-2 decoration-1 hover:decoration-2">ORCID</a> ·
+        <a href="https://scholar.google.com/citations?user=QH69Qk8AAAAJ&hl=en" class="underline underline-offset-2 decoration-1 hover:decoration-2">Google Scholar</a>
+      </p>
+      {t.publications.languageNote && (
+        <p class="mt-2 meta">{t.publications.languageNote}</p>
+      )}
+    </PageHeader>
+
+    <details class="mt-6 text-sm text-ink-muted">
+      <summary class="cursor-pointer">{t.publications.authorship}</summary>
+      <p class="mt-2">{t.publications.authorshipBody}</p>
+    </details>
+
+    {selected.length > 0 && (
+      <section class="mt-12 max-w-prose" data-reveal>
+        <SectionHeading title={t.publications.selected} />
+        <div class="mt-6">
+          {selected.map((p) => <PubCard pub={p} variant="selected" lang={lang} />)}
+        </div>
+      </section>
+    )}
+
+    <section class="mt-16 max-w-prose" data-reveal>
+      <SectionHeading title={t.publications.all} />
+      {themes.map((th) => (
+        byTheme[th.code].length > 0 && (
+          <section class="mt-10">
+            <h3 id={th.code} class="text-[1.375rem] font-normal text-ink mb-2 scroll-mt-20">{th.heading[lang]}</h3>
+            {byTheme[th.code].map((p) => <PubCard pub={p} variant="list" lang={lang} />)}
+          </section>
+        )
+      ))}
+    </section>
+  </section>
+</BaseLayout>

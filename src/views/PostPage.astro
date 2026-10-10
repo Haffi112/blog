@@ -1,0 +1,54 @@
+---
+import { getImage } from 'astro:assets';
+import { render } from 'astro:content';
+import PostLayout from '~/layouts/PostLayout.astro';
+import { postAlternates, postLang, postSlug, readingMinutes, type Post } from '~/lib/posts';
+
+/* Post body, shared by /YYYY/MM/DD/slug/ and its Icelandic twin under /is/. */
+interface Neighbour {
+  title: string;
+  url: string;
+}
+interface Props {
+  post: Post;
+  newer?: Neighbour;
+  older?: Neighbour;
+}
+
+const { post, newer, older } = Astro.props;
+const lang = postLang(post);
+const { Content } = await render(post);
+
+// Social-share image. Priority: explicit hero image from the post's
+// frontmatter (resized to the 1200x630 OG canvas), otherwise the generated
+// title card at /og/<slug>.png (/og/is/<slug>.png for Icelandic posts).
+let ogImage: string;
+if (post.data.hero) {
+  const optimised = await getImage({
+    src: post.data.hero,
+    width: 1200,
+    height: 630,
+    format: 'png',
+    fit: 'cover',
+    position: 'attention'
+  });
+  ogImage = optimised.src;
+} else {
+  ogImage = `/og/${lang === 'is' ? 'is/' : ''}${postSlug(post)}.png`;
+}
+---
+<PostLayout
+  title={post.data.title}
+  date={post.data.date}
+  cited={post.data.cited}
+  description={post.data.excerpt}
+  ogImage={ogImage}
+  tags={post.data.tags}
+  minutes={readingMinutes(post)}
+  newer={newer}
+  older={older}
+  lang={lang}
+  alternates={await postAlternates(post)}
+>
+  <Content />
+</PostLayout>

@@ -1,0 +1,36 @@
+---
+import BaseLayout from '~/components/BaseLayout.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import CourseCard from '~/components/CourseCard.astro';
+import { pick, useTranslations, type Lang } from '~/i18n/utils';
+import { getCollection } from 'astro:content';
+
+/* Teaching page body, shared by /teaching/ and /is/teaching/. */
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const courses = (await getCollection('teaching')).map((c) => c.data);
+// Sort: MSc/PhD before BSc; within group, alphabetic (by the shown title)
+const levelOrder: Record<typeof courses[number]['level'], number> = {
+  phd: 0,
+  msc: 1,
+  mixed: 2,
+  bsc: 3
+};
+const shownTitle = (c: (typeof courses)[number]) => pick(lang, c.title, c.title_is);
+courses.sort((a, b) =>
+  levelOrder[a.level] - levelOrder[b.level] ||
+  shownTitle(a).localeCompare(shownTitle(b), lang === 'is' ? 'is' : 'en')
+);
+---
+<BaseLayout title={t.teaching.title} description={t.teaching.description} lang={lang}>
+  <section class="max-w-prose mx-auto px-6 pb-12">
+    <PageHeader title={t.teaching.title} lede={t.teaching.lede} />
+    <div class="mt-8" data-reveal>
+      {courses.map((c) => <CourseCard {...c} lang={lang} />)}
+    </div>
+  </section>
+</BaseLayout>

@@ -4,20 +4,32 @@ interface Props {
   text: string;
   link?: string;
   newest?: boolean;
+  /** Printed before `text`, e.g. "New post: " for blog items. */
+  prefix?: string;
+  /** `lang` for `text` when it differs from the page (an English post title on /is/). */
+  textLang?: string;
+  /** `hreflang` for the link, when it opens a page in another language. */
+  hreflang?: string;
+  /** 'year' when only the year is known: show "2021", not "2021-01". */
+  precision?: 'year' | 'month';
 }
 
-const { date, text, link, newest = false } = Astro.props;
+const { date, text, link, newest = false, prefix, textLang, hreflang, precision = 'month' } = Astro.props;
 const iso = date.toISOString().slice(0, 10);
-const formatted = iso.slice(0, 7); // YYYY-MM
+const formatted = precision === 'year' ? iso.slice(0, 4) : iso.slice(0, 7); // YYYY or YYYY-MM
 ---
-<li class="grid grid-cols-[auto_1fr] gap-x-4 sm:gap-x-[1.125rem] gap-y-2 py-[0.9375rem] border-t border-rule-soft last:border-b last:border-b-rule-soft">
-  <time datetime={iso} class="meta pt-1 flex items-center gap-1.5">
+<li class="grid grid-cols-[4.5rem_1fr] gap-x-3 sm:gap-x-4 gap-y-2 py-[0.9375rem] border-t border-rule-soft last:border-b last:border-b-rule-soft">
+  <time datetime={precision === 'year' ? iso.slice(0, 4) : iso} class="meta pt-1 flex items-center gap-1.5">
     {newest && (
       <span class="inline-block w-1.5 h-1.5 rounded-full bg-accent-energy" aria-hidden="true" />
     )}
     {formatted}
   </time>
   <p class="font-prose text-[1.0625rem] leading-[1.45] text-ink">
-    {link ? <a href={link}>{text}</a> : text}
+    {link ? (
+      <a href={link} hreflang={hreflang}>{prefix}{textLang ? <span lang={textLang}>{text}</span> : text}</a>
+    ) : (
+      <Fragment>{prefix}{textLang ? <span lang={textLang}>{text}</span> : text}</Fragment>
+    )}
   </p>
 </li>

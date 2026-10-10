@@ -1,51 +1,9 @@
 ---
-import { getCollection } from 'astro:content';
-import { getImage } from 'astro:assets';
-import PostLayout from '~/layouts/PostLayout.astro';
+// Thin wrapper: the post page lives in src/views/PostPage.astro and is
+// shared with the Icelandic route under src/pages/is/.
+import PostPage from '~/views/PostPage.astro';
+import { postPaths } from '~/lib/posts';
 
-export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
-  return posts.map((post) => {
-    const d = post.data.date;
-    const year = String(d.getUTCFullYear());
-    const month = String(d.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(d.getUTCDate()).padStart(2, '0');
-    // Strip leading "YYYY-MM-DD-" from slug if present
-    const slug = post.slug.replace(/^\d{4}-\d{2}-\d{2}-/, '');
-    return {
-      params: { year, month, day, slug },
-      props: { post, slug }
-    };
-  });
-}
-
-const { post, slug } = Astro.props;
-const { Content } = await post.render();
-
-// Social-share image. Priority: explicit hero image from the post's
-// frontmatter (resized to the 1200x630 OG canvas), otherwise the
-// generated title card at /og/<slug>.png.
-let ogImage: string;
-if (post.data.hero) {
-  const optimised = await getImage({
-    src: post.data.hero,
-    width: 1200,
-    height: 630,
-    format: 'png',
-    fit: 'cover',
-    position: 'attention'
-  });
-  ogImage = optimised.src;
-} else {
-  ogImage = `/og/${slug}.png`;
-}
+export const getStaticPaths = () => postPaths('en');
 ---
-<PostLayout
-  title={post.data.title}
-  date={post.data.date}
-  cited={post.data.cited}
-  description={post.data.excerpt}
-  ogImage={ogImage}
->
-  <Content />
-</PostLayout>
+<PostPage {...Astro.props} />

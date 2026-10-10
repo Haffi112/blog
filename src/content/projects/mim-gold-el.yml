@@ -9,3 +9,8 @@ tags:
   - dataset
   - entity-linking
 status: maintenance
+summary_is: >-
+  Málheild fyrir einingatengingu (entity linking) á íslensku, byggð
+  ofan á MIM-GOLD-málheildinni þar sem sérnöfn eru mörkuð. Gefin út
+  með Háskóla Íslands og kynnt á LREC 2022; aðferðagreinin birtist á
+  vinnustofunni Dataset Creation for Lower-Resourced Languages.

@@ -1,0 +1,80 @@
+---
+import BaseLayout from '~/components/BaseLayout.astro';
+import JsonLdPerson from '~/components/JsonLdPerson.astro';
+import Hero from '~/components/Hero.astro';
+import NewsItem from '~/components/NewsItem.astro';
+import PubDisclosure from '~/components/PubDisclosure.astro';
+import SectionHeading from '~/components/SectionHeading.astro';
+import SeriesFeature from '~/components/SeriesFeature.astro';
+import { getNews } from '~/lib/news';
+import { localizePath, useTranslations, type Lang } from '~/i18n/utils';
+import pubsData from '~/data/publications.json';
+import type { Publication } from '~/data/publications.schema';
+
+/* Home page body, shared by src/pages/index.astro and src/pages/is/index.astro. */
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+/* Content that is only in English gets marked as such on Icelandic pages. */
+const foreign = lang === 'en' ? undefined : 'en';
+
+/* Latest five, blog posts included so new writing shows up here; the full
+   list lives at the bottom of the Writing page. */
+const news = (await getNews(lang, { withPosts: true })).slice(0, 5);
+
+const pubs = pubsData as unknown as Publication[];
+const selected = pubs.filter((p) => p.selected).slice(0, 3);
+---
+<BaseLayout title={t.home.title} description={t.meta.description} lang={lang}>
+  <JsonLdPerson slot="head" />
+  <Hero lang={lang} />
+
+  <!-- Two panels divided by a hairline. The rule is the 1px grid gap
+       showing the container background through — that way it runs the full
+       height of the taller column and collapses into a horizontal divider
+       when the grid stacks, with no extra elements. -->
+  <div
+    class="max-w-page mx-auto grid gap-px bg-rule lg:grid-cols-2"
+    data-reveal
+  >
+    <section class="bg-bg px-6 py-10 md:px-10 md:py-12">
+      <SectionHeading
+        title={t.home.news}
+        href={localizePath('/writing/#news', lang)}
+        linkLabel={t.home.all}
+        rule={false}
+      />
+      <ul class="mt-6 list-none">
+        {news.map((n, i) => (
+          <NewsItem
+            date={n.date}
+            text={n.text}
+            prefix={n.prefix}
+            textLang={n.textLang}
+            hreflang={n.hreflang}
+            link={n.link}
+            newest={i === 0}
+          />
+        ))}
+      </ul>
+    </section>
+
+    <section class="bg-bg px-6 py-10 md:px-10 md:py-12">
+      <SectionHeading
+        title={t.home.selected}
+        href={localizePath('/publications/', lang)}
+        linkLabel={t.home.all}
+        rule={false}
+      />
+      <div class="mt-6">
+        {selected.map((p) => <PubDisclosure pub={p} lang={lang} />)}
+      </div>
+    </section>
+
+    <div class="lg:col-span-2">
+      <SeriesFeature lang={lang} />
+    </div>
+  </div>
+</BaseLayout>

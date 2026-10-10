@@ -10,3 +10,10 @@ tags:
   - nlp-is
   - language-model
 status: maintenance
+summary_is: >-
+  Fjölskylda íslenskra BERT-mállíkana sem voru forþjálfuð á Íslensku
+  vefmálheildinni (Icelandic Crawled Corpus). IceBERT-líkönin komu út
+  með grein á LREC 2022 í samstarfi við Miðeind og hafa síðan verið
+  grunnurinn að stórum hluta íslenskrar máltæknivinnu, bæði í hópnum
+  okkar og annars staðar.
+name_is: "IceBERT-líkönin"

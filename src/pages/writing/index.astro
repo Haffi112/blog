@@ -1,35 +1,6 @@
 ---
-import BaseLayout from '~/components/BaseLayout.astro';
-import PageHeader from '~/components/PageHeader.astro';
-import { getCollection } from 'astro:content';
-
-const posts = (await getCollection('blog', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
-
-const postUrl = (slug: string, date: Date) => {
-  const y = date.getUTCFullYear();
-  const m = String(date.getUTCMonth() + 1).padStart(2, '0');
-  const d = String(date.getUTCDate()).padStart(2, '0');
-  const stripped = slug.replace(/^\d{4}-\d{2}-\d{2}-/, '');
-  return `/${y}/${m}/${d}/${stripped}/`;
-};
+// Thin wrapper: the page body lives in src/views/WritingPage.astro and is
+// shared with /is/writing/. Edit the view, not this file.
+import WritingPage from '~/views/WritingPage.astro';
 ---
-<BaseLayout title="Writing" description="Notes on computational neuroscience, NLP, and applied ML.">
-  <section class="max-w-prose mx-auto px-6 pb-12">
-    <PageHeader
-      title="Writing"
-      lede="Notes on computational neuroscience and applied machine learning. Older posts (2016) are from my PhD years; new posts will pick up the thread."
-    />
-    <ul class="mt-8" data-reveal>
-      {posts.map((p) => (
-        <li class="py-5 border-t border-rule first:border-t-0">
-          <p class="font-mono text-xs text-ink-muted">{p.data.date.toISOString().slice(0, 10)}</p>
-          <h2 class="mt-1 text-xl font-semibold text-ink">
-            <a href={postUrl(p.slug, p.data.date)}>{p.data.title}</a>
-          </h2>
-          {p.data.excerpt && <p class="mt-2 prose-body text-ink-muted">{p.data.excerpt}</p>}
-        </li>
-      ))}
-    </ul>
-  </section>
-</BaseLayout>
+<WritingPage lang="en" />

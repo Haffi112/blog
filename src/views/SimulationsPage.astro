@@ -1,0 +1,43 @@
+---
+import BaseLayout from '~/components/BaseLayout.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import { useTranslations, type Lang } from '~/i18n/utils';
+
+/* Simulations index body, shared by /simulations/ and /is/simulations/.
+   The simulations themselves are standalone English HTML pages. */
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const simLang = lang === 'en' ? undefined : 'en';
+
+const sims = [
+  { href: '/simulations/standard-percolation.html', label: t.simulations.sims.standard },
+  { href: '/simulations/dscaling.html', label: t.simulations.sims.dscaling },
+  { href: '/simulations/izhikevich_neuron.html', label: t.simulations.sims.izhikevich },
+  { href: '/simulations/dice_parser.html', label: t.simulations.sims.dice }
+];
+---
+<BaseLayout title={t.simulations.title} description={t.simulations.description} lang={lang}>
+  <section class="max-w-prose mx-auto px-6 pb-12">
+    <PageHeader title={t.simulations.title}>
+      {lang === 'is' ? (
+        <p class="mt-4 prose-body max-w-prose">
+          Sjálfstæðar gagnvirkar hermanir frá doktorsárunum. Flestar nota <a href="https://d3js.org/">d3.js</a> fyrir myndræna framsetningu. Þér er velkomið að nota þær í kennslu; kóðinn er í <a href="https://github.com/Haffi112/blog">GitHub-safninu</a>. Hermanirnar sjálfar eru á ensku.
+        </p>
+      ) : (
+        <p class="mt-4 prose-body max-w-prose">
+          Standalone interactive simulations from my PhD years. Most use <a href="https://d3js.org/">d3.js</a> for the visuals. Feel free to use them for educational purposes; the code lives in <a href="https://github.com/Haffi112/blog">the GitHub repo</a>.
+        </p>
+      )}
+    </PageHeader>
+    <ul class="mt-8" data-reveal>
+      {sims.map((s) => (
+        <li class="py-3 border-t border-rule first:border-t-0">
+          <a href={s.href} hreflang={simLang}>{s.label} →</a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>

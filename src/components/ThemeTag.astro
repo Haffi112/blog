@@ -1,57 +1,43 @@
 ---
 import type { Theme } from '~/data/publications.schema';
+import { themeByCode } from '~/data/themes';
+import type { Lang } from '~/i18n/utils';
 
 /**
  * Research-theme label. The redesign drops the pill entirely: the tag is a
  * line of letterspaced mono caps sitting above the title, tinted by theme.
  * Rust is the house accent and carries the two flagship strands; the
  * remaining themes step down through the warm secondary and plain ink so
- * the list never reads as a colour chart.
+ * the list never reads as a colour chart. Label text lives in
+ * src/data/themes.ts (both languages).
  */
 interface Props {
   theme?: Theme;
   size?: 'sm' | 'md';
+  lang?: Lang;
 }
 
-const { theme, size = 'sm' } = Astro.props;
+const { theme, size = 'sm', lang = 'en' } = Astro.props;
 
-const config: Record<Theme, { label: string; tone: string }> = {
-  'nlp-is': {
-    label: 'NLP for Icelandic & Germanic',
-    tone: 'text-accent-primary'
-  },
-  'cv-nat': {
-    label: 'Machine Learning · Natural Sciences',
-    tone: 'text-accent-energy'
-  },
-  'clinical-ai': {
-    label: 'Clinical AI',
-    tone: 'text-accent-warm'
-  },
-  genetics: {
-    label: 'Genetics',
-    tone: 'text-ink-muted'
-  },
-  'comp-neuro': {
-    label: 'Computational Neuroscience',
-    tone: 'text-accent-warm'
-  },
-  'discrete-math': {
-    label: 'Discrete Mathematics',
-    tone: 'text-ink-muted'
-  }
+const tone: Record<Theme, string> = {
+  'nlp-is': 'text-accent-primary',
+  'cv-nat': 'text-accent-energy',
+  'clinical-ai': 'text-accent-warm',
+  genetics: 'text-ink-muted',
+  'comp-neuro': 'text-accent-warm',
+  'discrete-math': 'text-ink-muted'
 };
 
-const c = theme ? config[theme] : null;
+const label = theme ? themeByCode[theme].tag[lang] : null;
 ---
-{c && (
+{theme && label && (
   <span
     class:list={[
       'inline-block font-mono uppercase leading-none',
       size === 'sm'
         ? 'text-[0.6875rem] tracking-[0.1em]'
         : 'text-xs tracking-[0.12em]',
-      c.tone
+      tone[theme]
     ]}
-  >{c.label}</span>
+  >{label}</span>
 )}

@@ -1,0 +1,121 @@
+---
+import BaseLayout from '~/components/BaseLayout.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import SectionHeading from '~/components/SectionHeading.astro';
+import ThemeCard from '~/components/ThemeCard.astro';
+import ProjectCard from '~/components/ProjectCard.astro';
+import TalkItem from '~/components/TalkItem.astro';
+import MediaItem from '~/components/MediaItem.astro';
+import { media } from '~/lib/media';
+import { aiSeries, seriesWatchUrlFor } from '~/data/series';
+import { themes } from '~/data/themes';
+import { useTranslations, type Lang } from '~/i18n/utils';
+import { getCollection } from 'astro:content';
+
+/* Research page body, shared by /research/ and /is/research/. */
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+/* Alphabetical by file id, which is how the list has always read. */
+const projects = (await getCollection('projects'))
+  .sort((a, b) => a.id.localeCompare(b.id))
+  .map((p) => p.data);
+const talks = (await getCollection('talks'))
+  .map((t) => t.data)
+  .sort((a, b) => b.date.getTime() - a.date.getTime());
+
+/* Sixty-odd talks read as a wall in one list; grouped by year, with only
+   the two most recent years open, the page stays scannable. */
+const talksByYear = new Map<number, typeof talks>();
+for (const t of talks) {
+  const y = t.date.getUTCFullYear();
+  talksByYear.set(y, [...(talksByYear.get(y) ?? []), t]);
+}
+const talkYears = [...talksByYear.keys()];
+
+const RECENT_MEDIA = 8;
+const recentMedia = media.slice(0, RECENT_MEDIA);
+const olderMedia = media.slice(RECENT_MEDIA);
+
+const watchUrl = seriesWatchUrlFor(lang);
+---
+<BaseLayout title={t.research.title} description={t.research.description} lang={lang}>
+  <section class="max-w-prose mx-auto px-6 pb-12">
+    <PageHeader title={t.research.title} lede={t.research.lede} />
+
+    <section id="themes" class="mt-12 scroll-mt-20" data-reveal>
+      <SectionHeading title={t.research.themes} />
+      <div class="mt-6 flex flex-col gap-4">
+        {themes.map((th) => (
+          <ThemeCard theme={th.code} title={th.title[lang]} body={th.body[lang]} anchor={th.code} lang={lang} />
+        ))}
+      </div>
+    </section>
+
+    <section id="projects" class="mt-16 scroll-mt-20" data-reveal>
+      <SectionHeading title={t.research.projects} />
+      <p class="mt-3 text-ink-muted text-sm">{t.research.projectsIntro}</p>
+      <div class="mt-4">
+        {projects.map((p) => <ProjectCard {...p} lang={lang} />)}
+      </div>
+    </section>
+
+    <section id="media" class="mt-16 scroll-mt-20" data-reveal>
+      <SectionHeading title={t.research.media} />
+      {lang === 'is' ? (
+        <p class="mt-3 text-ink-muted text-sm">
+          Viðtöl, aðsendar greinar og útvarps- og sjónvarpsþættir, flest um
+          gervigreind og samfélagið. Ég gerði líka sjö þátta fræðsluröð um
+          áhættu af gervigreind,
+          <a href={watchUrl}><em>{aiSeries.title_is}</em></a>
+          (<a href={aiSeries.makingOf} hreflang="en">svona var hún gerð</a>, á ensku).
+        </p>
+      ) : (
+        <p class="mt-3 text-ink-muted text-sm">
+          Interviews, op-eds and broadcasts, mostly in Icelandic and mostly about AI and society.
+          I also made a seven-part explainer series on AI risk,
+          <a href={watchUrl}><em>{aiSeries.title_en}</em></a>
+          (<a href={aiSeries.makingOf}>how it was made</a>).
+        </p>
+      )}
+      <ul class="mt-4">
+        {recentMedia.map((m) => <MediaItem item={m} lang={lang} />)}
+      </ul>
+      {olderMedia.length > 0 && (
+        <details class="group mt-1 border-t border-rule-soft">
+          <summary class="cursor-pointer py-3 font-mono text-xs text-ink-muted hover:text-ink list-none">
+            <span class="group-open:hidden">{t.research.showEarlier(olderMedia.length)}</span>
+            <span class="hidden group-open:inline">{t.research.hideEarlier}</span>
+          </summary>
+          <ul>
+            {olderMedia.map((m) => <MediaItem item={m} lang={lang} />)}
+          </ul>
+        </details>
+      )}
+    </section>
+
+    <section id="talks" class="mt-16 scroll-mt-20" data-reveal>
+      <SectionHeading title={t.research.talks} />
+      <p class="mt-3 text-ink-muted text-sm">
+        {t.research.talksSummary(talks.length, talkYears.at(-1)!)}
+      </p>
+      {talkYears.map((y, i) => (
+        <details class="group mt-4 border-t border-rule" open={i < 2}>
+          <summary class="flex items-baseline justify-between cursor-pointer py-3 list-none">
+            <span class="font-display text-[1.125rem] text-ink">{y}</span>
+            <span class="meta">
+              {t.research.talkCount(talksByYear.get(y)!.length)}
+              <span class="inline-block ml-1.5 transition-transform group-open:rotate-90" aria-hidden="true">›</span>
+            </span>
+          </summary>
+          <ul class="pb-2">
+            {talksByYear.get(y)!.map((talk) => <TalkItem {...talk} lang={lang} />)}
+          </ul>
+        </details>
+      ))}
+    </section>
+  </section>
+</BaseLayout>

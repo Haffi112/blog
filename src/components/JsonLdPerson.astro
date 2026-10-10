@@ -1,9 +1,11 @@
 ---
+import { aiSeries } from '~/data/series';
+
 const personJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: 'Hafsteinn Einarsson',
-  jobTitle: 'Associate Professor of Computer Science',
+  jobTitle: 'Associate Professor of Computer Science and Head of Faculty',
   affiliation: [
     {
       '@type': 'Organization',
@@ -17,13 +19,15 @@ const personJsonLd = {
     }
   ],
   url: 'https://hafst1.is/',
-  image: 'https://hafst1.is/img/hafsteinn.png',
+  image: 'https://hafst1.is/img/hafsteinn-einarsson.jpg',
   sameAs: [
     'https://orcid.org/0000-0001-5072-3678',
     'https://github.com/Haffi112',
     'https://scholar.google.com/citations?user=QH69Qk8AAAAJ&hl=en',
     'https://www.linkedin.com/in/hafsteinn-einarsson-619a3711',
-    'https://twitter.com/hafsteinn'
+    'https://twitter.com/hafsteinn',
+    aiSeries.youtubeChannel,
+    aiSeries.tiktok
   ],
   alumniOf: {
     '@type': 'CollegeOrUniversity',
@@ -34,7 +38,8 @@ const personJsonLd = {
     'Computational Neuroscience',
     'Low-resource language modelling',
     'Icelandic language',
-    'Machine learning for natural sciences'
+    'Machine learning for natural sciences',
+    'AI safety and AI risk communication'
   ]
 };
 ---

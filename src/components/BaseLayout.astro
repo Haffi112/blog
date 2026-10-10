@@ -9,6 +9,7 @@ import ThemeToggle from './ThemeToggle.astro';
 // body type; IBM Plex Mono carries every eyebrow, date and nav item.
 import serifLatinUrl from '@fontsource-variable/newsreader/files/newsreader-latin-wght-normal.woff2?url';
 import monoLatinUrl from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2?url';
+import { alternates, getLang, languages, otherLang, useTranslations, type Lang } from '~/i18n/utils';
 
 interface Props {
   title: string;
@@ -21,13 +22,21 @@ interface Props {
   ogType?: 'website' | 'article';
   /** Article-only fields (used when ogType === 'article'). */
   publishedTime?: Date;
+  /** Page language; defaults to the URL (anything under /is/ is Icelandic). */
+  lang?: Lang;
+  /** Explicit language twins, for pages outside translatedRoutes (blog
+      posts pair by filename). Only used when both languages are present. */
+  alternates?: Partial<Record<Lang, string>>;
 }
+
+const lang: Lang = Astro.props.lang ?? getLang(Astro.url);
+const t = useTranslations(lang);
 
 const {
   title,
-  description = 'Hafsteinn Einarsson — Associate Professor at the University of Iceland and Principal Scientist at Amgen deCODE.',
+  description = t.meta.description,
   canonical,
-  ogImage = '/og/default.png',
+  ogImage = lang === 'is' ? '/og/default-is.png' : '/og/default.png',
   ogType = 'website',
   publishedTime
 } = Astro.props;
@@ -38,15 +47,29 @@ const ogImageURL = ogImage.startsWith('http')
   ? ogImage
   : new URL(ogImage, site).toString();
 const fullTitle = `${title} · Hafsteinn Einarsson`;
+
+/* hreflang pairs for pages that exist in both languages. English is the
+   x-default. Pages without a twin (blog posts, 404) get none. */
+const given = Astro.props.alternates;
+const alt =
+  given?.en && given?.is ? (given as Record<Lang, string>) : alternates(Astro.url.pathname);
+const altURL = (l: Lang) => new URL(alt![l], site).toString();
 ---
 <!doctype html>
-<html lang="en">
+<html lang={languages[lang].hreflang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
+    {alt && (
+      <Fragment>
+        <link rel="alternate" hreflang="en" href={altURL('en')} />
+        <link rel="alternate" hreflang="is" href={altURL('is')} />
+        <link rel="alternate" hreflang="x-default" href={altURL('en')} />
+      </Fragment>
+    )}
 
     <!-- OpenGraph -->
     <meta property="og:type" content={ogType} />
@@ -57,6 +80,8 @@ const fullTitle = `${title} · Hafsteinn Einarsson`;
     <meta property="og:image" content={ogImageURL} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content={languages[lang].og} />
+    {alt && <meta property="og:locale:alternate" content={languages[otherLang(lang)].og} />}
     {ogType === 'article' && publishedTime && (
       <meta property="article:published_time" content={publishedTime.toISOString()} />
     )}
@@ -76,7 +101,7 @@ const fullTitle = `${title} · Hafsteinn Einarsson`;
     <link rel="preload" as="font" type="font/woff2" href={serifLatinUrl} crossorigin />
     <link rel="preload" as="font" type="font/woff2" href={monoLatinUrl} crossorigin />
     <link rel="apple-touch-icon" href="/apple-touch-icon-precomposed.png" />
-    <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href={lang === 'is' ? '/is/atom.xml' : '/atom.xml'} />
     <script is:inline>
       // No-FOUC theme init: must run before paint.
       // Mirror the ids in src/styles/global.css and ThemeToggle.astro.
@@ -105,12 +130,12 @@ const fullTitle = `${title} · Hafsteinn Einarsson`;
     <slot name="head" />
   </head>
   <body class="bg-bg text-ink">
-    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:bg-bg-elev focus:p-2 focus:border focus:border-accent-primary">Skip to content</a>
-    <Nav>
-      <ThemeToggle slot="end" />
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:bg-bg-elev focus:p-2 focus:border focus:border-accent-primary">{t.meta.skipToContent}</a>
+    <Nav lang={lang} switchTo={alt?.[otherLang(lang)]}>
+      <ThemeToggle slot="end" lang={lang} />
     </Nav>
     <main id="main"><slot /></main>
-    <Footer />
+    <Footer lang={lang} />
     <script is:inline>
       // Scroll reveals: fade/rise elements marked data-reveal as they
       // enter the viewport. CSS (gated on html.js) hides them initially;

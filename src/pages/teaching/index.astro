@@ -1,32 +1,6 @@
 ---
-import BaseLayout from '~/components/BaseLayout.astro';
-import PageHeader from '~/components/PageHeader.astro';
-import CourseCard from '~/components/CourseCard.astro';
-import { getCollection } from 'astro:content';
-
-const courses = (await getCollection('teaching')).map((c) => c.data);
-// Sort: MSc/PhD before BSc; within group, alphabetic
-const levelOrder: Record<typeof courses[number]['level'], number> = {
-  phd: 0,
-  msc: 1,
-  mixed: 2,
-  bsc: 3
-};
-courses.sort((a, b) =>
-  levelOrder[a.level] - levelOrder[b.level] || a.title.localeCompare(b.title)
-);
+// Thin wrapper: the page body lives in src/views/TeachingPage.astro and is
+// shared with /is/teaching/. Edit the view, not this file.
+import TeachingPage from '~/views/TeachingPage.astro';
 ---
-<BaseLayout
-  title="Teaching"
-  description="Courses taught and developed by Hafsteinn Einarsson at the University of Iceland."
->
-  <section class="max-w-prose mx-auto px-6 pb-12">
-    <PageHeader
-      title="Teaching"
-      lede="Courses I currently teach or have developed at the University of Iceland. Roughly 300+ students per academic year across these courses."
-    />
-    <div class="mt-8" data-reveal>
-      {courses.map((c) => <CourseCard {...c} />)}
-    </div>
-  </section>
-</BaseLayout>
+<TeachingPage lang="en" />

@@ -1,0 +1,104 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '~/components/BaseLayout.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import SectionHeading from '~/components/SectionHeading.astro';
+import NewsItem from '~/components/NewsItem.astro';
+import MediaItem from '~/components/MediaItem.astro';
+import { media } from '~/lib/media';
+import { getNews } from '~/lib/news';
+import { getPostsFor, postLang, postUrl, readingMinutes } from '~/lib/posts';
+import { formatDate, useTranslations, type Lang } from '~/i18n/utils';
+
+/* Writing index body, shared by /writing/ and /is/writing/. The Icelandic
+   index lists the Icelandic translations, and falls back to the English
+   original (marked lang="en") for any post not translated yet. */
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const posts = await getPostsFor(lang);
+/* lang/hreflang for a post written in another language than the page. */
+const foreign = (p: (typeof posts)[number]) => (postLang(p) === lang ? undefined : postLang(p));
+const anyForeign = posts.some((p) => foreign(p));
+/* Every news item, below the posts: writing stays the first thing here. */
+const news = await getNews(lang);
+/* Pieces I wrote for other outlets (op-eds, explainers), from the shared
+   media list in cv-static.yaml. */
+const elsewhere = media.filter((m) => m.type === 'opinion' || m.type === 'explainer');
+
+/* Group by year, newest year first; the year is the only structure a
+   chronological list needs. */
+const byYear = new Map<number, typeof posts>();
+for (const p of posts) {
+  const y = p.data.date.getUTCFullYear();
+  byYear.set(y, [...(byYear.get(y) ?? []), p]);
+}
+
+const shortDate = (d: Date) => formatDate(d, lang, { day: 'numeric', month: 'short' });
+---
+<BaseLayout title={t.writing.title} description={t.writing.description} lang={lang}>
+  <section class="max-w-prose mx-auto px-6 pb-12">
+    <PageHeader title={t.writing.title} lede={t.writing.lede}>
+      {anyForeign && t.writing.languageNote && <p class="mt-3 meta">{t.writing.languageNote}</p>}
+      <p class="mt-4"><a href="#news" class="link-plain font-mono text-xs text-ink-muted">{t.writing.newsJump} ↓</a></p>
+    </PageHeader>
+
+    {[...byYear].map(([year, list]) => (
+      <section class="mt-10" data-reveal aria-labelledby={`y-${year}`}>
+        <h2 id={`y-${year}`} class="meta text-[0.8125rem]">{year}</h2>
+        <ul class="mt-2">
+          {list.map((p) => (
+            <li class="py-6 border-t border-rule-soft first:border-t-0">
+              <a href={postUrl(p)} hreflang={foreign(p)} class="link-plain group grid gap-x-6 gap-y-3 sm:grid-cols-[1fr_auto] items-start">
+                <div>
+                  <p class="meta flex gap-3">
+                    <time datetime={p.data.date.toISOString().slice(0, 10)}>{shortDate(p.data.date)}</time>
+                    <span>{t.writing.minRead(readingMinutes(p))}</span>
+                  </p>
+                  <h3 lang={foreign(p)} class="mt-1.5 font-display text-[1.375rem] leading-[1.25] font-normal text-ink group-hover:text-accent-primary transition-colors text-balance">
+                    {p.data.title}
+                  </h3>
+                  {p.data.excerpt && (
+                    <p lang={foreign(p)} class="mt-2 font-prose text-[1rem] leading-[1.55] text-ink-muted line-clamp-3">{p.data.excerpt}</p>
+                  )}
+                </div>
+                {p.data.hero && (
+                  <Image
+                    src={p.data.hero}
+                    alt=""
+                    width={176}
+                    height={132}
+                    fit="cover"
+                    class="row-start-1 sm:row-start-auto w-full sm:w-[8.25rem] aspect-4/3 object-cover border border-rule grayscale-[35%] group-hover:grayscale-0 transition-[filter] duration-300"
+                    loading="lazy"
+                  />
+                )}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    {elsewhere.length > 0 && (
+      <section id="elsewhere" class="mt-20 scroll-mt-20" data-reveal>
+        <SectionHeading title={t.writing.elsewhereTitle} rule={false} />
+        <p class="mt-2 text-sm text-ink-muted">{t.writing.elsewhereLede}</p>
+        <ul class="mt-4">
+          {elsewhere.map((m) => <MediaItem item={m} lang={lang} />)}
+        </ul>
+      </section>
+    )}
+
+    <section id="news" class="mt-20 scroll-mt-20" data-reveal>
+      <SectionHeading title={t.writing.newsTitle} rule={false} />
+      <p class="mt-2 text-sm text-ink-muted">{t.writing.newsLede}</p>
+      <ul class="mt-5 list-none">
+        {news.map((n) => <NewsItem {...n} />)}
+      </ul>
+    </section>
+  </section>
+</BaseLayout>

@@ -1,29 +1,6 @@
 ---
-import BaseLayout from '~/components/BaseLayout.astro';
-import PageHeader from '~/components/PageHeader.astro';
+// Thin wrapper: the page body lives in src/views/CvPage.astro and is
+// shared with /is/cv/. Edit the view, not this file.
+import CvPage from '~/views/CvPage.astro';
 ---
-<BaseLayout title="CV" description="Curriculum Vitae — Hafsteinn Einarsson.">
-  <section class="max-w-prose mx-auto px-6 pb-12">
-    <PageHeader
-      title="Curriculum Vitae"
-      lede="Two versions, both generated from this site's content via a Typst template that mirrors the site's typography and palette."
-    />
-    <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-      <li><a href="/cv.pdf" download class="underline underline-offset-2 decoration-1 hover:decoration-2">Short CV (2 pages) ↓</a></li>
-      <li><a href="/cv-long.pdf" download class="underline underline-offset-2 decoration-1 hover:decoration-2">Full CV (all publications) ↓</a></li>
-    </ul>
-  </section>
-  <section class="max-w-page mx-auto px-6 pb-12">
-    <object
-      data="/cv.pdf"
-      type="application/pdf"
-      class="w-full h-[85vh] border border-rule rounded"
-      aria-label="Hafsteinn Einarsson's short CV"
-    >
-      <p class="prose-body p-6">
-        Your browser cannot display the embedded PDF.
-        <a href="/cv.pdf">Download the short CV here.</a>
-      </p>
-    </object>
-  </section>
-</BaseLayout>
+<CvPage lang="en" />

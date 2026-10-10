@@ -1,0 +1,38 @@
+---
+import { sourceLang, type MediaItem } from '~/lib/media';
+import { useTranslations, type Lang } from '~/i18n/utils';
+
+/**
+ * One press or broadcast appearance. The title leads in the page's
+ * language; when the piece itself is in the other language (most are in
+ * Icelandic), the outlet's own headline sits under it — that is also what
+ * the link opens. On Icelandic pages an Icelandic piece therefore shows
+ * just its original headline, with no English gloss.
+ */
+interface Props {
+  item: MediaItem;
+  lang?: Lang;
+}
+
+const { item, lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+const iso = item.date.toISOString().slice(0, 10);
+const src = sourceLang(item);
+const lead = lang === 'is' ? (item.title_is ?? item.title_en) : item.title_en;
+const leadLang = lang === 'is' && !item.title_is ? 'en' : undefined;
+const original = src === lang ? undefined : src === 'is' ? item.title_is : item.title_en;
+const showOriginal = !!original && original !== lead;
+const hreflang = src === lang ? undefined : src;
+---
+<li class="grid grid-cols-[4.25rem_1fr] gap-x-4 py-4 border-t border-rule-soft first:border-t-0">
+  <time datetime={iso} class="meta pt-1">{iso.slice(0, 7)}</time>
+  <div>
+    <p class="font-prose text-[1.0625rem] leading-[1.45] text-ink text-pretty" lang={leadLang}>
+      {item.url ? <a href={item.url} hreflang={hreflang}>{lead}</a> : lead}
+    </p>
+    {showOriginal && (
+      <p lang={src} class="mt-0.5 font-prose italic text-[0.9375rem] leading-[1.45] text-ink-muted">{original}</p>
+    )}
+    <p class="meta mt-1.5">{item.outlet}, {t.media.types[item.type]?.toLowerCase() ?? item.type}</p>
+  </div>
+</li>

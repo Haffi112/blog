@@ -1,23 +1,38 @@
 ---
+import { places } from '~/i18n/ui';
+import { fallbackLang, formatDate, pick, useTranslations, type Lang } from '~/i18n/utils';
+
 interface Props {
   date: Date;
   title: string;
+  title_is?: string;
   venue: string;
+  venue_is?: string;
   location?: string;
   type: 'invited' | 'keynote' | 'outreach' | 'workshop';
   link?: string;
+  lang?: Lang;
 }
-const { date, title, venue, location, type, link } = Astro.props;
-const year = date.getFullYear();
+const { date, title, title_is, venue, venue_is, location, type, link, lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+const shownTitle = pick(lang, title, title_is);
+const shownVenue = pick(lang, venue, venue_is);
+const shownPlace = location && pick(lang, location, places[location]);
+/* Talks are listed under a year heading, so the rail shows the month. A
+   1 January date is how year-only entries are stored, so it gets no month
+   rather than a misleading "Jan". */
+const yearOnly = date.getUTCMonth() === 0 && date.getUTCDate() === 1;
+const month = yearOnly ? '' : formatDate(date, lang, { month: 'short' });
 ---
-<li class="flex gap-4 py-3 border-t border-rule first:border-t-0">
-  <span class="font-mono text-xs text-ink-muted shrink-0 w-12 mt-1">{year}</span>
+<li class="grid grid-cols-[2.75rem_1fr] gap-x-4 py-3 border-t border-rule-soft first:border-t-0">
+  <span class="meta pt-1">{month}</span>
   <div>
-    <p class="text-ink">
-      {link ? <a href={link}>{title}</a> : title}
+    <p class="font-prose text-[1.0625rem] leading-[1.45] text-ink" lang={fallbackLang(lang, title_is)}>
+      {link ? <a href={link}>{shownTitle}</a> : shownTitle}
     </p>
-    <p class="text-sm text-ink-muted">
-      {venue}{location && <Fragment>, {location}</Fragment>} · {type}
+    <p class="mt-0.5 text-sm text-ink-muted">
+      {shownVenue}{shownPlace && <Fragment>, {shownPlace}</Fragment>}
+      {type !== 'invited' && <span class="meta ml-2">{t.talkTypes[type]}</span>}
     </p>
   </div>
 </li>

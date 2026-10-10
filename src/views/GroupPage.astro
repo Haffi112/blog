@@ -1,0 +1,73 @@
+---
+import BaseLayout from '~/components/BaseLayout.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import SectionHeading from '~/components/SectionHeading.astro';
+import PersonCard from '~/components/PersonCard.astro';
+import { pick, useTranslations, type Lang } from '~/i18n/utils';
+import { getCollection } from 'astro:content';
+
+/* Group page body, shared by /group/ and /is/group/. Thesis titles are
+   shown as written; section and role labels come from src/i18n/ui.ts. */
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+type Role =
+  | 'phd-main'
+  | 'phd-committee'
+  | 'msc'
+  | 'alumni-phd'
+  | 'alumni-phd-committee'
+  | 'alumni-msc';
+
+/* Explicit order, not file order (the content loader doesn't promise one):
+   current members by start year, graduates most recent first, then name. */
+const all = (await getCollection('students'))
+  .map((s) => s.data)
+  .sort((a, b) =>
+    a.role.startsWith('alumni')
+      ? (b.endYear ?? 0) - (a.endYear ?? 0) || a.name.localeCompare(b.name, 'is')
+      : (a.startYear ?? 0) - (b.startYear ?? 0) || a.name.localeCompare(b.name, 'is')
+  );
+
+const order: Role[] = [
+  'phd-main',
+  'phd-committee',
+  'msc',
+  'alumni-phd',
+  'alumni-phd-committee',
+  'alumni-msc'
+];
+---
+<BaseLayout title={t.group.title} description={t.group.description} lang={lang}>
+  <section class="max-w-prose mx-auto px-6 pb-12">
+    <PageHeader title={t.group.title} lede={t.group.lede} />
+
+    {order.map((role) => {
+      const members = all.filter((s) => s.role === role);
+      if (members.length === 0) return null;
+      const g = t.group.sections[role];
+      return (
+        <section class="mt-12" data-reveal>
+          <SectionHeading title={g.label} />
+          {g.description && <p class="mt-2 text-ink-muted">{g.description}</p>}
+          <div class="mt-4">
+            {members.map((m) => (
+              <PersonCard
+                name={m.name}
+                role={t.group.roles[m.role]}
+                title={pick(lang, m.title, m.title_is)}
+                link={m.link}
+                nowAt={pick(lang, m.nowAt, m.nowAt_is)}
+                supervisor={m.supervisor}
+                lang={lang}
+              />
+            ))}
+          </div>
+        </section>
+      );
+    })}
+  </section>
+</BaseLayout>

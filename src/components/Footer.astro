@@ -1,18 +1,29 @@
 ---
+import { aiSeries } from '~/data/series';
+import { localizePath, useTranslations, type Lang } from '~/i18n/utils';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+
 const exploreLinks = [
-  { href: '/research/', label: 'Research' },
-  { href: '/publications/', label: 'Publications' },
-  { href: '/teaching/', label: 'Teaching' },
-  { href: '/group/', label: 'Group' },
-  { href: '/writing/', label: 'Writing' },
-  { href: '/about/', label: 'About' }
-];
+  { href: '/research/', label: t.nav.research },
+  { href: '/publications/', label: t.nav.publications },
+  { href: '/teaching/', label: t.nav.teaching },
+  { href: '/group/', label: t.nav.group },
+  { href: '/writing/', label: t.nav.writing },
+  { href: '/about/', label: t.nav.about }
+].map((l) => ({ ...l, href: localizePath(l.href, lang) }));
 const profileLinks = [
   { href: 'https://scholar.google.com/citations?user=QH69Qk8AAAAJ&hl=en', label: 'Google Scholar' },
   { href: 'https://orcid.org/0000-0001-5072-3678', label: 'ORCID' },
   { href: 'https://github.com/Haffi112', label: 'GitHub' },
   { href: 'https://www.linkedin.com/in/hafsteinn-einarsson-619a3711', label: 'LinkedIn' },
   { href: 'https://twitter.com/hafsteinn', label: 'X' },
+  { href: aiSeries.youtubeChannel, label: 'YouTube' },
+  { href: aiSeries.tiktok, label: 'TikTok' },
   { href: '/atom.xml', label: 'RSS' }
 ];
 const year = new Date().getFullYear();
@@ -26,21 +37,20 @@ const year = new Date().getFullYear();
         Hafsteinn Einarsson
       </p>
       <p class="mt-3 font-prose text-[1rem] leading-[1.55] text-ink-muted max-w-[34ch]">
-        Machine learning research at the University of Iceland and Amgen
-        deCODE: language, vision, clinical AI, and human genetics.
+        {t.footer.blurb}
       </p>
       <p class="meta mt-6">© {year} Hafsteinn Einarsson</p>
     </div>
-    <nav aria-label="Site sections">
-      <p class="eyebrow text-ink-faint">Explore</p>
+    <nav aria-label={t.footer.sectionsLabel}>
+      <p class="eyebrow text-ink-faint">{t.footer.explore}</p>
       <ul class="mt-3.5 flex flex-col gap-2.5 font-mono text-[0.78125rem]">
         {exploreLinks.map((l) => (
           <li><a href={l.href} class="text-ink-muted hover:text-ink">{l.label}</a></li>
         ))}
       </ul>
     </nav>
-    <nav aria-label="Profiles elsewhere">
-      <p class="eyebrow text-ink-faint">Elsewhere</p>
+    <nav aria-label={t.footer.profilesLabel}>
+      <p class="eyebrow text-ink-faint">{t.footer.elsewhere}</p>
       <ul class="mt-3.5 flex flex-col gap-2.5 font-mono text-[0.78125rem]">
         {profileLinks.map((l) => (
           <li><a href={l.href} class="text-ink-muted hover:text-ink">{l.label}</a></li>
@@ -50,7 +60,7 @@ const year = new Date().getFullYear();
   </div>
   <div class="border-t border-rule">
     <div class="max-w-page mx-auto px-6 md:px-10 py-4 flex justify-end">
-      <a href="/cv.pdf" class="meta hover:text-ink">Download CV ↓</a>
+      <a href="/cv.pdf" hreflang={lang === 'en' ? undefined : 'en'} class="meta hover:text-ink">{t.footer.downloadCv}</a>
     </div>
   </div>
 </footer>

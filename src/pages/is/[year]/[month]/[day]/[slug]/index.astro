@@ -1,0 +1,8 @@
+---
+// Icelandic translations of blog posts (src/content/blog/is/*.mdx).
+import PostPage from '~/views/PostPage.astro';
+import { postPaths } from '~/lib/posts';
+
+export const getStaticPaths = () => postPaths('is');
+---
+<PostPage {...Astro.props} />

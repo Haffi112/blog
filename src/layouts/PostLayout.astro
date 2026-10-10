@@ -1,6 +1,12 @@
 ---
 import BaseLayout from '~/components/BaseLayout.astro';
 import Bibliography from '~/components/Bibliography.astro';
+import { formatDate, languages, localizePath, useTranslations, type Lang } from '~/i18n/utils';
+
+interface Neighbour {
+  title: string;
+  url: string;
+}
 
 interface Props {
   title: string;
@@ -8,9 +14,53 @@ interface Props {
   cited?: string[];
   description?: string;
   ogImage?: string;
+  tags?: string[];
+  /** Estimated reading time in minutes. */
+  minutes?: number;
+  /** Adjacent posts by date, for the footer navigation. */
+  newer?: Neighbour;
+  older?: Neighbour;
+  lang?: Lang;
+  /** URLs of this post in each language it exists in. */
+  alternates?: Partial<Record<Lang, string>>;
 }
 
-const { title, date, cited = [], description, ogImage } = Astro.props;
+const {
+  title,
+  date,
+  cited = [],
+  description,
+  ogImage,
+  tags = [],
+  minutes,
+  newer,
+  older,
+  lang = 'en',
+  alternates = {}
+} = Astro.props;
+const t = useTranslations(lang);
+
+const iso = date.toISOString().slice(0, 10);
+const longDate = formatDate(date, lang, { day: 'numeric', month: 'long', year: 'numeric' });
+/* A translation says so, and links to the original. */
+const original = lang !== 'en' ? alternates.en : undefined;
+
+/* Article metadata for search engines. */
+const site = Astro.site ?? new URL('https://hafst1.is/');
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  datePublished: date.toISOString(),
+  inLanguage: languages[lang].hreflang,
+  url: new URL(Astro.url.pathname, site).toString(),
+  mainEntityOfPage: new URL(Astro.url.pathname, site).toString(),
+  image: ogImage ? new URL(ogImage, site).toString() : undefined,
+  keywords: tags.length ? tags.join(', ') : undefined,
+  author: { '@type': 'Person', name: 'Hafsteinn Einarsson', url: site.toString() },
+  ...(original && { translationOfWork: { '@id': new URL(original, site).toString() } })
+};
 ---
 <BaseLayout
   title={title}
@@ -18,30 +68,93 @@ const { title, date, cited = [], description, ogImage } = Astro.props;
   ogType="article"
   publishedTime={date}
   ogImage={ogImage}
+  lang={lang}
+  alternates={alternates}
 >
-  <article class="max-w-prose mx-auto px-6 py-12">
-    <header>
-      <p class="text-sm text-ink-muted font-mono">{date.toISOString().slice(0, 10)}</p>
-      <h1 class="mt-2 text-4xl font-semibold tracking-tight text-ink leading-tight">{title}</h1>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(articleLd)} />
+  <article class="max-w-prose mx-auto px-6 pt-10 pb-12 md:pt-14">
+    <header class="pb-8 border-b border-rule">
+      <a href={localizePath('/writing/', lang)} class="link-plain font-mono text-xs text-ink-muted">← {t.post.back}</a>
+      <p class="meta mt-8 flex flex-wrap gap-x-4 gap-y-1">
+        <time datetime={iso}>{longDate}</time>
+        {minutes && <span>{t.writing.minRead(minutes)}</span>}
+        {original && <a href={original} hreflang="en" class="link-plain hover:text-ink">{t.post.original} ↗</a>}
+      </p>
+      <h1 class="mt-3 text-display-sm font-light text-ink text-balance">{title}</h1>
+      {description && (
+        <p class="mt-5 font-prose italic text-[1.1875rem] leading-[1.55] text-ink-muted text-pretty">{description}</p>
+      )}
     </header>
-    <div class="mt-10 prose-body [&>p]:my-5 [&>h2]:mt-12 [&>h2]:mb-3 [&>h2]:text-2xl [&>h2]:font-semibold [&>h3]:mt-8 [&>h3]:mb-2 [&>h3]:text-xl [&>h3]:font-semibold [&>ul]:my-4 [&>ul]:pl-6 [&>ul>li]:list-disc [&>ol]:my-4 [&>ol]:pl-6 [&>ol>li]:list-decimal [&>blockquote]:border-l-4 [&>blockquote]:border-rule [&>blockquote]:pl-4 [&>blockquote]:italic [&>blockquote]:text-ink-muted">
+
+    <div class="post-body mt-10 prose-body [&>p]:my-5 [&>ul]:my-4 [&>ul]:pl-6 [&>ul>li]:list-disc [&>ol]:my-4 [&>ol]:pl-6 [&>ol>li]:list-decimal [&>blockquote]:border-l-2 [&>blockquote]:border-accent-primary [&>blockquote]:pl-5 [&>blockquote]:italic [&>blockquote]:text-ink-muted">
       <slot />
     </div>
+
     {cited.length > 0 && (
       <section class="mt-16">
-        <h2 class="text-xl font-semibold text-ink">References</h2>
+        <h2 class="text-[1.5rem] font-normal text-ink">{t.post.references}</h2>
         <Bibliography keys={cited} />
       </section>
     )}
+
+    <footer class="mt-16">
+      {tags.length > 0 && (
+        <ul class="flex flex-wrap gap-x-3 gap-y-1 font-mono text-xs text-ink-faint" aria-label={t.post.tags}>
+          {tags.map((t) => <li>#{t}</li>)}
+        </ul>
+      )}
+      {(newer || older) && (
+        <nav aria-label={t.post.moreWriting} class="mt-6 grid gap-px bg-rule border-y border-rule sm:grid-cols-2">
+          <div class="bg-bg py-5 sm:pr-6">
+            {older && (
+              <a href={older.url} class="link-plain group block">
+                <span class="meta">{t.post.older}</span>
+                <span class="mt-1 block font-display text-[1.125rem] leading-snug text-ink group-hover:text-accent-primary transition-colors">{older.title}</span>
+              </a>
+            )}
+          </div>
+          <div class="bg-bg py-5 sm:pl-6 sm:text-right">
+            {newer && (
+              <a href={newer.url} class="link-plain group block">
+                <span class="meta">{t.post.newer}</span>
+                <span class="mt-1 block font-display text-[1.125rem] leading-snug text-ink group-hover:text-accent-primary transition-colors">{newer.title}</span>
+              </a>
+            )}
+          </div>
+        </nav>
+      )}
+    </footer>
   </article>
 </BaseLayout>
+
+<style>
+  /* Post headings follow the site's type: the serif at its plain weight,
+     sized to step clearly below the light display title. */
+  .post-body :global(> h2) {
+    margin-top: 3rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.625rem;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+  }
+  .post-body :global(> h3) {
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+</style>
 
 <script>
   // Replace inline footnote references with click/hover popovers via
   // littlefoot. GFM emits the footnotes block + jump links during markdown
   // compile; littlefoot hides the block at runtime and renders an inline
   // numbered button instead. No-op on posts without footnotes.
-  import littlefoot from 'littlefoot';
+  // Named import: the package has no "exports" map, and Vite 8 resolves its
+  // CommonJS build, where the default-import interop yields an object
+  // rather than the function ("littlefoot is not a function").
+  import { littlefoot } from 'littlefoot';
   import 'littlefoot/dist/littlefoot.css';
 
   if (document.querySelector('[data-footnotes], .footnotes')) {

@@ -8,3 +8,8 @@ tags:
   - dataset
   - benchmark
 status: maintenance
+summary_is: >-
+  Íslensk aðlögun á WinoGrande-prófsafninu, sem reynir á almenna
+  skynsemi, ætluð til að meta íslensk mállíkön í verkefnum sem
+  krefjast þess að greina hvert fornöfn vísa og að beita þekkingu á
+  heiminum. Gefið út af Miðeind ehf.
