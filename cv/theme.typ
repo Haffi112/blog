@@ -24,7 +24,7 @@
 
 // --- Text ------------------------------------------------------------------
 #let ink = rgb("#1C1A17")
-#let muted = rgb("#67635D")          // ink at 62% over paper
+#let muted = rgb("#565350")          // ink at 70% over paper (site raised it for contrast)
 #let rule = rgb("#E2DFD8")           // ink at 12% over paper
 
 // --- Accents ---------------------------------------------------------------

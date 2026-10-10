@@ -8,7 +8,6 @@
 @import "@fontsource-variable/ibm-plex-sans";
 @import "@fontsource/ibm-plex-mono/latin-400.css";
 @import "@fontsource/ibm-plex-mono/latin-500.css";
-@import "katex/dist/katex.min.css";
 @import "tailwindcss";
 
 /* daisyUI v5 — two curated themes only: the editorial "light" and "dark"
@@ -16,6 +15,10 @@
    name. */
 @plugin "daisyui" {
   themes: light --default, dark --prefersdark;
+  /* The site uses daisyUI for its theme system only — every component is
+     hand-built — so emit just the base layer. With all components it was
+     ~100 KB of unused CSS on every page. */
+  include: properties, rootcolor, rootscrollgutter, rootscrolllock, scrollbar, svg;
 }
 
 /* Editorial light — "quiet paper". Surfaces and ink are the redesign's own
@@ -37,11 +40,13 @@
   --color-base-200: oklch(94.67% 0.0127 86.8);
   --color-base-300: oklch(89.08% 0.0068 87.8);
   --color-base-content: oklch(21.89% 0.0065 78.2);
-  --color-primary: oklch(56.94% 0.1342 44.9);
+  /* Rust, a step darker than the design's hsl(20 62% 44%) so 11px theme
+     tags clear 4.5:1 on paper (it measured 4.3:1). */
+  --color-primary: oklch(54% 0.1342 44.9);
   --color-primary-content: oklch(97.03% 0.007 88.6);
   --color-secondary: oklch(39.1% 0.0363 62.6);
   --color-secondary-content: oklch(97.03% 0.007 88.6);
-  --color-accent: oklch(56.94% 0.1342 44.9);
+  --color-accent: oklch(54% 0.1342 44.9);
   --color-accent-content: oklch(97.03% 0.007 88.6);
   --color-neutral: oklch(21.89% 0.0065 78.2);
   --color-neutral-content: oklch(97.03% 0.007 88.6);
@@ -107,11 +112,14 @@
   --color-bg: var(--color-base-100);
   --color-bg-elev: var(--color-base-200);
   --color-ink: var(--color-base-content);
-  /* 62% ink over the surface — the design's rgba(28,26,23,0.62) metadata
-     grey, expressed as a mix so it re-derives correctly in every theme. */
-  --color-ink-muted: color-mix(in oklch, var(--color-base-content) 62%, var(--color-base-100));
-  /* 42% ink — the fainter tier used for mono dates and section numbers. */
-  --color-ink-faint: color-mix(in oklch, var(--color-base-content) 44%, var(--color-base-100));
+  /* Secondary text: 70% ink over the surface, expressed as a mix so it
+     re-derives correctly in every theme (~7:1 on paper). */
+  --color-ink-muted: color-mix(in oklch, var(--color-base-content) 70%, var(--color-base-100));
+  /* The fainter tier for mono dates and labels. It was 44% (the design's
+     rgba 0.42), which measured 3.1:1 on paper and 2.9:1 on the footer —
+     below WCAG AA for 12px text. 60% clears 4.5:1 on both surfaces in both
+     themes; muted moved up to keep the two tiers apart. */
+  --color-ink-faint: color-mix(in oklch, var(--color-base-content) 60%, var(--color-base-100));
   --color-rule: var(--color-base-300);
   /* Hairline used *inside* content blocks (list separators), lighter than
      the structural --color-rule that divides whole sections. */
@@ -147,10 +155,11 @@
   --radius-card: var(--radius-box, 0);
   --border-card: 1px;
 
-  /* Layout widths (drive max-w-page, max-w-prose, max-w-pubs utilities) */
-  --width-page: 1180px;
-  --width-prose: 680px;
-  --width-pubs: 75ch;
+  /* Layout widths. Tailwind 4 builds max-w-* from the --container-*
+     namespace; a --width-* token generates nothing, which is how max-w-page
+     silently resolved to `none` and let every page run edge to edge on wide
+     screens. max-w-prose stays Tailwind's built-in 65ch. */
+  --container-page: 1180px;
 
   /* Custom font size: drives text-display utility (fluid). Mirrors the
      design's clamp(42px, 7.4vw, 80px) on a near-solid 0.98 leading — the
@@ -343,6 +352,14 @@
      a thin hairline rule and a touch of breathing room. */
   .prose-body figure {
     margin: 2.25rem 0;
+  }
+
+  /* A display equation wider than a phone column scrolls on its own
+     instead of widening the page (the LIF post's ODEs do at <400px). */
+  .prose-body .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 2px;
   }
   .prose-body figure :is(img, picture, picture > img) {
     display: block;

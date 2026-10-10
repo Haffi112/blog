@@ -1,38 +1,40 @@
 ---
-import Prose from './Prose.astro';
+import { fallbackLang, pick, useTranslations, type Lang } from '~/i18n/utils';
 
 interface Props {
   title: string;
+  title_is?: string;
   level: 'bsc' | 'msc' | 'phd' | 'mixed';
   language: 'english' | 'icelandic' | 'mixed';
   description: string;
+  description_is?: string;
   syllabus?: string;
   semesters?: string[];
+  lang?: Lang;
 }
-const { title, level, language, description, syllabus, semesters = [] } = Astro.props;
-
-const levelLabel: Record<Props['level'], string> = {
-  bsc: 'BSc',
-  msc: 'MSc',
-  phd: 'PhD',
-  mixed: 'BSc / MSc'
-};
-const languageLabel: Record<Props['language'], string> = {
-  english: 'English',
-  icelandic: 'Icelandic',
-  mixed: 'Mixed'
-};
+const {
+  title,
+  title_is,
+  level,
+  language,
+  description,
+  description_is,
+  syllabus,
+  semesters = [],
+  lang = 'en'
+} = Astro.props;
+const t = useTranslations(lang);
 ---
 <article class="py-5 border-t border-rule first:border-t-0">
-  <h2 class="text-lg font-semibold text-ink">{title}</h2>
+  <h2 class="text-[1.1875rem] font-medium text-ink" lang={fallbackLang(lang, title_is)}>{pick(lang, title, title_is)}</h2>
   <p class="mt-1 text-sm text-ink-muted">
-    {levelLabel[level]} · {languageLabel[language]}
-    {syllabus && <Fragment> · <a href={syllabus}>Syllabus</a></Fragment>}
+    {t.course.level[level]} · {t.course.language[language]}
+    {syllabus && <Fragment> · <a href={syllabus}>{t.course.syllabus}</a></Fragment>}
   </p>
-  <p class="mt-2 prose-body max-w-prose text-ink">{description}</p>
+  <p class="mt-2 prose-body max-w-prose text-ink" lang={fallbackLang(lang, description_is)}>{pick(lang, description, description_is)}</p>
   {semesters.length > 0 && (
     <p class="mt-2 text-xs text-ink-muted">
-      <span class="font-medium">Taught:</span> {semesters.join(', ')}
+      <span class="font-medium">{t.course.taught}</span> {semesters.map(t.course.semester).join(', ')}
     </p>
   )}
 </article>

@@ -1,50 +1,79 @@
 ---
 /**
- * PercolationField — bootstrap percolation on a drifting random geometric
- * graph, rendered behind the hero.
+ * PercolationField — bootstrap percolation with inhibition on a drifting
+ * random geometric graph, rendered behind the hero as a live instrument.
  *
- * The model (a nod to the PhD work on bootstrap percolation with
- * inhibition, and to the 2016 blog posts):
+ * The model (the one from the PhD work on bootstrap percolation with
+ * inhibition, and from the 2016 blog posts):
  *
- *  - Nodes drift on a bounded plane and rewire continuously: the edge set
- *    is rebuilt from scratch every ~0.55 s, so an edge exists exactly
- *    while two nodes are within RADIUS of one another. The topology is
- *    part of the animation, not a fixed backdrop.
- *  - A node fires when THRESH (= 2) of its neighbours have delivered a
- *    spike inside the DECAY window — the bootstrap rule. Partial charge is
- *    drawn as an arc filling toward the threshold, and leaks away if the
- *    second spike never arrives.
- *  - Firing sends spikes along up to six incident edges as travelling
- *    particles, then drops the node into a refractory pause (drawn as a
- *    recovery arc). The refractory state is what makes cascades either die
- *    out or sweep the graph and stop, instead of reverberating forever.
- *  - Transit delays are deterministic (distance / MSG_V) by default, or
- *    drawn from an Exp(1/mean) when the "exponential delays" toggle is on —
- *    the difference between a synchronous and an asynchronous cascade,
- *    which is visible as fronts going from crisp to ragged.
+ *  - Nodes drift on a torus and rewire continuously: the edge set is
+ *    rebuilt every ~0.55 s, so an edge exists exactly while two nodes are
+ *    within RADIUS of one another.
+ *  - A resting node fires once its excitatory hits minus its inhibitory
+ *    hits, counted inside the DECAY window, reach `r` — the bootstrap rule
+ *    with inhibition, r selectable (1/2/3). Charge is drawn as an arc
+ *    filling toward the threshold (rust), or, when inhibition has pushed it
+ *    below zero, as a slate arc running the other way.
+ *  - Roughly one node in eight is inhibitory (a slate square). It fires by
+ *    the same rule, but its spikes subtract half a hit. A front that runs
+ *    into one loses ground there, which carves it into fingers and islands
+ *    instead of a clean disc. The constants are tuned so that at r = 2 about
+ *    half of all cascades percolate: sitting near the sharp threshold is
+ *    what makes each one worth watching.
+ *  - Firing sends spikes to the nearest resting neighbours, then drops the
+ *    node into a refractory pause, so cascades sweep and stop rather than
+ *    reverberating forever.
+ *  - Transit delays are deterministic (distance / speed) or drawn from an
+ *    Exp(1/mean) — synchronous fronts versus first-passage percolation.
  *
- * Interaction: click ignites the nearest rested node; holding grows an
- * ignition front that keeps seeding nodes inside it. Optional ambient
- * auto-triggering, and optional audio — each node holds a fixed pitch
- * drawn from an A-minor pentatonic field over the plane, so neighbouring
- * nodes (which are the ones that fire in sequence) land on consonant
- * intervals.
+ * Every spike that lands leaves a fading trail on its edge, tinted by
+ * cascade depth (rust at the seed, warming toward amber), so the branching
+ * tree of a cascade is visible while it happens. Each cascade is tracked;
+ * one that reaches half the graph "percolates" and sends a shock ring
+ * across the field. The readout in the corner plots the fraction of
+ * recently fired nodes and keeps the visitor's best cascade.
  *
- * Performance / accessibility contract (unchanged from the field this
- * replaces):
+ * Interaction: hovering lights the mesh under the pointer and marks the
+ * node a click would ignite; click ignites it, holding grows an ignition
+ * front. On first load a cascade starts from beside the portrait.
+ *
+ * Performance / accessibility contract:
  *  - no dependencies; the whole thing is this inline script
- *  - devicePixelRatio-aware, capped at 2
+ *  - devicePixelRatio-aware, capped at 2; trails and fuses are batched into
+ *    a handful of Path2D strokes per frame
  *  - animation pauses when the canvas leaves the viewport or the tab hides
- *  - prefers-reduced-motion gets a single static frame and no controls
- *  - colors come from the theme's CSS custom properties and re-resolve
- *    when data-theme changes, so the field matches light/dark/reader
- *  - audio is opt-in and only ever constructed inside a click handler, so
- *    no AudioContext is created without a user gesture
- *  - without JavaScript the canvas stays blank and the controls are
- *    hidden; hero content is unaffected
+ *  - prefers-reduced-motion gets a single static frame, no readout and no
+ *    controls
+ *  - colours come from the theme's CSS custom properties and re-resolve
+ *    when data-theme changes. Numeric components are only ever obtained by
+ *    round-tripping through a 1×1 canvas, never by parsing the CSS string
+ *    (oklch tokens come back in their authored space)
+ *  - audio is opt-in and only ever constructed inside a click handler
+ *  - without JavaScript the canvas stays blank and the controls are hidden
+ *
+ * Language: all copy comes from src/i18n/ui.ts (`perc`). The readout's
+ * dynamic messages are templates ({n}, {m}, {s}) handed to the inline
+ * script through data-* attributes on the root, so one script serves both
+ * languages; the decimal separator travels the same way.
  */
+import { useTranslations, type Lang } from '~/i18n/utils';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+/* The model's name stays in English on Icelandic pages; mark it so. */
+const termLang = lang === 'en' ? undefined : 'en';
 ---
-<div class="absolute inset-0" data-perc-root>
+<div
+  class="absolute inset-0"
+  data-perc-root
+  data-decimal={t.perc.decimal}
+  data-msg-idle={t.perc.msgIdle}
+  data-msg-perc={t.perc.msgPercolated}
+  data-msg-of={t.perc.firingOf}
+>
   <canvas data-perc-canvas class="w-full h-full block" aria-hidden="true"></canvas>
 
   <!-- Readability wash: a soft radial lift over the side the hero type
@@ -58,6 +87,27 @@
       linear-gradient(to bottom, transparent 60%, color-mix(in oklch, var(--color-bg) 55%, transparent) 88%, var(--color-bg) 100%);"
   ></div>
 
+  <!-- Instrument readout. Desktop only: below lg the hero text owns the
+       whole width and the readout would sit on top of the buttons. -->
+  <div
+    data-perc-hud
+    hidden
+    class="perc-hud absolute z-10 right-6 bottom-7 w-[15.5rem] pointer-events-none"
+    aria-hidden="true"
+  >
+    <div class="flex items-baseline justify-between">
+      <span lang={termLang}>{t.perc.hudTitle}</span>
+      <span data-hud-r class="text-ink">r = 2</span>
+    </div>
+    <canvas data-hud-spark class="mt-2 block w-full h-9"></canvas>
+    <dl class="mt-2 grid grid-cols-[1fr_auto] gap-x-3 gap-y-0.5">
+      <dt>{t.perc.firing}</dt><dd data-hud-firing class="text-ink">0</dd>
+      <dt>{t.perc.lastCascade}</dt><dd data-hud-last class="text-ink">–</dd>
+      <dt>{t.perc.best}</dt><dd data-hud-best class="text-ink">–</dd>
+    </dl>
+    <p data-hud-msg class="perc-hud__msg mt-2">{t.perc.msgIdle}</p>
+  </div>
+
   <div
     data-perc-controls
     hidden
@@ -68,7 +118,7 @@
       data-perc-toggle-panel
       aria-expanded="false"
       aria-controls="perc-panel"
-      aria-label="About this animation"
+      aria-label={t.perc.about}
       class="order-1 inline-flex items-center justify-center w-7 h-7 rounded-full border border-ink/25 bg-bg/70 backdrop-blur-[2px] font-display italic text-sm leading-none text-ink-muted hover:border-ink/50 hover:text-ink transition-colors cursor-help"
     >i</button>
 
@@ -76,30 +126,63 @@
       id="perc-panel"
       data-perc-panel
       hidden
-      class="perc-panel order-2 w-[min(84vw,22.5rem)] p-5 bg-bg/95 border border-ink/15 backdrop-blur-[3px]"
+      class="perc-panel order-2 w-[min(88vw,24rem)] p-5 bg-bg/95 border border-ink/15 backdrop-blur-[3px]"
     >
-      <p class="prose-body text-[0.96875rem] leading-[1.55] text-ink-muted">
-        Nodes drift and rewire; a node fires once two of its neighbours have
-        fired within a short window, then falls into a refractory pause.
-        Cascades either die out or sweep the graph. Inspired by my PhD work
-        on bootstrap percolation with inhibition.
+      {lang === 'is' ? (
+        <p class="prose-body text-[0.96875rem] leading-[1.55] text-ink-muted">
+          Hver punktur er eining í neti sem er á sífelldri hreyfingu. Einingin
+          kviknar þegar <em>r</em> nágrannar hennar hafa sent henni boð innan
+          skamms tíma og hvílist svo. Blágráu ferningarnir eru hamlandi: hvert
+          boð frá þeim vegur upp á móti hálfu örvandi boði. Keðjuverkun ýmist
+          fjarar út eða fer um allt netið. Þetta er líkanið úr doktorsverkefninu
+          mínu um <a href="/2016/04/25/percolation-with-inhibition/" hreflang="en"><span lang="en">bootstrap percolation</span> með hömlun</a>.
+        </p>
+      ) : (
+        <p class="prose-body text-[0.96875rem] leading-[1.55] text-ink-muted">
+          Each dot is a unit on a drifting graph. It fires once <em>r</em> of
+          its neighbours have fired at it within a short window, then rests.
+          The slate squares are inhibitory: each of their spikes cancels half
+          of an excitatory one. A cascade either fizzles or sweeps the graph. This is the model from my PhD work on
+          <a href="/2016/04/25/percolation-with-inhibition/">bootstrap percolation with inhibition</a>.
+        </p>
+      )}
+      <p class="mt-3 font-mono text-[0.6875rem] text-ink-faint">
+        {t.perc.hint}
       </p>
-      <p class="mt-3 eyebrow text-[0.65625rem] tracking-[0.08em] text-ink-faint">
-        Click to ignite · hold to widen the ignition front
-      </p>
-      <div class="mt-3.5 flex flex-wrap gap-2">
+
+      <div class="mt-4 flex items-center gap-3">
+        <span id="perc-r-label" class="font-mono text-[0.6875rem] text-ink-muted">{t.perc.threshold}</span>
+        <div role="group" aria-labelledby="perc-r-label" class="flex">
+          {[1, 2, 3].map((r) => (
+            <button
+              type="button"
+              data-perc-r={r}
+              aria-pressed={r === 2 ? 'true' : 'false'}
+              aria-label={t.perc.thresholdAria(r)}
+              class="perc-seg"
+            ><em class="font-display">r</em>&thinsp;=&thinsp;{r}</button>
+          ))}
+        </div>
+      </div>
+
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button type="button" data-perc-toggle="inhibition" aria-pressed="true" class="perc-chip">
+          <span class="perc-dot" aria-hidden="true"></span>{t.perc.inhibition}
+        </button>
+        <button type="button" data-perc-toggle="expDelay" aria-pressed="false" class="perc-chip">
+          <span class="perc-dot" aria-hidden="true"></span>{t.perc.randomDelays}
+        </button>
+        <button type="button" data-perc-toggle="auto" aria-pressed="true" class="perc-chip">
+          <span class="perc-dot" aria-hidden="true"></span>{t.perc.ambient}
+        </button>
         <button type="button" data-perc-toggle="sound" aria-pressed="false" class="perc-chip">
-          <span class="perc-dot" aria-hidden="true"></span>
-          <span data-perc-label>Sound off</span>
+          <span class="perc-dot" aria-hidden="true"></span>{t.perc.sound}
         </button>
-        <button type="button" data-perc-toggle="auto" aria-pressed="false" class="perc-chip">
-          <span class="perc-dot" aria-hidden="true"></span>
-          <span data-perc-label>Auto-trigger off</span>
-        </button>
-        <button type="button" data-perc-toggle="delay" aria-pressed="false" class="perc-chip">
-          <span class="perc-dot" aria-hidden="true"></span>
-          <span data-perc-label>Delays · fixed</span>
-        </button>
+      </div>
+
+      <div class="mt-4 pt-4 border-t border-ink/10 flex flex-wrap gap-2">
+        <button type="button" data-perc-action="ignite" class="btn-editorial btn-editorial--solid px-3 py-2 text-[0.71875rem]">{t.perc.ignite}</button>
+        <button type="button" data-perc-action="reset" class="btn-editorial px-3 py-2 text-[0.71875rem]">{t.perc.newGraph}</button>
       </div>
     </div>
   </div>
@@ -112,7 +195,27 @@
     box-shadow: 0 14px 34px color-mix(in oklch, var(--color-ink) 14%, transparent);
   }
 
-  .perc-chip {
+  .perc-hud {
+    padding: 0.75rem 0.875rem 0.8125rem;
+    background: color-mix(in oklch, var(--color-bg) 80%, transparent);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    border: 1px solid color-mix(in oklch, var(--color-ink) 12%, transparent);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.5;
+    color: var(--color-ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .perc-hud dd { text-align: right; }
+  .perc-hud__msg {
+    min-height: 1.5em;
+    transition: color var(--motion-base) var(--ease-out);
+  }
+  .perc-hud__msg.is-hot { color: var(--color-accent-primary); }
+
+  .perc-chip,
+  .perc-seg {
     display: inline-flex;
     align-items: center;
     gap: 0.4375rem;
@@ -120,15 +223,26 @@
     border: 1px solid color-mix(in oklch, var(--color-ink) 22%, transparent);
     background: transparent;
     font-family: var(--font-mono);
-    font-size: 0.65625rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    font-size: 0.6875rem;
+    letter-spacing: 0.02em;
     color: var(--color-ink-muted);
     cursor: pointer;
-    transition: border-color var(--motion-fast) var(--ease-out);
+    transition:
+      border-color var(--motion-fast) var(--ease-out),
+      color var(--motion-fast) var(--ease-out),
+      background-color var(--motion-fast) var(--ease-out);
   }
-  .perc-chip:hover {
+  .perc-chip:hover,
+  .perc-seg:hover {
     border-color: color-mix(in oklch, var(--color-ink) 50%, transparent);
+    color: var(--color-ink);
+  }
+  .perc-seg + .perc-seg { margin-left: -1px; }
+  .perc-seg[aria-pressed='true'] {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-bg);
+    position: relative;
   }
   .perc-dot {
     width: 0.375rem;
@@ -137,6 +251,7 @@
     background: color-mix(in oklch, var(--color-ink) 22%, transparent);
     transition: background-color var(--motion-fast) var(--ease-out);
   }
+  .perc-chip[aria-pressed='true'] { color: var(--color-ink); }
   .perc-chip[aria-pressed='true'] .perc-dot {
     background: var(--color-accent-energy);
   }
@@ -151,32 +266,37 @@
     if (!ctx) return;
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const TAU = Math.PI * 2;
 
     /* ---- Theme colours ---------------------------------------------------
-       Probe computed `color` to resolve the theme tokens, and use the
-       returned strings verbatim as fill/stroke styles.
-
-       Do NOT try to pick numeric components out of these strings to build
-       `rgba(r,g,b,a)`: getComputedStyle returns the colour in its authored
-       space, so an oklch() token comes back as "oklch(0.91 0.008 88)" and
-       reading those three numbers as R,G,B yields near-black in *both*
-       themes — which looks plausible on paper and is invisible on the dark
-       surface. Alpha belongs on ctx.globalAlpha instead. */
+       Probe computed `color` to resolve the theme tokens and use the
+       returned strings verbatim as fill/stroke styles. Do NOT pick numbers
+       out of those strings: an oklch() token comes back as
+       "oklch(0.91 0.008 88)", and reading that as R,G,B gives near-black in
+       both themes — invisible on the dark surface. Where real components
+       are needed (the generation gradient, the glow sprites) they come from
+       a 1×1 canvas round-trip below. */
     let inkColor = 'rgb(28,26,23)';
     let accent = 'rgb(182,76,43)';
+    let inhibColor = 'rgb(62,110,130)';
+    let isDark = false;
+    let glowOp = 'source-over';
+    let genColors = [accent];
+    let spriteE = null, spriteI = null;
 
-    /* A 1x1 scratch canvas is the safe way to get real components out of a
-       colour in any space: let the canvas parse it and read the pixel back,
-       rather than parsing the CSS string ourselves. */
     const scratch = document.createElement('canvas');
     scratch.width = scratch.height = 1;
     const sctx = scratch.getContext('2d', { willReadFrequently: true });
-    const luminance = (css) => {
+    const rgbOf = (css) => {
       sctx.clearRect(0, 0, 1, 1);
       sctx.fillStyle = '#000';
       sctx.fillStyle = css; // an unparseable value simply leaves it black
       sctx.fillRect(0, 0, 1, 1);
-      const [r, g, b] = sctx.getImageData(0, 0, 1, 1).data;
+      const d = sctx.getImageData(0, 0, 1, 1).data;
+      return [d[0], d[1], d[2]];
+    };
+    const luminance = ([r, g, b]) => {
       const f = (c) => {
         c /= 255;
         return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
@@ -186,19 +306,32 @@
 
     /* Ink alphas per surface, listed rather than derived from one another:
        a 5% white wash on near-black reads clearly, while 5% black on
-       near-white barely registers, and the two surfaces don't need the same
-       ratios anyway. Edges carry the biggest difference — as hairlines they
-       are the first thing to disappear on a low-contrast or badly
-       calibrated panel, so on paper they sit far above a scaled version of
-       the dark value. Accent-coloured elements (spikes, sparks, the firing
-       glow) are already saturated and are left alone. */
+       near-white barely registers. Edges carry the biggest difference — as
+       hairlines they are the first thing to disappear on a low-contrast
+       panel, so on paper they sit far above a scaled version of the dark
+       value. `lens` is the extra edge alpha right under the pointer. */
     const ALPHA = {
-      dark:  { edge: 0.047, node: 0.22, refracDot: 0.11, refracArc: 0.18 },
-      light: { edge: 0.16,  node: 0.42, refracDot: 0.24, refracArc: 0.38 }
+      dark:  { edge: 0.05, lens: 0.2, node: 0.24, refracDot: 0.11, refracArc: 0.18, inh: 0.7, trail: 0.75 },
+      light: { edge: 0.16, lens: 0.3, node: 0.42, refracDot: 0.24, refracArc: 0.38, inh: 0.8, trail: 0.62 }
     };
     let A = ALPHA.light;
-    const ink = (key) => A[key];
 
+    /* Soft radial glow, pre-rendered once per theme and stamped with
+       drawImage — far cheaper than a fresh gradient per firing node. */
+    const makeSprite = ([r, g, b]) => {
+      const s = document.createElement('canvas');
+      s.width = s.height = 64;
+      const c = s.getContext('2d');
+      const grd = c.createRadialGradient(32, 32, 0, 32, 32, 32);
+      grd.addColorStop(0, `rgba(${r},${g},${b},0.9)`);
+      grd.addColorStop(0.35, `rgba(${r},${g},${b},0.35)`);
+      grd.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      c.fillStyle = grd;
+      c.fillRect(0, 0, 64, 64);
+      return s;
+    };
+
+    const GEN_STEPS = 6;
     const resolveColors = () => {
       const probe = document.createElement('span');
       probe.style.display = 'none';
@@ -209,44 +342,130 @@
       };
       inkColor = grab('--color-ink') || inkColor;
       accent = grab('--color-accent-energy') || accent;
+      inhibColor = grab('--color-info') || inhibColor;
+      const warm = grab('--color-warning');
       const bg = grab('--color-bg');
       probe.remove();
-      A = luminance(bg) < 0.25 ? ALPHA.dark : ALPHA.light;
+
+      isDark = luminance(rgbOf(bg)) < 0.25;
+      A = isDark ? ALPHA.dark : ALPHA.light;
+      /* Additive blending makes overlapping trails bloom on the dark
+         surface; on paper it would wash out to white, so stay normal. */
+      glowOp = isDark ? 'lighter' : 'source-over';
+
+      /* Cascade depth → colour: the seed is the house rust, later
+         generations warm toward the amber token. */
+      const a = rgbOf(accent);
+      const w = rgbOf(warm);
+      genColors = [];
+      for (let k = 0; k < GEN_STEPS; k++) {
+        const t = (k / (GEN_STEPS - 1)) * 0.85;
+        const c = a.map((v, i) => Math.round(v + (w[i] - v) * t));
+        genColors.push(`rgb(${c[0]},${c[1]},${c[2]})`);
+      }
+      spriteE = makeSprite(a);
+      spriteI = makeSprite(rgbOf(inhibColor));
     };
     resolveColors();
+    const genColor = (g) => genColors[Math.min(GEN_STEPS - 1, g)];
 
-    /* ---- Model constants (from the design) ------------------------------ */
-    const FIRE = 0.34;      // s — how long a node stays in the firing state
-    const REFRAC = 3.1;     // s — refractory pause after firing
-    const DECAY = 2.6;      // s — how long partial charge lingers
-    const MSG_V = 150;      // px/s — spike transit speed
-    const RADIUS = 132;     // px — edge existence radius
-    const THRESH = 2;       // bootstrap threshold
-    const DENSITY = 1.5;    // nodes per 11000 px², scaled
-    const BURST = 1;        // spark-particle multiplier
-    const RELINK = 0.55;    // s — how often the edge set is rebuilt
-    const FANOUT = 6;       // max incident edges a firing node transmits on
+    /* ---- Model constants -------------------------------------------------- */
+    const FIRE = 0.34;       // s — how long a node stays in the firing state
+    const REFRAC = 3.1;      // s — refractory pause after firing
+    const DECAY = 2.6;       // s — how long partial charge lingers
+    const MSG_V = 150;       // px/s — excitatory spike speed
+    const INH_FRAC = 0.12;   // share of inhibitory nodes
+    const INH_W = 0.5;       // weight of one inhibitory hit
+    const RADIUS = 132;      // px — edge existence radius
+    const DENSITY = 1.8;     // nodes per 11000 px², scaled
+    const RELINK = 0.55;     // s — how often the edge set is rebuilt
+    const FANOUT = 8;        // max spikes an excitatory node sends
+    const FANOUT_I = 4;      // …and an inhibitory one
+    const TRAIL = 1.5;       // s — how long a landed spike's trail lingers
+    const LENS_R = 150;      // px — pointer lens radius
+    const PERC = 0.5;        // cascade share that counts as percolation
+    const SPARK_N = 200;     // readout history: 200 samples × 0.1 s
 
     let W = 0, H = 0;
-    let nodes = [], edges = [], msgs = [], pulses = [], sparks = [], flashes = [];
-    let sinceLink = 0, ambient = 1.2, mouseCool = 0;
-    const hold = { on: false, x: 0, y: 0, r: 0, acc: 0 };
+    let nodes = [], edges = [], msgs = [], pulses = [], sparks = [], trails = [], shocks = [];
+    let sinceLink = 0, ambient = 2.5, mouseCool = 0, clock = 0;
+    const hold = { on: false, x: 0, y: 0, r: 0, acc: 0, cid: 0 };
+    const pointer = { in: false, x: 0, y: 0, target: -1 };
+
+    /* User-controlled modes. */
+    const mode = { sound: false, auto: true, expDelay: false, inhibition: true, r: 2 };
 
     /* ---- Toroidal space --------------------------------------------------
-       The field wraps: a node leaving the right edge re-enters on the left,
-       and two nodes on opposite edges are neighbours. Everything that
-       measures a distance therefore uses the minimum-image convention —
-       the shortest of the displacement and its wrapped alternatives — and
-       anything drawn between two points has to be drawn twice when the
-       short path crosses a boundary, once running off each side. */
+       The field wraps, so every distance uses the minimum-image convention
+       and anything drawn between two points is drawn twice when the short
+       path crosses a seam, once running off each side. */
     const wrapD = (d, s) => (s ? d - s * Math.round(d / s) : d);
     const wrapP = (v, s) => (s ? ((v % s) + s) % s : v);
     const dxOf = (ax, bx) => wrapD(bx - ax, W);
     const dyOf = (ay, by) => wrapD(by - ay, H);
     const dist = (ax, ay, bx, by) => Math.hypot(dxOf(ax, bx), dyOf(ay, by));
 
-    /* User-controlled modes. */
-    const mode = { sound: false, auto: false, expDelay: false };
+    /* ---- Cascades --------------------------------------------------------
+       Every ignition opens a cascade; spikes carry its id, and a node that
+       fires inherits the id of the spike that tipped it over. A node is
+       counted once per cascade (a wave can come round the torus again). */
+    let cascades = new Map(), nextCid = 1;
+    let lastShare = null, bestShare = 0, sinceCheck = 0;
+    try { bestShare = Number(localStorage.getItem('perc-best')) || 0; } catch (e) {}
+
+    const openCascade = (x, y) => {
+      const cid = nextCid++;
+      cascades.set(cid, { n: 0, t0: clock, last: clock, x, y, perc: false });
+      return cid;
+    };
+
+    /* ---- Readout ---------------------------------------------------------- */
+    const hud = root.querySelector('[data-perc-hud]');
+    const hudR = root.querySelector('[data-hud-r]');
+    const hudFiring = root.querySelector('[data-hud-firing]');
+    const hudLast = root.querySelector('[data-hud-last]');
+    const hudBest = root.querySelector('[data-hud-best]');
+    const hudMsg = root.querySelector('[data-hud-msg]');
+    const spark = root.querySelector('[data-hud-spark]');
+    const spctx = spark && spark.getContext('2d');
+    const history = new Float32Array(SPARK_N);
+    let histHead = 0, sinceSample = 0, sinceHud = 0, msgHold = 0, touched = false;
+
+    /* Localised readout copy from the root's data-* attributes (see the
+       frontmatter); the English fallbacks keep the script self-sufficient. */
+    const L = root.dataset;
+    const DECIMAL = L.decimal || '.';
+    const fill = (tpl, vars) => tpl.replace(/\{(\w)\}/g, (_, k) => String(vars[k]));
+    const MSG_IDLE = L.msgIdle || 'click anywhere to start a cascade';
+    const MSG_PERC = L.msgPerc || 'percolated: half the graph in {s} s';
+    const MSG_OF = L.msgOf || '{n} of {m}';
+
+    const pct = (v) => (v == null ? '–' : `${Math.round(v * 100)}%`);
+    const setText = (el, s) => { if (el && el.textContent !== s) el.textContent = s; };
+    const say = (s, hot, holdFor) => {
+      if (!hudMsg) return;
+      setText(hudMsg, s);
+      hudMsg.classList.toggle('is-hot', !!hot);
+      msgHold = holdFor || 0;
+    };
+    if (bestShare) setText(hudBest, pct(bestShare));
+
+    const closeCascade = (cid, c) => {
+      cascades.delete(cid);
+      if (c.n < 3) return; // a lone click that fizzled is not a cascade
+      lastShare = Math.min(1, c.n / nodes.length);
+      if (lastShare > bestShare) {
+        bestShare = lastShare;
+        try { localStorage.setItem('perc-best', String(bestShare)); } catch (e) {}
+      }
+    };
+
+    const onPercolate = (c) => {
+      c.perc = true;
+      shocks.push({ x: c.x, y: c.y, t: 0 });
+      const secs = Math.max(0.1, clock - c.t0).toFixed(1).replace('.', DECIMAL);
+      say(fill(MSG_PERC, { s: secs }), true, 4);
+    };
 
     /* ---- Audio (opt-in, built lazily inside a click handler) ------------ */
     let actx = null, master = null, lastNote = 0;
@@ -276,9 +495,10 @@
       if (actx.state === 'suspended') actx.resume();
     };
 
-    /* Short plucked tone. `gen` is the cascade depth: seeds are louder than
-       the nodes they recruit, so a sweep is audible as a decrescendo. */
-    const playTone = (freq, gen) => {
+    /* Short plucked tone. Seeds are louder than the nodes they recruit, so
+       a sweep is audible as a decrescendo; inhibitory nodes answer an
+       octave down on a pure sine, a soft thump under the melody. */
+    const playTone = (freq, gen, inh) => {
       if (!mode.sound || !actx) return;
       const now = actx.currentTime;
       if (now - lastNote < 0.035) return; // rate-limit dense cascades
@@ -286,16 +506,16 @@
       const o1 = actx.createOscillator();
       const o2 = actx.createOscillator();
       const g = actx.createGain();
-      o1.type = 'triangle';
+      o1.type = inh ? 'sine' : 'triangle';
       o2.type = 'sine';
-      o1.frequency.value = freq;
+      o1.frequency.value = inh ? freq / 2 : freq;
       o2.frequency.value = freq * 2.002; // slight detune → gentle beating
-      const peak = gen === 0 ? 0.5 : 0.3;
+      const peak = inh ? 0.22 : gen === 0 ? 0.5 : 0.3;
       g.gain.setValueAtTime(0.0001, now);
       g.gain.exponentialRampToValueAtTime(peak, now + 0.012);
-      g.gain.exponentialRampToValueAtTime(0.0001, now + 1.5);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + (inh ? 0.6 : 1.5));
       const g2 = actx.createGain();
-      g2.gain.value = 0.3;
+      g2.gain.value = inh ? 0 : 0.3;
       o1.connect(g);
       o2.connect(g2);
       g2.connect(g);
@@ -322,8 +542,8 @@
          of birth position, so graph neighbours — the nodes that actually
          fire in sequence — land on consonant intervals. */
       const SEMI = [0, 3, 5, 7, 10];
-      const ph1 = Math.random() * 6.28;
-      const ph2 = Math.random() * 6.28;
+      const ph1 = Math.random() * TAU;
+      const ph2 = Math.random() * TAU;
       const toneAt = (x, y) => {
         const f =
           1.9 * Math.sin((x / W) * 3.1 + ph1) +
@@ -338,15 +558,17 @@
       for (let i = 0; i < count; i++) {
         const x = Math.random() * W;
         const y = Math.random() * H;
+        const vx = (Math.random() - 0.5) * 15;
+        const vy = (Math.random() - 0.5) * 15;
         nodes.push({
-          x, y,
-          vx: (Math.random() - 0.5) * 15,
-          vy: (Math.random() - 0.5) * 15,
+          x, y, vx, vy, bvx: vx, bvy: vy,
+          inh: Math.random() < INH_FRAC,
           st: 0,        // 0 rest · 1 firing · 2 refractory
           t: 0,
-          charge: 0,
+          charge: 0,    // excitatory minus inhibitory hits in the window
           ct: 0,
           gen: 0,
+          cid: 0,       // cascade that last fired this node
           nb: [],
           freq: toneAt(x, y)
         });
@@ -354,13 +576,15 @@
       msgs = [];
       pulses = [];
       sparks = [];
-      flashes = [];
+      trails = [];
+      shocks = [];
+      cascades = new Map();
       link();
       return true;
     };
 
-    /* Rebuild the edge set from current positions. O(n²), but n is ~100 and
-       this runs a couple of times a second, not per frame. */
+    /* Rebuild the edge set from current positions. O(n²), but n is ~100–200
+       and this runs a couple of times a second, not per frame. */
     const link = () => {
       edges = [];
       for (const nd of nodes) nd.nb = [];
@@ -368,8 +592,7 @@
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = dxOf(nodes[i].x, nodes[j].x);
           const dy = dyOf(nodes[i].y, nodes[j].y);
-          const d2 = dx * dx + dy * dy;
-          if (d2 >= RADIUS * RADIUS) continue;
+          if (dx * dx + dy * dy >= RADIUS * RADIUS) continue;
           edges.push([i, j]);
           nodes[i].nb.push(j);
           nodes[j].nb.push(i);
@@ -377,23 +600,34 @@
       }
     };
 
+    const isInh = (nd) => mode.inhibition && nd.inh;
+
     /* ---- Firing ---------------------------------------------------------- */
-    const fire = (i, gen) => {
+    const fire = (i, gen, cid) => {
       const nd = nodes[i];
-      if (!nd || nd.st !== 0) return;
+      if (!nd || nd.st !== 0) return false;
       const g = gen || 0;
+      const c = cascades.get(cid) || cascades.get((cid = openCascade(nd.x, nd.y)));
       nd.st = 1;
       nd.t = 0;
       nd.charge = 0;
       nd.ct = 0;
       nd.gen = g;
-      playTone(nd.freq, g);
-      pulses.push({ x: nd.x, y: nd.y, t: 0, big: g === 0 });
+      if (nd.cid !== cid) {
+        nd.cid = cid;
+        c.n++;
+        if (!c.perc && c.n >= nodes.length * PERC) onPercolate(c);
+      }
+      c.last = clock;
 
-      const cnt = Math.round((g === 0 ? 16 : 9) * BURST);
-      const a0 = Math.random() * Math.PI * 2;
+      const inh = isInh(nd);
+      playTone(nd.freq, g, inh);
+      pulses.push({ x: nd.x, y: nd.y, t: 0, big: g === 0, inh, g });
+
+      const cnt = inh ? 5 : g === 0 ? 16 : 8;
+      const a0 = Math.random() * TAU;
       for (let k = 0; k < cnt; k++) {
-        const a = a0 + (k / cnt) * Math.PI * 2 + (Math.random() - 0.5) * 0.7;
+        const a = a0 + (k / cnt) * TAU + (Math.random() - 0.5) * 0.7;
         const sp = 42 + Math.random() * 108 * (g === 0 ? 1.25 : 1);
         sparks.push({
           x: nd.x, y: nd.y,
@@ -402,36 +636,91 @@
           t: 0,
           life: 0.42 + Math.random() * 0.5,
           r: 0.7 + Math.random() * 1.5,
-          spin: Math.random() < 0.22
+          streak: Math.random() < 0.22,
+          inh, g
         });
       }
 
-      for (const j of nd.nb.slice(0, FANOUT)) {
-        if (nodes[j].st !== 0) continue;
-        const d = dist(nd.x, nd.y, nodes[j].x, nodes[j].y);
-        const mean = Math.max(0.16, d / MSG_V);
-        /* Inverse-transform sampling of Exp(1/mean) when asynchronous
-           delays are on; otherwise the deterministic transit time. */
+      /* Spikes go to the nearest resting neighbours first, so a front
+         advances along the short edges and reads as a wave. */
+      const targets = nd.nb
+        .filter((j) => nodes[j].st === 0)
+        .map((j) => [j, dist(nd.x, nd.y, nodes[j].x, nodes[j].y)])
+        .sort((p, q) => p[1] - q[1])
+        .slice(0, inh ? FANOUT_I : FANOUT);
+      for (const [j, d] of targets) {
+        const mean = Math.max(0.12, d / MSG_V);
+        /* Inverse-transform sampling of Exp(1/mean) when random delays are
+           on; otherwise the deterministic transit time. */
         const dur = mode.expDelay
           ? Math.min(2.4, Math.max(0.05, -mean * Math.log(1 - Math.random())))
           : mean;
-        msgs.push({ a: i, b: j, p: 0, dur, g });
-        flashes.push({ a: i, b: j, t: 0 });
+        msgs.push({ a: i, b: j, p: 0, dur, g, cid, inh });
       }
+      return true;
+    };
+
+    /* Seed a cascade that has a fair chance: a node plus one or two of its
+       resting neighbours, so their shared neighbours can reach r = 2. */
+    const seedAt = (i, cid) => {
+      const nd = nodes[i];
+      if (!nd || nd.st !== 0) return 0;
+      cid = cid || openCascade(nd.x, nd.y);
+      fire(i, 0, cid);
+      const nb = nd.nb.filter((j) => nodes[j].st === 0 && !isInh(nodes[j]));
+      for (let k = 0; k < Math.min(mode.r - 1, nb.length); k++) {
+        fire(nb.splice((Math.random() * nb.length) | 0, 1)[0], 0, cid);
+      }
+      return cid;
+    };
+
+    const nearestRested = (x, y, maxD, avoid) => {
+      let best = -1, bd = maxD;
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i];
+        if (n.st !== 0) continue;
+        if (avoid && avoid(n)) continue;
+        const d = dist(x, y, n.x, n.y);
+        if (d < bd) { bd = d; best = i; }
+      }
+      return best;
+    };
+
+    const randomSeed = () => {
+      const cand = [];
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i];
+        if (n.st === 0 && !isInh(n) && n.nb.length >= 3) cand.push(i);
+      }
+      if (cand.length) seedAt(cand[(Math.random() * cand.length) | 0]);
     };
 
     /* ---- Integration ----------------------------------------------------- */
     const step = (dt) => {
+      clock += dt;
+      const lensOn = pointer.in && finePointer.matches;
+
       for (const nd of nodes) {
-        /* Wrap rather than bounce: on a torus there are no walls, so the
-           drift never reverses and the field never develops the pile-up
-           along the edges that reflection produces. */
+        /* Ease back toward the node's own drift, then let the pointer push
+           it aside — the mesh parts around the cursor like a net. */
+        nd.vx += (nd.bvx - nd.vx) * Math.min(1, 1.2 * dt);
+        nd.vy += (nd.bvy - nd.vy) * Math.min(1, 1.2 * dt);
+        if (lensOn) {
+          const dx = dxOf(pointer.x, nd.x);
+          const dy = dyOf(pointer.y, nd.y);
+          const d = Math.hypot(dx, dy);
+          if (d < LENS_R * 0.75 && d > 0.5) {
+            const f = (1 - d / (LENS_R * 0.75)) * 140 * dt;
+            nd.vx += (dx / d) * f;
+            nd.vy += (dy / d) * f;
+          }
+        }
         nd.x = wrapP(nd.x + nd.vx * dt, W);
         nd.y = wrapP(nd.y + nd.vy * dt, H);
         nd.t += dt;
         if (nd.st === 1 && nd.t > FIRE) { nd.st = 2; nd.t = 0; }
         else if (nd.st === 2 && nd.t > REFRAC) { nd.st = 0; nd.t = 0; }
-        if (nd.st === 0 && nd.charge > 0) {
+        if (nd.st === 0 && nd.charge !== 0) {
           nd.ct += dt;
           if (nd.ct > DECAY) { nd.charge = 0; nd.ct = 0; }
         }
@@ -443,21 +732,29 @@
         if (m.p < 1) continue;
         msgs.splice(k, 1);
         const tgt = nodes[m.b];
-        if (!tgt || tgt.st !== 0) continue;
-        tgt.charge++;
+        if (!tgt) continue;
+        trails.push({ a: m.a, b: m.b, t: 0, g: m.g, inh: m.inh });
+        if (tgt.st !== 0) continue;
         tgt.ct = 0;
-        sparks.push({ x: tgt.x, y: tgt.y, vx: 0, vy: 0, t: 0, life: 0.3, r: 2.4, ring: true });
-        if (tgt.charge >= THRESH) fire(m.b, (m.g || 0) + 1);
+        if (m.inh) {
+          tgt.charge -= INH_W;
+          sparks.push({ x: tgt.x, y: tgt.y, vx: 0, vy: 0, t: 0, life: 0.4, r: 2.4, ring: true, inh: true });
+          continue;
+        }
+        tgt.charge++;
+        sparks.push({ x: tgt.x, y: tgt.y, vx: 0, vy: 0, t: 0, life: 0.3, r: 2.4, ring: true, g: m.g });
+        if (tgt.charge >= mode.r) fire(m.b, m.g + 1, m.cid);
       }
 
-      for (let k = pulses.length - 1; k >= 0; k--) {
-        pulses[k].t += dt;
-        if (pulses[k].t > 0.9) pulses.splice(k, 1);
-      }
-      for (let k = flashes.length - 1; k >= 0; k--) {
-        flashes[k].t += dt;
-        if (flashes[k].t > 0.45) flashes.splice(k, 1);
-      }
+      const age = (arr, life) => {
+        for (let k = arr.length - 1; k >= 0; k--) {
+          arr[k].t += dt;
+          if (arr[k].t > life) arr.splice(k, 1);
+        }
+      };
+      age(pulses, 0.9);
+      age(trails, TRAIL);
+      age(shocks, 1.6);
       for (let k = sparks.length - 1; k >= 0; k--) {
         const s = sparks[k];
         s.t += dt;
@@ -474,7 +771,7 @@
       if (sinceLink > RELINK) { sinceLink = 0; link(); }
 
       /* Held-pointer ignition front: a growing disc that keeps seeding a
-         fraction of the rested nodes it covers. */
+         fraction of the rested nodes it covers, all in one cascade. */
       if (hold.on) {
         hold.r = Math.min(300, hold.r + 190 * dt);
         hold.acc += dt;
@@ -486,49 +783,73 @@
             if (dist(hold.x, hold.y, nodes[i].x, nodes[i].y) < hold.r) cand.push(i);
           }
           if (cand.length) {
+            if (!cascades.has(hold.cid)) hold.cid = openCascade(hold.x, hold.y);
             const n = Math.max(1, Math.round(cand.length * 0.16));
-            for (let k = 0; k < n; k++) fire(cand[(Math.random() * cand.length) | 0]);
+            for (let k = 0; k < n; k++) fire(cand[(Math.random() * cand.length) | 0], 0, hold.cid);
           }
         }
       }
 
-      /* Ambient seeding: two adjacent seeds, so their shared neighbours can
-         actually reach the K=2 threshold and the wave has somewhere to go. */
       ambient -= dt;
       if (mode.auto && ambient <= 0) {
-        ambient = 2.4 + Math.random() * 2.2;
-        const cand = [];
-        for (let i = 0; i < nodes.length; i++) {
-          if (nodes[i].st === 0 && nodes[i].nb.length >= 2) cand.push(i);
-        }
-        if (cand.length) {
-          const i = cand[(Math.random() * cand.length) | 0];
-          fire(i);
-          const nb = nodes[i].nb.filter((j) => nodes[j].st === 0);
-          if (nb.length) fire(nb[(Math.random() * nb.length) | 0]);
+        ambient = 4 + Math.random() * 3.5;
+        randomSeed();
+      }
+
+      /* Close cascades that have gone quiet: nothing fired for a while and
+         no spike of theirs is still in flight. */
+      sinceCheck += dt;
+      if (sinceCheck > 0.4) {
+        sinceCheck = 0;
+        const live = new Set();
+        for (const m of msgs) live.add(m.cid);
+        if (hold.on) live.add(hold.cid);
+        for (const [cid, c] of cascades) {
+          if (!live.has(cid) && clock - c.last > FIRE + 0.3) closeCascade(cid, c);
         }
       }
 
+      /* Pointer target: the node a click would ignite. */
+      pointer.target = lensOn ? nearestRested(pointer.x, pointer.y, 110) : -1;
+
       if (mouseCool > 0) mouseCool -= dt;
+
+      /* Readout: sample the share of nodes that fired in the last few
+         seconds (firing + refractory) — a smooth curve that peaks with each
+         cascade — and refresh the text a few times a second. */
+      sinceSample += dt;
+      if (sinceSample >= 0.1) {
+        sinceSample = 0;
+        let active = 0;
+        for (const nd of nodes) if (nd.st !== 0) active++;
+        history[histHead] = nodes.length ? active / nodes.length : 0;
+        histHead = (histHead + 1) % SPARK_N;
+      }
+      if (msgHold > 0) {
+        msgHold -= dt;
+        if (msgHold <= 0) say(touched ? '' : MSG_IDLE);
+      }
+      sinceHud += dt;
+      if (sinceHud >= 0.25) { sinceHud = 0; drawHud(); }
     };
 
     /* ---- Rendering -------------------------------------------------------- */
-    const TAU = Math.PI * 2;
 
-    /* Add a segment to the current path, drawn the short way round. When
-       the short path leaves the canvas it is drawn twice — once running off
-       each side — so the line appears continuous across the seam. Anything
-       off-canvas is clipped for free. */
-    const segment = (ax, ay, bx, by) => {
-      const dx = dxOf(ax, bx);
-      const dy = dyOf(ay, by);
-      ctx.moveTo(ax, ay);
-      ctx.lineTo(ax + dx, ay + dy);
-      if (ax + dx !== bx || ay + dy !== by) {
-        ctx.moveTo(bx, by);
-        ctx.lineTo(bx - dx, by - dy);
+    /* Add the segment a → a + (dx, dy) to a path. The start is always on
+       the canvas; when the end runs off a side, the same segment is drawn
+       again shifted by one period, so it reappears across the seam. */
+    const seg = (p, ax, ay, dx, dy) => {
+      const ex = ax + dx, ey = ay + dy;
+      p.moveTo(ax, ay);
+      p.lineTo(ex, ey);
+      const sx = ex < 0 ? W : ex > W ? -W : 0;
+      const sy = ey < 0 ? H : ey > H ? -H : 0;
+      if (sx || sy) {
+        p.moveTo(ax + sx, ay + sy);
+        p.lineTo(ex + sx, ey + sy);
       }
     };
+    const edgeSeg = (p, a, b) => seg(p, a.x, a.y, dxOf(a.x, b.x), dyOf(a.y, b.y));
 
     /* Draw a radial effect once per wrapped image that could reach the
        canvas, so rings and discs near a seam continue on the far side. */
@@ -543,22 +864,58 @@
       }
     };
 
+    /* Batched strokes keyed by colour and a quantised alpha, so a large
+       cascade with a thousand fading trails is still a few dozen strokes. */
+    const ALPHA_STEPS = 6;
+    const batches = new Map();
+    const batchPath = (color, alpha, width) => {
+      const q = Math.max(1, Math.min(ALPHA_STEPS, Math.ceil(alpha * ALPHA_STEPS)));
+      const key = `${color}|${q}|${width}`;
+      let b = batches.get(key);
+      if (!b) { b = { color, alpha: q / ALPHA_STEPS, width, path: new Path2D() }; batches.set(key, b); }
+      return b.path;
+    };
+    const flushBatches = () => {
+      for (const b of batches.values()) {
+        ctx.globalAlpha = b.alpha;
+        ctx.strokeStyle = b.color;
+        ctx.lineWidth = b.width;
+        ctx.stroke(b.path);
+      }
+      batches.clear();
+    };
+
     const draw = () => {
       ctx.clearRect(0, 0, W, H);
       ctx.save();
+      ctx.lineCap = 'round';
 
       /* Edges: one batched path at low alpha, so the mesh reads as texture
-         rather than wireframe and costs a single stroke call. (0.62 × 0.075
-         from the original two-stage alpha, folded into one value.) */
-      ctx.globalAlpha = ink('edge');
+         rather than wireframe. */
+      ctx.globalAlpha = A.edge;
       ctx.lineWidth = 1;
       ctx.strokeStyle = inkColor;
-      ctx.beginPath();
-      for (const e of edges) {
-        const a = nodes[e[0]], b = nodes[e[1]];
-        segment(a.x, a.y, b.x, b.y);
+      const mesh = new Path2D();
+      for (const e of edges) edgeSeg(mesh, nodes[e[0]], nodes[e[1]]);
+      ctx.stroke(mesh);
+
+      /* Lens: the mesh under the pointer is redrawn darker, in three
+         proximity bands, so the cursor reads as a light over the net. */
+      if (pointer.in && finePointer.matches) {
+        const bands = [new Path2D(), new Path2D(), new Path2D()];
+        for (const e of edges) {
+          const a = nodes[e[0]], b = nodes[e[1]];
+          const mx = a.x + dxOf(a.x, b.x) / 2;
+          const my = a.y + dyOf(a.y, b.y) / 2;
+          const d = dist(pointer.x, pointer.y, mx, my);
+          if (d >= LENS_R) continue;
+          edgeSeg(bands[Math.min(2, Math.floor((d / LENS_R) * 3))], a, b);
+        }
+        bands.forEach((p, k) => {
+          ctx.globalAlpha = A.lens * (1 - k / 3);
+          ctx.stroke(p);
+        });
       }
-      ctx.stroke();
 
       if (hold.on) {
         ctx.strokeStyle = accent;
@@ -574,26 +931,47 @@
         });
       }
 
-      /* Edge flashes on links currently transmitting. */
-      ctx.lineWidth = 1.2;
-      ctx.strokeStyle = accent;
-      for (const f of flashes) {
-        const a = nodes[f.a], b = nodes[f.b];
+      ctx.globalCompositeOperation = glowOp;
+
+      /* Trails left by landed spikes: the cascade's branching tree. */
+      for (const tr of trails) {
+        const a = nodes[tr.a], b = nodes[tr.b];
         if (!a || !b) continue;
-        ctx.globalAlpha = 0.3 * (1 - f.t / 0.45);
-        ctx.beginPath();
-        segment(a.x, a.y, b.x, b.y);
-        ctx.stroke();
+        const k = 1 - tr.t / TRAIL;
+        const color = tr.inh ? inhibColor : genColor(tr.g);
+        edgeSeg(batchPath(color, A.trail * k * k, tr.inh ? 1.1 : 1.6), a, b);
+      }
+      /* Fuses: the stretch of edge a spike in flight has already covered. */
+      for (const m of msgs) {
+        const a = nodes[m.a], b = nodes[m.b];
+        if (!a || !b) continue;
+        const color = m.inh ? inhibColor : genColor(m.g);
+        seg(batchPath(color, 0.55, 1.4), a.x, a.y, dxOf(a.x, b.x) * m.p, dyOf(a.y, b.y) * m.p);
+      }
+      flushBatches();
+
+      /* Percolation shock: one ring sweeping the whole field. */
+      for (const s of shocks) {
+        const k = s.t / 1.6;
+        const r = 20 + (1 - Math.pow(1 - k, 2)) * Math.hypot(W, H) * 0.7;
+        ctx.strokeStyle = accent;
+        ctx.lineWidth = 2.2 * (1 - k) + 0.4;
+        radial(s.x, s.y, r, (x, y) => {
+          ctx.globalAlpha = 0.32 * (1 - k);
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, TAU);
+          ctx.stroke();
+        });
       }
 
       /* Expanding rings at each firing site; seeds get a second ring. */
-      ctx.strokeStyle = accent;
       for (const p of pulses) {
         const k = p.t / 0.9;
         const e = 1 - Math.pow(1 - k, 3);
         const r1 = 4 + e * (p.big ? 40 : 26);
         const r2 = 4 + e * 62;
         const wide = p.big && k < 0.55 ? r2 : r1;
+        ctx.strokeStyle = p.inh ? inhibColor : genColor(p.g);
         radial(p.x, p.y, wide, (x, y) => {
           ctx.globalAlpha = (p.big ? 0.4 : 0.28) * (1 - k);
           ctx.lineWidth = (p.big ? 1.8 : 1.3) * (1 - k * 0.6);
@@ -612,8 +990,9 @@
       /* Spark particles: a few are drawn as motion streaks. */
       for (const s of sparks) {
         const k = s.t / s.life;
+        const color = s.inh ? inhibColor : genColor(s.g || 0);
         if (s.ring) {
-          ctx.strokeStyle = accent;
+          ctx.strokeStyle = color;
           ctx.globalAlpha = 0.5 * (1 - k);
           ctx.lineWidth = 1.2;
           ctx.beginPath();
@@ -622,8 +1001,8 @@
           continue;
         }
         ctx.globalAlpha = 0.85 * (1 - k * k);
-        if (s.spin) {
-          ctx.strokeStyle = accent;
+        if (s.streak) {
+          ctx.strokeStyle = color;
           ctx.lineWidth = 0.9;
           const len = 3 + s.r * 2;
           const m = Math.hypot(s.vx, s.vy) || 1;
@@ -632,81 +1011,167 @@
           ctx.lineTo(s.x - (s.vx / m) * len, s.y - (s.vy / m) * len);
           ctx.stroke();
         } else {
-          ctx.fillStyle = accent;
+          ctx.fillStyle = color;
           ctx.beginPath();
           ctx.arc(s.x, s.y, s.r * (1 - k * 0.55), 0, TAU);
           ctx.fill();
         }
       }
 
-      /* Nodes: firing (glow), refractory (recovery arc), rested (dot, plus
-         a charge arc showing progress toward the threshold). */
+      /* Firing glow, stamped from the pre-rendered sprites. */
       for (const nd of nodes) {
+        if (nd.st !== 1) continue;
+        const k = 1 - nd.t / FIRE;
+        const sprite = isInh(nd) ? spriteI : spriteE;
+        if (!sprite) continue;
+        const R = 16 + 10 * k;
+        ctx.globalAlpha = 0.25 + 0.5 * k;
+        ctx.drawImage(sprite, nd.x - R, nd.y - R, R * 2, R * 2);
+      }
+
+      ctx.globalCompositeOperation = 'source-over';
+
+      /* Nodes: firing (core), refractory (recovery arc), rested (dot or
+         inhibitory square, plus a charge arc toward the threshold). */
+      for (const nd of nodes) {
+        const inh = isInh(nd);
         if (nd.st === 1) {
-          const k = 1 - nd.t / FIRE;
-          ctx.fillStyle = accent;
-          ctx.globalAlpha = 0.18 + 0.22 * k;
-          ctx.beginPath();
-          ctx.arc(nd.x, nd.y, 9, 0, TAU);
-          ctx.fill();
           ctx.globalAlpha = 1;
+          ctx.fillStyle = inh ? inhibColor : genColor(nd.gen);
           ctx.beginPath();
-          ctx.arc(nd.x, nd.y, 4.2, 0, TAU);
+          if (inh) ctx.rect(nd.x - 3.6, nd.y - 3.6, 7.2, 7.2);
+          else ctx.arc(nd.x, nd.y, 4.2, 0, TAU);
           ctx.fill();
-        } else if (nd.st === 2) {
+          continue;
+        }
+        if (nd.st === 2) {
           const k = Math.min(1, nd.t / REFRAC);
-          ctx.fillStyle = inkColor;
-          ctx.globalAlpha = ink('refracDot');
+          ctx.fillStyle = inh ? inhibColor : inkColor;
+          ctx.globalAlpha = A.refracDot;
           ctx.beginPath();
-          ctx.arc(nd.x, nd.y, 3, 0, TAU);
+          if (inh) ctx.rect(nd.x - 2.6, nd.y - 2.6, 5.2, 5.2);
+          else ctx.arc(nd.x, nd.y, 3, 0, TAU);
           ctx.fill();
-          ctx.strokeStyle = inkColor;
-          ctx.globalAlpha = ink('refracArc');
+          ctx.strokeStyle = ctx.fillStyle;
+          ctx.globalAlpha = A.refracArc;
           ctx.lineWidth = 1.3;
           ctx.beginPath();
           ctx.arc(nd.x, nd.y, 6.5, -Math.PI / 2, -Math.PI / 2 + k * TAU);
           ctx.stroke();
+          continue;
+        }
+        if (inh) {
+          ctx.strokeStyle = inhibColor;
+          ctx.globalAlpha = A.inh;
+          ctx.lineWidth = 1.2;
+          ctx.strokeRect(nd.x - 2.6, nd.y - 2.6, 5.2, 5.2);
         } else {
           ctx.fillStyle = inkColor;
-          ctx.globalAlpha = ink('node');
+          ctx.globalAlpha = A.node;
           ctx.beginPath();
           ctx.arc(nd.x, nd.y, 2.7, 0, TAU);
           ctx.fill();
-          if (nd.charge > 0) {
-            ctx.strokeStyle = accent;
-            ctx.globalAlpha = 0.6;
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.arc(nd.x, nd.y, 6, -Math.PI / 2, -Math.PI / 2 + (nd.charge / THRESH) * TAU);
-            ctx.stroke();
-          }
+        }
+        /* Charge toward the threshold: rust clockwise when excitation
+           leads, slate anticlockwise when inhibition has it below zero. */
+        if (nd.charge !== 0) {
+          const pos = nd.charge > 0;
+          const k = Math.min(1, Math.abs(nd.charge) / mode.r);
+          ctx.strokeStyle = pos ? accent : inhibColor;
+          ctx.globalAlpha = pos ? 0.6 : 0.7;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(nd.x, nd.y, 6, -Math.PI / 2, -Math.PI / 2 + (pos ? k : -k) * TAU, !pos);
+          ctx.stroke();
         }
       }
 
-      /* Spikes in transit. */
-      ctx.fillStyle = accent;
+      /* Spike heads in transit. */
+      ctx.globalCompositeOperation = glowOp;
       for (const m of msgs) {
         const a = nodes[m.a], b = nodes[m.b];
         if (!a || !b) continue;
-        /* Travel along the short way round, then wrap back onto the canvas
-           so a spike crossing the seam reappears on the far side. */
         const x = wrapP(a.x + dxOf(a.x, b.x) * m.p, W);
         const y = wrapP(a.y + dyOf(a.y, b.y) * m.p, H);
-        ctx.globalAlpha = 0.85;
+        ctx.fillStyle = m.inh ? inhibColor : genColor(m.g);
+        ctx.globalAlpha = 0.9;
         ctx.beginPath();
-        ctx.arc(x, y, 1.9, 0, TAU);
+        ctx.arc(x, y, m.inh ? 1.6 : 2, 0, TAU);
         ctx.fill();
-        ctx.globalAlpha = 0.25;
+        ctx.globalAlpha = 0.22;
         ctx.beginPath();
-        ctx.arc(x, y, 4.5, 0, TAU);
+        ctx.arc(x, y, 5, 0, TAU);
         ctx.fill();
+      }
+      ctx.globalCompositeOperation = 'source-over';
+
+      /* Target marker: a slowly turning dashed ring on the node a click
+         would ignite. */
+      const tgt = nodes[pointer.target];
+      if (tgt) {
+        ctx.strokeStyle = accent;
+        ctx.globalAlpha = 0.75;
+        ctx.lineWidth = 1.2;
+        ctx.setLineDash([3, 3.5]);
+        ctx.lineDashOffset = -clock * 8;
+        ctx.beginPath();
+        ctx.arc(tgt.x, tgt.y, 10, 0, TAU);
+        ctx.stroke();
+        ctx.setLineDash([]);
       }
 
       ctx.restore();
     };
 
+    const drawHud = () => {
+      if (!hud || hud.hidden) return;
+      let firing = 0;
+      for (const nd of nodes) if (nd.st === 1) firing++;
+      setText(hudFiring, fill(MSG_OF, { n: firing, m: nodes.length }));
+      setText(hudLast, pct(lastShare));
+      setText(hudBest, bestShare ? pct(bestShare) : '–');
+      setText(hudR, `r = ${mode.r}`);
+
+      if (!spctx) return;
+      const r = spark.getBoundingClientRect();
+      if (!r.width) return;
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const w = Math.round(r.width * dpr), h = Math.round(r.height * dpr);
+      if (spark.width !== w || spark.height !== h) { spark.width = w; spark.height = h; }
+      spctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const sw = r.width, sh = r.height;
+      spctx.clearRect(0, 0, sw, sh);
+      /* Half-graph reference line: above it, a cascade has percolated. */
+      spctx.globalAlpha = 0.35;
+      spctx.strokeStyle = inkColor;
+      spctx.lineWidth = 1;
+      spctx.setLineDash([2, 3]);
+      spctx.beginPath();
+      spctx.moveTo(0, sh * (1 - PERC) + 0.5);
+      spctx.lineTo(sw, sh * (1 - PERC) + 0.5);
+      spctx.stroke();
+      spctx.setLineDash([]);
+      spctx.beginPath();
+      for (let k = 0; k < SPARK_N; k++) {
+        const v = history[(histHead + k) % SPARK_N];
+        const x = (k / (SPARK_N - 1)) * sw;
+        const y = sh - 1 - v * (sh - 2);
+        k ? spctx.lineTo(x, y) : spctx.moveTo(x, y);
+      }
+      spctx.strokeStyle = accent;
+      spctx.globalAlpha = 1;
+      spctx.lineWidth = 1.25;
+      spctx.stroke();
+      spctx.lineTo(sw, sh);
+      spctx.lineTo(0, sh);
+      spctx.closePath();
+      spctx.fillStyle = accent;
+      spctx.globalAlpha = 0.12;
+      spctx.fill();
+    };
+
     /* ---- Loop ------------------------------------------------------------- */
-    let raf = 0, visible = false, last = 0, ready = false;
+    let raf = 0, visible = false, last = 0, ready = false, introDone = false;
     const loop = (now) => {
       const dt = Math.min(0.05, last ? (now - last) / 1000 : 0.016);
       last = now;
@@ -718,10 +1183,29 @@
       if (raf || !ready || reduced.matches || !visible || document.hidden) return;
       last = 0;
       raf = requestAnimationFrame(loop);
+      if (!introDone) { introDone = true; setTimeout(intro, 700); }
     };
     const stop = () => {
       cancelAnimationFrame(raf);
       raf = 0;
+    };
+
+    /* Opening moment: one cascade from just beside the portrait, so a
+       first-time visitor sees the field do the thing it is about. */
+    const intro = () => {
+      if (!raf) return;
+      const portrait = document.querySelector('.hero-portrait');
+      const cr = canvas.getBoundingClientRect();
+      let x = W * 0.6, y = H * 0.45, box = null;
+      if (portrait) {
+        const pr = portrait.getBoundingClientRect();
+        box = { l: pr.left - cr.left, t: pr.top - cr.top, r: pr.right - cr.left, b: pr.bottom - cr.top };
+        x = box.r + 24;
+        y = (box.t + box.b) / 2;
+      }
+      const under = (n) => box && n.x > box.l - 6 && n.x < box.r + 6 && n.y > box.t - 6 && n.y < box.b + 6;
+      const i = nearestRested(x, y, 1e9, (n) => under(n) || isInh(n));
+      if (i >= 0) seedAt(i);
     };
 
     /* ---- Pointer ---------------------------------------------------------- */
@@ -735,34 +1219,43 @@
     };
     /* Clicks on real controls are theirs alone — no ignition front under a
        link the visitor is trying to follow. */
-    const isChrome = (e) => !!(e.target && e.target.closest && e.target.closest('a,button'));
+    const isChrome = (e) =>
+      !!(e.target && e.target.closest && e.target.closest('a,button,[data-perc-panel]'));
+
+    const markTouched = () => {
+      if (touched) return;
+      touched = true;
+      if (msgHold <= 0) say('');
+    };
 
     const ignite = (p) => {
       if (mouseCool > 0) return;
-      let best = -1, bd = 1e9;
-      for (let i = 0; i < nodes.length; i++) {
-        const d = dist(p.x, p.y, nodes[i].x, nodes[i].y);
-        if (d < bd) { bd = d; best = i; }
-      }
-      if (best >= 0 && bd < 110 && nodes[best].st === 0) {
-        fire(best);
+      const i = nearestRested(p.x, p.y, 110);
+      if (i >= 0) {
+        hold.cid = openCascade(nodes[i].x, nodes[i].y);
+        fire(i, 0, hold.cid);
         mouseCool = 0.12;
+        markTouched();
       }
     };
 
     const onDown = (e) => {
-      if (isChrome(e)) return;
+      if (isChrome(e) || e.button > 0) return;
       const p = at(e);
       hold.on = true; hold.x = p.x; hold.y = p.y; hold.r = 34; hold.acc = 0;
       ignite(p);
     };
     const onUp = () => { hold.on = false; hold.r = 0; };
     const onMove = (e) => {
-      if (!hold.on) return;
       const p = at(e);
+      pointer.x = p.x;
+      pointer.y = p.y;
+      pointer.in = !isChrome(e);
+      if (!hold.on) return;
       hold.x = p.x;
       hold.y = p.y;
     };
+    const onLeave = () => { pointer.in = false; onUp(); };
     const onTouch = (e) => {
       if (isChrome(e)) return;
       const t0 = e.touches && e.touches[0];
@@ -770,12 +1263,12 @@
       const p = at({ clientX: t0.clientX, clientY: t0.clientY });
       hold.on = true; hold.x = p.x; hold.y = p.y;
       if (hold.r < 34) hold.r = 34;
-      ignite(p);
+      if (e.type === 'touchstart') ignite(p);
     };
 
     host.addEventListener('mousemove', onMove);
     host.addEventListener('mousedown', onDown);
-    host.addEventListener('mouseleave', onUp);
+    host.addEventListener('mouseleave', onLeave);
     window.addEventListener('mouseup', onUp);
     host.addEventListener('touchstart', onTouch, { passive: true });
     host.addEventListener('touchmove', onTouch, { passive: true });
@@ -786,24 +1279,33 @@
     const panel = root.querySelector('[data-perc-panel]');
     const panelBtn = root.querySelector('[data-perc-toggle-panel]');
 
-    const LABELS = {
-      sound: ['Sound off', 'Sound on'],
-      auto: ['Auto-trigger off', 'Auto-trigger on'],
-      delay: ['Delays · fixed', 'Delays · exponential']
-    };
-    const KEY = { sound: 'sound', auto: 'auto', delay: 'expDelay' };
-
     root.querySelectorAll('[data-perc-toggle]').forEach((btn) => {
-      const id = btn.dataset.percToggle;
+      const key = btn.dataset.percToggle;
       btn.addEventListener('click', () => {
-        const next = !mode[KEY[id]];
-        mode[KEY[id]] = next;
+        const next = !mode[key];
+        mode[key] = next;
         btn.setAttribute('aria-pressed', next ? 'true' : 'false');
-        const label = btn.querySelector('[data-perc-label]');
-        if (label) label.textContent = LABELS[id][next ? 1 : 0];
         /* The AudioContext is constructed here and nowhere else, so it is
            always inside a user gesture and never autoplay-blocked. */
-        if (id === 'sound' && next) initAudio();
+        if (key === 'sound' && next) initAudio();
+        if (key === 'auto' && next) ambient = 0.6;
+        if (!raf && ready) draw();
+      });
+    });
+
+    const segs = root.querySelectorAll('[data-perc-r]');
+    segs.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        mode.r = Number(btn.dataset.percR);
+        segs.forEach((b) => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
+        drawHud();
+      });
+    });
+
+    root.querySelectorAll('[data-perc-action]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (btn.dataset.percAction === 'ignite') { randomSeed(); markTouched(); }
+        else if (build()) { if (!raf) draw(); }
       });
     });
 
@@ -816,9 +1318,6 @@
         e.stopPropagation();
         setPanel(panel.hidden);
       });
-      /* Keep the panel from swallowing hero clicks, and close on outside
-         click or Escape. */
-      panel.addEventListener('mousedown', (e) => e.stopPropagation());
       document.addEventListener('click', (e) => {
         if (!panel.hidden && !controls.contains(e.target)) setPanel(false);
       });
@@ -830,12 +1329,20 @@
       });
     }
 
-    /* Controls only make sense when the field is actually running. */
-    if (controls && !reduced.matches) controls.hidden = false;
+    /* Controls, readout and the crosshair only make sense when the field
+       is actually running. */
+    const syncChrome = () => {
+      if (controls) controls.hidden = reduced.matches;
+      if (hud) hud.hidden = reduced.matches || !window.matchMedia('(min-width: 1024px)').matches;
+      host.style.cursor = !reduced.matches && finePointer.matches ? 'crosshair' : '';
+    };
+    syncChrome();
+    window.matchMedia('(min-width: 1024px)').addEventListener('change', syncChrome);
 
     /* ---- Lifecycle -------------------------------------------------------- */
     new MutationObserver(() => {
       resolveColors();
+      drawHud();
       if (!raf && ready) draw();
     }).observe(document.documentElement, {
       attributes: true,
@@ -853,7 +1360,7 @@
     });
 
     reduced.addEventListener('change', () => {
-      if (controls) controls.hidden = reduced.matches;
+      syncChrome();
       if (reduced.matches) { stop(); if (ready) draw(); } else start();
     });
 

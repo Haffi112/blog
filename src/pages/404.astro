@@ -1,16 +1,39 @@
 ---
 import BaseLayout from '~/components/BaseLayout.astro';
+import PercolationField from '~/components/PercolationField.astro';
 ---
 <BaseLayout
   title="Not found"
   description="Page not found — Hafsteinn Einarsson's website."
 >
-  <section class="max-w-page mx-auto px-6 py-24 text-center">
-    <p class="font-mono text-sm text-ink-muted">404</p>
-    <h1 class="mt-2 text-display font-semibold tracking-tight text-ink">Not found</h1>
-    <p class="mt-4 prose-body max-w-prose mx-auto">
-      The page you're looking for isn't here. It might have been moved or it might never have existed.
-      Try <a href="/">the home page</a>, the <a href="/publications/">publications list</a>, or my <a href="/writing/">writing</a>.
-    </p>
+  <!-- The hero's percolation field again, as a joke at the field's own
+       expense: a missing page is a cascade that never reached you. -->
+  <section class="relative overflow-hidden border-b border-rule min-h-[calc(100dvh-3.75rem)] flex items-center">
+    <PercolationField lang="en" />
+    <div class="relative pointer-events-none max-w-page w-full mx-auto px-6 py-20">
+      <p class="plate inline-block px-3 py-1.5 meta">Error 404</p>
+      <h1 class="plate mt-4 w-fit px-3 py-2 text-[clamp(2.5rem,1.4rem+4.6vw,4.5rem)] leading-[1.02] tracking-[-0.022em] font-light text-ink">
+        This page didn’t<br />percolate.
+      </h1>
+      <p class="plate mt-5 max-w-[46ch] px-4 py-3 prose-body">
+        The cascade died out before it reached whatever you were looking for.
+        It may have moved, or it may never have existed. Try
+        <a href="/" class="pointer-events-auto">the home page</a>,
+        <a href="/publications/" class="pointer-events-auto">publications</a> or
+        <a href="/writing/" class="pointer-events-auto">writing</a>, or click
+        anywhere to start a cascade of your own.
+      </p>
+      <!-- One 404 serves both languages (GitHub Pages has a single
+           404.html), so the Icelandic reader gets the same message in
+           Icelandic, pointing at the /is/ pages. -->
+      <p lang="is" class="plate mt-3 max-w-[46ch] px-4 py-3 prose-body text-ink-muted">
+        Keðjuverkunin dó út áður en hún náði þangað sem þú ætlaðir. Síðan
+        gæti hafa verið færð, eða hún var aldrei til. Prófaðu
+        <a href="/is/" hreflang="is" class="pointer-events-auto">forsíðuna</a>,
+        <a href="/is/publications/" hreflang="is" class="pointer-events-auto">ritaskrána</a> eða
+        <a href="/is/writing/" hreflang="is" class="pointer-events-auto">skrifin</a>,
+        eða smelltu hvar sem er til að hefja þína eigin keðjuverkun.
+      </p>
+    </div>
   </section>
 </BaseLayout>

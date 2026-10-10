@@ -2,11 +2,19 @@
 import { Picture } from 'astro:assets';
 import PercolationField from './PercolationField.astro';
 import hafsteinnPhoto from '~/assets/hafsteinn.png';
+import { localizePath, useTranslations, type Lang } from '~/i18n/utils';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+const cvLang = lang === 'en' ? undefined : 'en';
 ---
 <section class="relative overflow-hidden border-b border-rule">
   <!-- Live percolation field, its own readability wash, and the controls
        that go with it. Everything below stacks above it. -->
-  <PercolationField />
+  <PercolationField lang={lang} />
 
   <!-- pointer-events-none lets clicks fall through the type to the canvas
        so the whole hero is ignitable; the CTAs opt back in. -->
@@ -24,7 +32,7 @@ import hafsteinnPhoto from '~/assets/hafsteinn.png';
          Each block carries its own frosted plate rather than sharing one
          card, so the cascade stays visible between the lines. -->
     <div class="hero-grid grid">
-      <span class="plate [grid-area:eyebrow] px-3 py-1.5 eyebrow">Machine learning research</span>
+      <span class="plate [grid-area:eyebrow] px-3 py-1.5 eyebrow">{t.hero.eyebrow}</span>
 
       <!-- Steeper fluid clamp below md: the name is the one element that
            cannot wrap, so it sets the floor for the text track once the
@@ -35,8 +43,8 @@ import hafsteinnPhoto from '~/assets/hafsteinn.png';
       </h1>
 
       <p class="plate [grid-area:affil] px-3.5 py-2 font-prose italic font-light text-ink-muted text-[1.0625rem] md:text-[1.1875rem] leading-[1.5]">
-        Associate Professor, University of Iceland<br />
-        Principal Scientist, Amgen deCODE
+        {t.hero.affiliation[0]}<br />
+        {t.hero.affiliation[1]}
       </p>
 
       <!-- Portrait: square-cornered, desaturated to sit inside the paper
@@ -58,15 +66,13 @@ import hafsteinnPhoto from '~/assets/hafsteinn.png';
       </div>
 
       <p class="plate [grid-area:bio] px-4 py-3 prose-body max-w-[46ch] text-[1.03125rem] md:text-[1.15rem]">
-        I lead a research group working on natural language processing for
-        Icelandic and Faroese, with active projects in computer vision for
-        the natural sciences, clinical AI, and human genetics.
+        {t.hero.bioBefore}<a href={localizePath('/#series-title', lang)} class="pointer-events-auto">{t.hero.bioLink}</a>{t.hero.bioAfter}
       </p>
 
       <div class="[grid-area:cta] pointer-events-auto mt-1.5 flex flex-wrap gap-2.5">
-        <a href="/research/" class="btn-editorial btn-editorial--solid">Research →</a>
-        <a href="/publications/" class="btn-editorial plate">Publications →</a>
-        <a href="/cv.pdf" class="btn-editorial plate">Download CV ↓</a>
+        <a href={localizePath('/research/', lang)} class="btn-editorial btn-editorial--solid">{t.hero.ctaResearch}</a>
+        <a href={localizePath('/publications/', lang)} class="btn-editorial plate">{t.hero.ctaPublications}</a>
+        <a href="/cv.pdf" hreflang={cvLang} class="btn-editorial plate">{t.hero.ctaCv}</a>
       </div>
     </div>
   </div>
@@ -168,5 +174,10 @@ import hafsteinnPhoto from '~/assets/hafsteinn.png';
       var(--color-bg-elev) 6px 12px
     );
     box-shadow: 0 18px 44px color-mix(in oklch, var(--color-ink) 18%, transparent);
+  }
+  /* In dark mode "ink" is the light colour, so the shadow above would glow
+     white around the portrait; a shadow is always dark. */
+  :global([data-theme='dark']) .hero-portrait {
+    box-shadow: 0 18px 44px rgb(0 0 0 / 0.5);
   }
 </style>

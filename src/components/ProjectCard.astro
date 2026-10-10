@@ -1,7 +1,11 @@
 ---
+import { fallbackLang, pick, useTranslations, type Lang } from '~/i18n/utils';
+
 interface Props {
   name: string;
+  name_is?: string;
   summary: string;
+  summary_is?: string;
   links?: {
     repo?: string;
     huggingface?: string;
@@ -10,16 +14,13 @@ interface Props {
   };
   tags?: string[];
   status: 'active' | 'maintenance' | 'archived';
+  lang?: Lang;
 }
-const { name, summary, links = {}, tags = [], status } = Astro.props;
+const { name, name_is, summary, summary_is, links = {}, status, lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
 
-const linkOrder: Array<{ key: keyof NonNullable<Props['links']>; label: string }> = [
-  { key: 'huggingface', label: 'Hugging Face' },
-  { key: 'repo', label: 'Code' },
-  { key: 'dataset', label: 'Dataset' },
-  { key: 'site', label: 'Site' }
-];
-const visibleLinks = linkOrder.filter((l) => links[l.key]);
+const linkOrder: Array<keyof NonNullable<Props['links']>> = ['huggingface', 'repo', 'dataset', 'site'];
+const visibleLinks = linkOrder.filter((key) => links[key]);
 
 const statusTone: Record<Props['status'], string> = {
   active: 'text-accent-energy',
@@ -29,14 +30,14 @@ const statusTone: Record<Props['status'], string> = {
 ---
 <article class="py-5 border-t border-rule first:border-t-0">
   <div class="flex items-baseline gap-3">
-    <h3 class="text-lg font-semibold text-ink">{name}</h3>
-    <span class:list={['text-xs uppercase tracking-wide', statusTone[status]]}>{status}</span>
+    <h3 class="text-[1.1875rem] font-medium text-ink">{pick(lang, name, name_is)}</h3>
+    <span class:list={['text-xs uppercase tracking-wide', statusTone[status]]}>{t.project.status[status]}</span>
   </div>
-  <p class="mt-2 prose-body max-w-prose text-ink">{summary}</p>
+  <p class="mt-2 prose-body max-w-prose text-ink" lang={fallbackLang(lang, summary_is)}>{pick(lang, summary, summary_is)}</p>
   {visibleLinks.length > 0 && (
     <ul class="mt-3 flex flex-wrap gap-3 text-sm">
-      {visibleLinks.map((l) => (
-        <li><a href={links[l.key]}>{l.label} →</a></li>
+      {visibleLinks.map((key) => (
+        <li><a href={links[key]}>{t.project.links[key]} →</a></li>
       ))}
     </ul>
   )}
