@@ -7,7 +7,9 @@ export async function GET(context: { site: URL }) {
   return rss({
     title: 'Hafsteinn Einarsson',
     description: 'Pistlar um það sem ég smíða með gervigreind, bootstrap percolation og reiknileg taugavísindi.',
-    site: context.site,
+    // The channel links to the Icelandic home page; item links are
+    // root-relative (/is/…), so they resolve the same against either base.
+    site: new URL('/is/', context.site),
     customData: '<language>is</language>',
     items: posts.map((p) => ({
       title: p.data.title,

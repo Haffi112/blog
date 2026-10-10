@@ -71,13 +71,19 @@ export async function postPaths(lang: Lang) {
   const link = (p?: Post) => (p ? { title: p.data.title, url: postUrl(p) } : undefined);
   return posts.map((post, i) => {
     const d = post.data.date;
+    const params = {
+      year: String(d.getUTCFullYear()),
+      month: String(d.getUTCMonth() + 1).padStart(2, '0'),
+      day: String(d.getUTCDate()).padStart(2, '0'),
+      slug: postSlug(post)
+    };
+    // localizePath() finds translated posts by filename, so the URL has to
+    // match it as well as the frontmatter.
+    if (!baseName(post).startsWith(`${params.year}-${params.month}-${params.day}-`)) {
+      throw new Error(`${post.id}: frontmatter date ${params.year}-${params.month}-${params.day} does not match the filename`);
+    }
     return {
-      params: {
-        year: String(d.getUTCFullYear()),
-        month: String(d.getUTCMonth() + 1).padStart(2, '0'),
-        day: String(d.getUTCDate()).padStart(2, '0'),
-        slug: postSlug(post)
-      },
+      params,
       // Sorted newest first, so the previous index is the newer post.
       props: { post, newer: link(posts[i - 1]), older: link(posts[i + 1]) }
     };

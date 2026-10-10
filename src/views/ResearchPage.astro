@@ -9,7 +9,7 @@ import MediaItem from '~/components/MediaItem.astro';
 import { media } from '~/lib/media';
 import { aiSeries, seriesWatchUrlFor } from '~/data/series';
 import { themes } from '~/data/themes';
-import { useTranslations, type Lang } from '~/i18n/utils';
+import { localizePath, useTranslations, type Lang } from '~/i18n/utils';
 import { getCollection } from 'astro:content';
 
 /* Research page body, shared by /research/ and /is/research/. */
@@ -71,7 +71,7 @@ const watchUrl = seriesWatchUrlFor(lang);
           gervigreind og samfélagið. Ég gerði líka sjö þátta fræðsluröð um
           áhættu af gervigreind,
           <a href={watchUrl}><em>{aiSeries.title_is}</em></a>
-          (<a href={aiSeries.makingOf} hreflang="en">svona var hún gerð</a>, á ensku).
+          (<a href={localizePath(aiSeries.makingOf, lang)}>svona var hún gerð</a>).
         </p>
       ) : (
         <p class="mt-3 text-ink-muted text-sm">

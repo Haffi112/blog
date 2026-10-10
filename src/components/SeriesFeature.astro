@@ -3,7 +3,7 @@ import { Picture } from 'astro:assets';
 import SectionHeading from './SectionHeading.astro';
 import { aiSeries } from '~/data/series';
 import introHost from '~/assets/ai-series/intro-host.jpg';
-import { useTranslations, type Lang } from '~/i18n/utils';
+import { localizePath, useTranslations, type Lang } from '~/i18n/utils';
 
 /**
  * Homepage feature for the AI-risk video series. The episodes are numbered
@@ -79,7 +79,7 @@ const watch = [
             class:list={['btn-editorial', i === 0 && 'btn-editorial--solid']}
           >{w.label}</a>
         ))}
-        <a href={aiSeries.makingOf} hreflang={lang === 'en' ? undefined : 'en'} class="btn-editorial">{t.series.makingOf}</a>
+        <a href={localizePath(aiSeries.makingOf, lang)} class="btn-editorial">{t.series.makingOf}</a>
       </div>
     </div>
   </div>

@@ -7,7 +7,8 @@ export const defaultLang: Lang = 'en';
 /**
  * Pages that exist in both languages, as their English path. The Icelandic
  * twin is the same path under /is/ (src/pages/is/<same>/index.astro).
- * Anything not listed — blog posts, /404/, static files — is English only.
+ * Blog posts are paired separately (translatedPosts below); anything else —
+ * /404/, PDFs, static files — is English only.
  * Add a route here when you add its /is/ wrapper.
  */
 export const translatedRoutes = [
@@ -24,10 +25,27 @@ export const translatedRoutes = [
 
 const translated = new Set<string>(translatedRoutes);
 
-/** Normalise to a leading and trailing slash, matching trailingSlash: 'always'. */
+/**
+ * English URLs of the posts that have an Icelandic translation, read from
+ * the filenames in src/content/blog/is/ (drafts left out). A post's URL is
+ * its filename's date and slug; postPaths() in src/lib/posts.ts fails the
+ * build if a frontmatter date ever disagrees with its filename.
+ */
+const translatedPosts = Object.entries(
+  import.meta.glob<string>('/src/content/blog/is/*.{md,mdx}', { query: '?raw', import: 'default', eager: true })
+).flatMap(([file, source]) => {
+  const front = source.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
+  const m = file.match(/(\d{4})-(\d{2})-(\d{2})-([^/]+)\.mdx?$/);
+  return m && !/^draft:\s*true\s*$/m.test(front) ? [`/${m[1]}/${m[2]}/${m[3]}/${m[4]}/`] : [];
+});
+
+/** Everything localizePath() moves under /is/: the pages, the translated posts and the feed. */
+const localizable = new Set<string>([...translatedRoutes, ...translatedPosts, '/atom.xml']);
+
+/** Normalise to a leading and trailing slash, matching trailingSlash: 'always'. Files keep their extension. */
 const withSlash = (p: string) => {
   const s = p.startsWith('/') ? p : `/${p}`;
-  return s.endsWith('/') ? s : `${s}/`;
+  return s.endsWith('/') || /\.\w+$/.test(s) ? s : `${s}/`;
 };
 
 /** The language a path belongs to: anything under /is/ is Icelandic. */
@@ -44,8 +62,10 @@ export function stripLang(path: string): string {
 
 /**
  * The URL of an internal page in `lang`. Only paths with a translation are
- * prefixed; everything else (PDFs, blog posts, external links, mailto:) is
- * returned unchanged, so it is always safe to wrap an href in this.
+ * prefixed (pages, translated blog posts, the feed); everything else (PDFs,
+ * untranslated posts, external links, mailto:) is returned unchanged, so it
+ * is always safe to wrap an href in this — and any internal link on a
+ * bilingual page should be wrapped.
  * Hash and query are preserved: '/#series' → '/is/#series'.
  */
 export function localizePath(href: string, lang: Lang): string {
@@ -53,9 +73,9 @@ export function localizePath(href: string, lang: Lang): string {
   const cut = href.search(/[?#]/);
   const path = cut === -1 ? href : href.slice(0, cut);
   const tail = cut === -1 ? '' : href.slice(cut);
-  const base = stripLang(path);
-  if (!translated.has(withSlash(base))) return href;
-  return (lang === 'is' ? `/is${withSlash(base)}` : withSlash(base)) + tail;
+  const base = withSlash(stripLang(path));
+  if (!localizable.has(base)) return href;
+  return (lang === 'is' ? `/is${base}` : base) + tail;
 }
 
 /** Both language versions of the current page, or null if it has no twin. */
@@ -69,14 +89,17 @@ export const otherLang = (lang: Lang): Lang => (lang === 'is' ? 'en' : 'is');
 
 /**
  * Where the language switcher points: the twin of this page when there is
- * one; for a blog post, the Icelandic writing index (posts are English
- * only); otherwise the other language's home page.
+ * one; for a blog post, its translation, or the Icelandic writing index if
+ * it has none; otherwise the other language's home page. (Post pages pass
+ * their own alternates to BaseLayout, so this is the fallback.)
  */
 export function switchHref(pathname: string): string {
   const lang = getLang(pathname);
   const target = otherLang(lang);
   const alt = alternates(pathname);
   if (alt) return alt[target];
+  const post = localizePath(pathname, target);
+  if (post !== pathname) return post;
   if (target === 'is' && /^\/\d{4}\/\d{2}\/\d{2}\//.test(pathname)) return '/is/writing/';
   return target === 'is' ? '/is/' : '/';
 }

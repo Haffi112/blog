@@ -56,7 +56,7 @@
  * script through data-* attributes on the root, so one script serves both
  * languages; the decimal separator travels the same way.
  */
-import { useTranslations, type Lang } from '~/i18n/utils';
+import { localizePath, useTranslations, type Lang } from '~/i18n/utils';
 
 interface Props {
   lang?: Lang;
@@ -135,7 +135,7 @@ const termLang = lang === 'en' ? undefined : 'en';
           skamms tíma og hvílist svo. Blágráu ferningarnir eru hamlandi: hvert
           boð frá þeim vegur upp á móti hálfu örvandi boði. Keðjuverkun ýmist
           fjarar út eða fer um allt netið. Þetta er líkanið úr doktorsverkefninu
-          mínu um <a href="/2016/04/25/percolation-with-inhibition/" hreflang="en"><span lang="en">bootstrap percolation</span> með hömlun</a>.
+          mínu um <a href={localizePath('/2016/04/25/percolation-with-inhibition/', lang)}><span lang="en">bootstrap percolation</span> með hömlun</a>.
         </p>
       ) : (
         <p class="prose-body text-[0.96875rem] leading-[1.55] text-ink-muted">
