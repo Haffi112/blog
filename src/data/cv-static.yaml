@@ -51,6 +51,12 @@ previous_positions:
     start: 2024
     end: present
     location: Iceland
+  # Founding year only (prints "2024"), not a claim of an ongoing role.
+  - title: Co-founder
+    institution: Gervigreindarsetrið
+    start: 2024
+    end: 2024
+    location: Iceland
   - title: Assistant Professor in Computer Science
     institution: University of Iceland
     start: 2020
