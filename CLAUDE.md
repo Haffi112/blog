@@ -57,7 +57,7 @@ Key invariants:
 
 | Task | File or directory |
 |---|---|
-| Add news item (homepage feed) | `src/content/news/YYYY-MM-slug.yml` — the homepage shows the latest five (blog posts included); the full list is at the bottom of `/writing/` (`src/lib/news.ts`) |
+| Add news item (homepage feed) | `src/content/news/YYYY-MM-slug.yml` — the homepage shows the latest five (blog posts included); the full list is at the bottom of `/writing/` (`src/lib/news.ts`). Optional `images:` list (`src: ../../assets/news/<file>`, `alt`, `alt_is`) shows thumbnails that link to a 1600px copy |
 | Outreach page sections (blog, videos, media, talks, news) | `src/views/WritingPage.astro` (served at `/writing/`). The section order, labels and anchors are `writing.sections` in `src/i18n/ui.ts`; the page's own section links and the nav's Outreach submenu both read them through `outreachSections()` (`src/i18n/utils.ts`), so add or reorder a section there. Op-eds are not a separate list: they sit in "In the media" with their type label |
 | Add blog post | `src/content/blog/YYYY-MM-DD-slug.mdx` (set `draft: true` to exclude) |
 | Add publication | Append to `references.bib`, then optionally enrich `src/data/pub-overrides.yaml` (`summary`, `summary_is`, links). The "Cite" button shows the entry's own BibTeX, extracted by `scripts/parse-bib.ts` |

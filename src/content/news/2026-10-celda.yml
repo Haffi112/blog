@@ -1,0 +1,12 @@
+date: 2026-10-26
+text: "Received the best paper award at CELDA 2026 in Lisbon for “Validating LLM-Generated Exam Questions Against Student Performance”, written with Sigrún Helga Lund. Presented two papers at the conference and co-authored a third."
+text_is: "Hlaut verðlaun fyrir bestu grein ráðstefnunnar CELDA 2026 í Lissabon, „Validating LLM-Generated Exam Questions Against Student Performance“, sem við Sigrún Helga Lund skrifuðum. Kynnti tvær greinar á ráðstefnunni og var meðhöfundur að þeirri þriðju."
+link: /publications/
+link_is: /is/publications/
+images:
+  - src: ../../assets/news/celda-2026-award.jpg
+    alt: "Hafsteinn Einarsson receiving the best paper certificate from conference co-chair Demetrios G. Sampson at CELDA 2026."
+    alt_is: "Hafsteinn Einarsson tekur við viðurkenningu fyrir bestu grein CELDA 2026 úr hendi Demetrios G. Sampson, annars formanna ráðstefnunnar."
+  - src: ../../assets/news/celda-2026-slide.jpg
+    alt: "Slide announcing the CELDA 2026 best paper: “Validating LLM-Generated Exam Questions Against Student Performance” by Hafsteinn Einarsson and Sigrún Helga Lund."
+    alt_is: "Glæra þar sem tilkynnt er um bestu grein CELDA 2026: „Validating LLM-Generated Exam Questions Against Student Performance“ eftir Hafstein Einarsson og Sigrúnu Helgu Lund."

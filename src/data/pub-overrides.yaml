@@ -1064,13 +1064,29 @@ einarsson2026validating:
     Validates LLM-generated multiple-choice exam questions against the
     performance of students who sat them in a graded university exam.
     Self-assigned difficulty labels predicted performance only weakly,
-    and generated items still needed expert review. Accepted at CELDA 2026.
+    and generated items still needed expert review. CELDA 2026, best paper
+    award.
   summary_is: |
     Sannreynir krossaspurningar sem stórt mállíkan samdi með því að bera
     þær saman við frammistöðu nemenda sem þreyttu þær í háskólaprófi sem
     gilti til einkunnar. Erfiðleikastigið sem líkanið gaf spurningunum
     sjálft spáði aðeins veiklega fyrir um frammistöðu og spurningarnar
-    þurftu eftir sem áður yfirlestur sérfræðinga. Samþykkt á CELDA 2026.
+    þurftu eftir sem áður yfirlestur sérfræðinga. CELDA 2026, verðlaun
+    fyrir bestu grein ráðstefnunnar.
+  notes: Best paper award, CELDA 2026
+
+rutsdottir2026grading:
+  theme: nlp-is
+  summary: |
+    An exploratory study of whether large language models can apply an
+    explicit rubric to free-text exam answers consistently enough to
+    support human graders. The models tracked rubric-based instructor
+    grades closely but were the strictest raters. CELDA 2026.
+  summary_is: |
+    Könnunarrannsókn á því hvort stór mállíkön geti beitt skýrum
+    matskvarða á skrifleg prófsvör af nægri samkvæmni til að styðja við
+    yfirferð kennara. Einkunnir líkananna fylgdu vel einkunnum kennara sem
+    notuðu matskvarðann, en líkönin gáfu lægstu einkunnirnar. CELDA 2026.
 
 einarsson2026bloom:
   theme: nlp-is
@@ -1078,9 +1094,9 @@ einarsson2026bloom:
     Compares the Bloom levels and difficulty labels that an LLM assigns to
     its own exam items with human raters, separate "cold" model ratings and
     student performance. Self-assigned labels describe the request rather
-    than the item. Accepted at CELDA 2026.
+    than the item. CELDA 2026.
   summary_is: |
     Ber saman Bloom-stig og erfiðleikamerki sem stórt mállíkan gefur eigin
     prófspurningum við mat manna, sérstakt „kalt“ mat líkans og
     frammistöðu nemenda. Merkin sem líkanið gefur sjálft lýsa beiðninni
-    fremur en spurningunni. Samþykkt á CELDA 2026.
+    fremur en spurningunni. CELDA 2026.

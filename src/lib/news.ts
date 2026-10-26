@@ -1,6 +1,15 @@
+import type { ImageMetadata } from 'astro';
 import { getCollection } from 'astro:content';
 import { getPostsFor, postLang, postUrl } from '~/lib/posts';
-import { pick, useTranslations, type Lang } from '~/i18n/utils';
+import { fallbackLang, pick, useTranslations, type Lang } from '~/i18n/utils';
+
+/** A photo attached to a news item, with its alt text in the page's language. */
+export interface NewsImage {
+  src: ImageMetadata;
+  alt: string;
+  /** `lang` for `alt` when it falls back to English on /is/. */
+  altLang?: string;
+}
 
 /** One row in a news list, ready for NewsItem.astro. */
 export interface NewsEntry {
@@ -15,6 +24,7 @@ export interface NewsEntry {
   hreflang?: string;
   /** 'year' when only the year is known. */
   precision?: 'year' | 'month';
+  images?: NewsImage[];
 }
 
 /**
@@ -30,7 +40,12 @@ export async function getNews(lang: Lang, { withPosts = false } = {}): Promise<N
     text: pick(lang, n.data.text, n.data.text_is),
     textLang: lang === 'is' && !n.data.text_is ? 'en' : undefined,
     link: pick(lang, n.data.link, n.data.link_is),
-    precision: n.data.precision
+    precision: n.data.precision,
+    images: n.data.images.map((img) => ({
+      src: img.src,
+      alt: pick(lang, img.alt, img.alt_is),
+      altLang: fallbackLang(lang, img.alt_is)
+    }))
   }));
 
   if (withPosts) {

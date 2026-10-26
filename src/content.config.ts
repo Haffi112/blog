@@ -27,19 +27,25 @@ const blog = defineCollection({
 
 const news = defineCollection({
   loader: glob({ pattern: '*.yml', base: './src/content/news' }),
-  schema: z.object({
-    date: z.date(),
-    text: z.string(),
-    text_is: z.string().optional(),
-    /** An absolute URL or a site path (e.g. /research/#talks). */
-    link: z.string().regex(/^(https?:\/\/|\/)/).optional(),
-    /** Where the Icelandic version should link, when it differs. */
-    link_is: z.string().regex(/^(https?:\/\/|\/)/).optional(),
-    /** How much of `date` is known. Year-only items (a position, a grant,
-        a graduation) show just the year instead of an invented month; store
-        them as YYYY-01-01. */
-    precision: z.enum(['year', 'month']).default('month')
-  })
+  schema: ({ image }) =>
+    z.object({
+      date: z.date(),
+      text: z.string(),
+      text_is: z.string().optional(),
+      /** An absolute URL or a site path (e.g. /research/#talks). */
+      link: z.string().regex(/^(https?:\/\/|\/)/).optional(),
+      /** Where the Icelandic version should link, when it differs. */
+      link_is: z.string().regex(/^(https?:\/\/|\/)/).optional(),
+      /** How much of `date` is known. Year-only items (a position, a grant,
+          a graduation) show just the year instead of an invented month; store
+          them as YYYY-01-01. */
+      precision: z.enum(['year', 'month']).default('month'),
+      /** Photos shown as thumbnails under the text, each linking to a larger
+          copy. `src` is relative to the YAML file (../../assets/news/…). */
+      images: z
+        .array(z.object({ src: image(), alt: z.string(), alt_is: z.string().optional() }))
+        .default([])
+    })
 });
 
 const talks = defineCollection({

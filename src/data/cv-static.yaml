@@ -90,6 +90,9 @@ education:
 
 awards_and_grants:
   - year: 2026
+    title: Best Paper Award, CELDA 2026
+    description: For "Validating LLM-Generated Exam Questions Against Student Performance" (with Sigrún Helga Lund)
+  - year: 2026
     title: Vísindi og velferð
     description: Grant for developing an app for science literacy
     amount: "700k ISK"

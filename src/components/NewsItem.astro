@@ -1,4 +1,7 @@
 ---
+import { Image, getImage } from 'astro:assets';
+import type { NewsImage } from '~/lib/news';
+
 interface Props {
   date: Date;
   text: string;
@@ -12,11 +15,15 @@ interface Props {
   hreflang?: string;
   /** 'year' when only the year is known: show "2021", not "2021-01". */
   precision?: 'year' | 'month';
+  /** Thumbnails under the text, in the column beside the date. */
+  images?: NewsImage[];
 }
 
-const { date, text, link, newest = false, prefix, textLang, hreflang, precision = 'month' } = Astro.props;
+const { date, text, link, newest = false, prefix, textLang, hreflang, precision = 'month', images = [] } = Astro.props;
 const iso = date.toISOString().slice(0, 10);
 const formatted = precision === 'year' ? iso.slice(0, 4) : iso.slice(0, 7); // YYYY or YYYY-MM
+/* Each thumbnail opens a larger copy, so the full-size original never ships. */
+const full = await Promise.all(images.map((img) => getImage({ src: img.src, width: 1600 })));
 ---
 <li class="grid grid-cols-[4.5rem_1fr] gap-x-3 sm:gap-x-4 gap-y-2 py-[0.9375rem] border-t border-rule-soft last:border-b last:border-b-rule-soft">
   <time datetime={precision === 'year' ? iso.slice(0, 4) : iso} class="meta pt-1 flex items-center gap-1.5">
@@ -32,4 +39,24 @@ const formatted = precision === 'year' ? iso.slice(0, 4) : iso.slice(0, 7); // Y
       <Fragment>{prefix}{textLang ? <span lang={textLang}>{text}</span> : text}</Fragment>
     )}
   </p>
+  {images.length > 0 && (
+    <ul class="col-start-2 mt-1 grid grid-cols-2 gap-2 max-w-[17rem] list-none">
+      {images.map((img, i) => (
+        <li>
+          <a href={full[i].src} class="link-plain group block">
+            <Image
+              src={img.src}
+              alt={img.alt}
+              lang={img.altLang}
+              width={264}
+              height={198}
+              fit="cover"
+              class="w-full aspect-4/3 object-cover border border-rule grayscale-[35%] group-hover:grayscale-0 transition-[filter] duration-300"
+              loading="lazy"
+            />
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
 </li>
