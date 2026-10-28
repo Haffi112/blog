@@ -1100,3 +1100,36 @@ einarsson2026bloom:
     prófspurningum við mat manna, sérstakt „kalt“ mat líkans og
     frammistöðu nemenda. Merkin sem líkanið gefur sjálft lýsa beiðninni
     fremur en spurningunni. CELDA 2026.
+
+einarsson2026beyond:
+  theme: nlp-is
+  selected: true
+  summary: |
+    Revisits the findings of the IceBERT paper with the ModernBERT
+    architecture, training Icelandic encoders from 12M to 1B parameters on
+    9B tokens of open data and benchmarking 30 encoders on eleven tasks
+    under one protocol. The 1B model, to our knowledge the first
+    monolingual Icelandic encoder of its size, is significantly better
+    than IceBERT on every task when trained from scratch; warm-started
+    from the English Ettin encoder, it scores best of all encoders on
+    every ranked task. Because the model shapes match Ettin and mmBERT,
+    the paper also tests warm starts under controlled conditions: with the
+    Icelandic vocabulary transplanted, a warm start was never
+    significantly worse than training from scratch. Single-author arXiv
+    preprint, with all models released on Hugging Face.
+  summary_is: |
+    Endurskoðar niðurstöður IceBERT-greinarinnar með ModernBERT-högun:
+    íslenskir kóðarar frá 12 milljónum upp í milljarð stika eru þjálfaðir
+    á 9 milljörðum tóka af opnum gögnum og 30 kóðarar bornir saman á
+    ellefu verkefnum með sömu aðferð. Milljarðs stika líkanið, að því er
+    best er vitað fyrsti eintyngdi íslenski kóðarinn af þeirri stærð, er
+    marktækt betra en IceBERT á öllum verkefnunum þegar það er þjálfað frá
+    grunni, og frumstillt með enska Ettin-kóðaranum nær það bestu
+    niðurstöðu allra kóðara á hverju verkefni. Þar sem lögun líkananna
+    passar við Ettin og mmBERT er einnig hægt að prófa frumstillingu við
+    stýrðar aðstæður: með íslenskan orðaforða ígræddan var frumstilling
+    aldrei marktækt verri en þjálfun frá grunni. Forprent á arXiv (eini
+    höfundur) og öll líkönin eru aðgengileg á Hugging Face.
+  links:
+    arxiv: https://arxiv.org/abs/2610.36230
+    huggingface: https://huggingface.co/collections/hafsteinn/icelandic-modernbert

@@ -1,0 +1,23 @@
+name: Icelandic ModernBERT
+summary: >-
+  ModernBERT encoders for Icelandic from 12M to 1B parameters, trained on
+  9B tokens of open data: a size ladder trained from scratch and the
+  models from the warm-start study, 34 in all under the MIT licence. The
+  1B model, to our knowledge the first monolingual Icelandic encoder of
+  that size, is significantly better than IceBERT on all eleven benchmark
+  tasks. Released alongside the 2026 arXiv preprint.
+links:
+  huggingface: https://huggingface.co/collections/hafsteinn/icelandic-modernbert
+tags:
+  - nlp-is
+  - language-model
+status: active
+summary_is: >-
+  ModernBERT-líkön fyrir íslensku frá 12 milljónum upp í milljarð stika,
+  þjálfuð á 9 milljörðum tóka af opnum gögnum: stærðarröð líkana sem eru
+  þjálfuð frá grunni og líkönin úr rannsókninni á frumstillingu, alls 34
+  líkön með MIT-leyfi. Milljarðs stika líkanið, að því er best er vitað
+  fyrsti eintyngdi íslenski kóðarinn af þeirri stærð, er marktækt betra
+  en IceBERT á öllum ellefu prófunarverkefnunum. Gefið út samhliða
+  forprenti á arXiv árið 2026.
+name_is: "ModernBERT-líkön fyrir íslensku"

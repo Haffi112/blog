@@ -1,0 +1,4 @@
+date: 2026-10-27
+text: "New paper on ModernBERT encoders for Icelandic trained on open data, from 12M to 1B parameters. The largest beats IceBERT on all eleven benchmark tasks, and all the models are on Hugging Face (arXiv preprint)."
+link: https://arxiv.org/abs/2610.36230
+text_is: "Ný grein um ModernBERT-líkön fyrir íslensku, frá 12 milljónum upp í milljarð stika, sem eru þjálfuð á opnum gögnum. Stærsta líkanið er betra en IceBERT á öllum ellefu prófunarverkefnunum og öll líkönin eru aðgengileg á Hugging Face (forprent á arXiv)."
