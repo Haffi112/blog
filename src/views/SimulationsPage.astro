@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '~/components/BaseLayout.astro';
-import PageHeader from '~/components/PageHeader.astro';
+import PageShell from '~/components/PageShell.astro';
 import { useTranslations, type Lang } from '~/i18n/utils';
 
 /* Simulations index body, shared by /simulations/ and /is/simulations/.
@@ -12,7 +12,7 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 const simLang = lang === 'en' ? undefined : 'en';
 
-/* Links in the intro sit inside PageHeader's <header>, where the base link
+/* Links in the intro sit inside PageShell's <header>, where the base link
    rule drops the underline (header links are treated as chrome), so they
    carry it explicitly. */
 const sims = [
@@ -22,24 +22,24 @@ const sims = [
 ];
 ---
 <BaseLayout title={t.simulations.title} description={t.simulations.description} lang={lang}>
-  <section class="max-w-prose mx-auto px-6 pb-12">
-    <PageHeader title={t.simulations.title}>
+  <PageShell title={t.simulations.title}>
+    <Fragment slot="aside">
       {lang === 'is' ? (
-        <p class="mt-4 prose-body max-w-prose">
+        <p class="mt-4 font-prose text-[1rem] leading-[1.6] text-ink-muted">
           Sjálfstæðar gagnvirkar hermanir frá doktorsárunum. Flestar nota <a href="https://d3js.org/" class="underline underline-offset-2 decoration-1 hover:decoration-2">d3.js</a> fyrir myndræna framsetningu. Þér er velkomið að nota þær í kennslu; kóðinn er í <a href="https://github.com/Haffi112/blog" class="underline underline-offset-2 decoration-1 hover:decoration-2">GitHub-safninu</a>. Hermanirnar sjálfar eru á ensku.
         </p>
       ) : (
-        <p class="mt-4 prose-body max-w-prose">
+        <p class="mt-4 font-prose text-[1rem] leading-[1.6] text-ink-muted">
           Standalone interactive simulations from my PhD years. Most use <a href="https://d3js.org/" class="underline underline-offset-2 decoration-1 hover:decoration-2">d3.js</a> for the visuals. Feel free to use them for educational purposes; the code lives in <a href="https://github.com/Haffi112/blog" class="underline underline-offset-2 decoration-1 hover:decoration-2">the GitHub repo</a>.
         </p>
       )}
-    </PageHeader>
+    </Fragment>
     <ul class="mt-8" data-reveal>
       {sims.map((s) => (
-        <li class="py-3 border-t border-rule first:border-t-0">
-          <a href={s.href} hreflang={simLang}>{s.label} →</a>
+        <li class="py-4 border-t border-rule-soft first:border-t-0">
+          <a href={s.href} hreflang={simLang} class="link-plain font-display text-[1.3125rem] leading-[1.25] text-ink">{s.label} <span class="meta" aria-hidden="true">→</span></a>
         </li>
       ))}
     </ul>
-  </section>
+  </PageShell>
 </BaseLayout>

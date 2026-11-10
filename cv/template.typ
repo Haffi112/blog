@@ -6,8 +6,9 @@
 #import "theme.typ": *
 
 // --- Font stacks (static files shipped in cv/fonts/) ----------------------
-// The site's three faces: Newsreader for the name, section titles and the
-// lede; IBM Plex Sans for running text; IBM Plex Mono for dates and labels.
+// Newsreader for the name, section titles and the lede and IBM Plex Mono
+// for dates and labels, as on the site; IBM Plex Sans (their sibling) for
+// running text, which holds up better than a serif at 9pt in dense lists.
 // "Newsreader Display" is the light, large-optical-size cut used only for
 // the name. The files are static instances cut from the OFL variable fonts
 // (Typst does not handle variable fonts reliably).

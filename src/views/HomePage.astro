@@ -1,78 +1,197 @@
 ---
+import { Picture } from 'astro:assets';
 import BaseLayout from '~/components/BaseLayout.astro';
 import JsonLdPerson from '~/components/JsonLdPerson.astro';
-import Hero from '~/components/Hero.astro';
+import Masthead from '~/components/Masthead.astro';
 import NewsItem from '~/components/NewsItem.astro';
-import PubDisclosure from '~/components/PubDisclosure.astro';
 import SectionHeading from '~/components/SectionHeading.astro';
 import SeriesFeature from '~/components/SeriesFeature.astro';
+import ThemeTag from '~/components/ThemeTag.astro';
+import portrait from '~/assets/hafsteinn.png';
 import { getNews } from '~/lib/news';
-import { localizePath, useTranslations, type Lang } from '~/i18n/utils';
+import { getPostsFor, postLang, postUrl, readingMinutes } from '~/lib/posts';
+import { formatDate, localizePath, useTranslations, type Lang } from '~/i18n/utils';
 import pubsData from '~/data/publications.json';
 import type { Publication } from '~/data/publications.schema';
 
-/* Home page body, shared by src/pages/index.astro and src/pages/is/index.astro. */
+/* Home page body, shared by src/pages/index.astro and src/pages/is/index.astro.
+
+   The page is a front page, not a profile: under the masthead a lead story
+   (the newest blog post) and a dated stream of everything else — papers,
+   talks, media, awards, each labelled by kind — with who-I-am and the
+   selected publications in a side column. The point is that something new
+   is usually at the top. */
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
 const t = useTranslations(lang);
-/* Latest five, blog posts included so new writing shows up here; the full
-   list lives at the bottom of the Writing page. */
-const news = (await getNews(lang, { withPosts: true })).slice(0, 5);
+
+/* Lead: the newest post (its translation where there is one). */
+const lead = (await getPostsFor(lang))[0];
+const leadUrl = lead && postUrl(lead);
+const leadForeign = lead && postLang(lead) !== lang ? postLang(lead) : undefined;
+
+/* Stream: news and posts, newest first, without the post that leads. */
+const STREAM_LENGTH = 9;
+const stream = (await getNews(lang, { withPosts: true }))
+  .filter((n) => n.link !== leadUrl)
+  .slice(0, STREAM_LENGTH);
 
 const pubs = pubsData as unknown as Publication[];
-const selected = pubs.filter((p) => p.selected).slice(0, 3);
+const selected = pubs.filter((p) => p.selected).slice(0, 5);
+/* Where a title in the side column goes: the paper itself when there is a
+   link, otherwise its place on the publications page. */
+const pubHref = (p: Publication) =>
+  p.links.doi ?? p.links.arxiv ?? p.links.pdf ?? localizePath(`/publications/#${p.theme ?? 'selected'}`, lang);
+
+const cvLang = lang === 'en' ? undefined : 'en';
 ---
 <BaseLayout title={t.home.title} description={t.meta.description} lang={lang}>
   <JsonLdPerson slot="head" />
-  <Hero lang={lang} />
+  <Masthead lang={lang} />
 
-  <!-- Two panels divided by a hairline. The rule is the 1px grid gap
-       showing the container background through — that way it runs the full
-       height of the taller column and collapses into a horizontal divider
-       when the grid stacks, with no extra elements. -->
-  <div
-    class="max-w-page mx-auto grid gap-px bg-rule lg:grid-cols-2"
-    data-reveal
-  >
-    <section class="bg-bg px-6 py-10 md:px-10 md:py-12">
+  <!-- Front page. From lg it is two independent columns (main: lead and
+       stream; side: about and selected publications), so neither waits for
+       the other's height. On small screens the column wrappers dissolve
+       (display: contents) and the four blocks are ordered lead, about,
+       stream, selected. -->
+  <div class="front max-w-page mx-auto px-6 pt-10 pb-14 md:pt-14" data-reveal>
+    <div class="front-col">
+    {lead && (
+      <article class="front-lead">
+        <a href={leadUrl} hreflang={leadForeign} class="link-plain group block">
+          {/* Post images are often loud (a video thumbnail leads as I write
+              this); at this size one would shout over the paper page, so
+              it is toned down until the reader points at it. */}
+          {lead.data.hero && (
+            <Picture
+              src={lead.data.hero}
+              alt=""
+              widths={[480, 800, 1200, 1600]}
+              sizes="(min-width: 1024px) 760px, 100vw"
+              formats={['avif', 'webp']}
+              class="block w-full aspect-[16/9] object-cover border border-rule grayscale-[55%] group-hover:grayscale-0 group-focus-visible:grayscale-0 transition-[filter] duration-300"
+              loading="eager"
+              fetchpriority="high"
+            />
+          )}
+          <p class="meta mt-5 flex flex-wrap gap-x-3 gap-y-1">
+            <span class="uppercase tracking-[0.1em] text-accent-primary">{t.home.leadKicker}</span>
+            <time datetime={lead.data.date.toISOString().slice(0, 10)}>
+              {formatDate(lead.data.date, lang, { day: 'numeric', month: 'long', year: 'numeric' })}
+            </time>
+            <span>{t.writing.minRead(readingMinutes(lead))}</span>
+          </p>
+          <h2 lang={leadForeign} class="mt-2.5 text-[clamp(1.875rem,1.2rem+2.4vw,3rem)] font-light leading-[1.06] tracking-[-0.02em] text-ink text-balance group-hover:text-accent-primary transition-colors">
+            {lead.data.title}
+          </h2>
+          {lead.data.excerpt && (
+            <p lang={leadForeign} class="mt-4 prose-body max-w-[60ch] text-ink-muted text-pretty">{lead.data.excerpt}</p>
+          )}
+          <p class="mt-4 font-mono text-xs text-ink">{t.home.read} →</p>
+        </a>
+      </article>
+    )}
+
+    <section class="front-stream">
       <SectionHeading
-        title={t.home.news}
+        title={t.home.latest}
         href={localizePath('/writing/#news', lang)}
         linkLabel={t.home.all}
         rule={false}
       />
-      <ul class="mt-6 list-none">
-        {news.map((n, i) => (
-          <NewsItem
-            date={n.date}
-            text={n.text}
-            prefix={n.prefix}
-            textLang={n.textLang}
-            hreflang={n.hreflang}
-            link={n.link}
-            images={n.images}
-            newest={i === 0}
-          />
-        ))}
+      <ul class="mt-5 list-none">
+        {stream.map((n, i) => <NewsItem {...n} lang={lang} newest={i === 0} />)}
       </ul>
     </section>
+    </div>
 
-    <section class="bg-bg px-6 py-10 md:px-10 md:py-12">
+    <div class="front-col">
+    <aside class="front-about" aria-label={t.nav.about}>
+      <div class="front-portrait relative w-32 aspect-4/5">
+        <Picture
+          src={portrait}
+          alt="Hafsteinn Einarsson"
+          widths={[128, 256, 384]}
+          sizes="128px"
+          formats={['avif', 'webp']}
+          fallbackFormat="png"
+          class="absolute inset-0 w-full h-full object-cover grayscale contrast-[1.06]"
+          loading="eager"
+        />
+      </div>
+      <p class="mt-5 prose-body text-[1.03125rem] leading-[1.6] text-pretty">
+        {t.hero.bioBefore}<a href={localizePath('/#series-title', lang)}>{t.hero.bioLink}</a>{t.hero.bioAfter}
+      </p>
+      <ul class="mt-5 flex flex-wrap gap-2">
+        <li><a href={localizePath('/research/', lang)} class="btn-editorial btn-editorial--solid px-3.5 py-2.5">{t.hero.ctaResearch}</a></li>
+        <li><a href={localizePath('/about/', lang)} class="btn-editorial px-3.5 py-2.5">{t.home.about} →</a></li>
+        <li><a href="/cv.pdf" hreflang={cvLang} class="btn-editorial px-3.5 py-2.5">{t.nav.cv}</a></li>
+      </ul>
+    </aside>
+
+    <aside class="front-selected">
       <SectionHeading
         title={t.home.selected}
         href={localizePath('/publications/', lang)}
         linkLabel={t.home.all}
         rule={false}
       />
-      <div class="mt-6">
-        {selected.map((p) => <PubDisclosure pub={p} lang={lang} />)}
-      </div>
-    </section>
-
-    <div class="lg:col-span-2">
-      <SeriesFeature lang={lang} />
+      <ul class="mt-5 list-none">
+        {selected.map((p) => (
+          <li class="py-4 border-t border-rule-soft last:border-b last:border-b-rule-soft">
+            <ThemeTag theme={p.theme} lang={lang} />
+            <p class="mt-2 font-display text-[1.125rem] leading-[1.3] text-ink text-pretty">
+              <a href={pubHref(p)} class="link-plain">{p.title}</a>
+            </p>
+            <p class="meta mt-1.5">{[p.venue.replace(/^Proceedings of the /, ''), p.year].filter(Boolean).join(' · ')}</p>
+          </li>
+        ))}
+      </ul>
+    </aside>
     </div>
   </div>
+
+  <div class="max-w-page mx-auto border-t border-rule" data-reveal>
+    <SeriesFeature lang={lang} />
+  </div>
 </BaseLayout>
+
+<style>
+  .front {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+  .front-col { display: contents; }
+  .front-lead { order: 1; }
+  .front-about { order: 2; }
+  .front-stream { order: 3; }
+  .front-selected { order: 4; }
+
+  @media (min-width: 1024px) {
+    .front {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 20.5rem;
+      column-gap: 4rem;
+      align-items: start;
+    }
+    .front-col {
+      display: flex;
+      flex-direction: column;
+      gap: 3.5rem;
+    }
+  }
+
+  /* The portrait is a cut-out; it stands on a panel in the raised surface
+     tone so it needs no background of its own in either theme. */
+  .front-portrait {
+    background: var(--color-bg-elev);
+  }
+  /* The white shirt is taken down a little on the dark surface so it is
+     not the brightest thing on the page. */
+  :global([data-theme='dark']) .front-portrait :global(img) {
+    filter: grayscale(1) brightness(0.88) contrast(1.04);
+  }
+</style>

@@ -17,7 +17,7 @@ const t = useTranslations(lang);
 <div class="cite" data-cite>
   <button
     type="button"
-    class="font-mono text-xs text-ink-muted hover:text-accent-primary cursor-pointer"
+    class="cite-button font-mono text-xs text-ink hover:text-accent-primary cursor-pointer"
     data-cite-button
     data-copied={t.pub.copied}
     data-select={t.pub.select}
@@ -25,6 +25,21 @@ const t = useTranslations(lang);
   >{t.pub.cite}</button>
   <pre class="cite-source mt-2 p-3 bg-bg-elev border border-rule font-mono text-[0.71875rem] leading-[1.5] text-ink whitespace-pre-wrap break-all" hidden>{bibtex}</pre>
 </div>
+
+<style>
+  /* A button, but it sits in the link rail and should read as one of them:
+     ink with the same hairline underline as the links beside it. */
+  .cite-button {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: color-mix(in srgb, currentColor 28%, transparent);
+    text-underline-offset: 0.22em;
+    transition: color var(--motion-fast) var(--ease-out), text-decoration-color var(--motion-fast) var(--ease-out);
+  }
+  .cite-button:hover {
+    text-decoration-color: currentColor;
+  }
+</style>
 
 <script>
   // Bundled once per page however many Cite buttons there are; a single

@@ -35,7 +35,15 @@
  *
  * Interaction: hovering lights the mesh under the pointer and marks the
  * node a click would ignite; click ignites it, holding grows an ignition
- * front. On first load a cascade starts from beside the portrait.
+ * front. On first load one cascade starts by itself.
+ *
+ * `expandable` (the front page's masthead band) adds a button that opens
+ * the field to the full window: the enclosing section becomes a fixed
+ * overlay, its other content is hidden, page scroll is locked, and the
+ * readout and the control panel come up. Escape or the same button closes
+ * it. The canvas's ResizeObserver rebuilds the graph for the new size, so
+ * nothing else has to know. Without the prop (the 404 page) the readout
+ * shows from `lg` as before.
  *
  * Performance / accessibility contract:
  *  - no dependencies; the whole thing is this inline script
@@ -60,8 +68,10 @@ import { localizePath, useTranslations, type Lang } from '~/i18n/utils';
 
 interface Props {
   lang?: Lang;
+  /** Offer a button that opens the field to the full window. */
+  expandable?: boolean;
 }
-const { lang = 'en' } = Astro.props;
+const { lang = 'en', expandable = false } = Astro.props;
 const t = useTranslations(lang);
 /* The model's name stays in English on Icelandic pages; mark it so. */
 const termLang = lang === 'en' ? undefined : 'en';
@@ -73,6 +83,7 @@ const termLang = lang === 'en' ? undefined : 'en';
   data-msg-idle={t.perc.msgIdle}
   data-msg-perc={t.perc.msgPercolated}
   data-msg-of={t.perc.firingOf}
+  data-expandable={expandable ? '' : undefined}
 >
   <canvas data-perc-canvas class="w-full h-full block" aria-hidden="true"></canvas>
 
@@ -80,6 +91,7 @@ const termLang = lang === 'en' ? undefined : 'en';
        sits on, plus a fade into the page background at the bottom edge so
        the full-bleed section ends cleanly. -->
   <div
+    data-perc-wash
     class="absolute inset-0 pointer-events-none"
     aria-hidden="true"
     style="background:
@@ -113,14 +125,30 @@ const termLang = lang === 'en' ? undefined : 'en';
     hidden
     class="absolute z-20 right-4 top-4 md:right-6 md:top-5 flex flex-col items-end gap-2.5"
   >
-    <button
-      type="button"
-      data-perc-toggle-panel
-      aria-expanded="false"
-      aria-controls="perc-panel"
-      aria-label={t.perc.about}
-      class="order-1 inline-flex items-center justify-center w-7 h-7 rounded-full border border-ink/25 bg-bg/70 backdrop-blur-[2px] font-display italic text-sm leading-none text-ink-muted hover:border-ink/50 hover:text-ink transition-colors cursor-help"
-    >i</button>
+    <div class="order-1 flex items-center gap-2">
+      {expandable && (
+        <button
+          type="button"
+          data-perc-expand
+          aria-pressed="false"
+          data-label-open={t.perc.expand}
+          data-label-close={t.perc.collapse}
+          class="inline-flex items-center gap-2 h-7 px-2.5 border border-ink/25 bg-bg/70 backdrop-blur-[2px] font-mono text-[0.6875rem] tracking-[0.04em] leading-none text-ink-muted hover:border-ink/50 hover:text-ink transition-colors cursor-pointer"
+        >
+          <svg data-icon-open width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M7.5 1H11v3.5M4.5 11H1V7.5M11 1 7 5M1 11l4-4" /></svg>
+          <svg data-icon-close class="hidden" width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" /></svg>
+          <span data-perc-expand-label>{t.perc.expand}</span>
+        </button>
+      )}
+      <button
+        type="button"
+        data-perc-toggle-panel
+        aria-expanded="false"
+        aria-controls="perc-panel"
+        aria-label={t.perc.about}
+        class="inline-flex items-center justify-center w-7 h-7 rounded-full border border-ink/25 bg-bg/70 backdrop-blur-[2px] font-display italic text-sm leading-none text-ink-muted hover:border-ink/50 hover:text-ink transition-colors cursor-help"
+      >i</button>
+    </div>
 
     <div
       id="perc-panel"
@@ -254,6 +282,24 @@ const termLang = lang === 'en' ? undefined : 'en';
   .perc-chip[aria-pressed='true'] { color: var(--color-ink); }
   .perc-chip[aria-pressed='true'] .perc-dot {
     background: var(--color-accent-energy);
+  }
+</style>
+
+<style is:global>
+  /* Full-window mode (see `expandable`). Global because the classes go on
+     the enclosing section and on <html>, outside this component's scope. */
+  .perc-expanded {
+    position: fixed !important;
+    inset: 0;
+    z-index: 60;
+    background: var(--color-bg);
+  }
+  .perc-expanded > :not([data-perc-root]),
+  .perc-expanded [data-perc-wash] {
+    display: none;
+  }
+  html.perc-locked {
+    overflow: hidden;
   }
 </style>
 
@@ -1190,8 +1236,9 @@ const termLang = lang === 'en' ? undefined : 'en';
       raf = 0;
     };
 
-    /* Opening moment: one cascade from just beside the portrait, so a
-       first-time visitor sees the field do the thing it is about. */
+    /* Opening moment: one cascade, so a first-time visitor sees the field
+       do the thing it is about. It starts beside the portrait where the
+       page has one in the field, otherwise right of centre. */
     const intro = () => {
       if (!raf) return;
       const portrait = document.querySelector('.hero-portrait');
@@ -1313,20 +1360,57 @@ const termLang = lang === 'en' ? undefined : 'en';
       });
     });
 
+    const setPanel = (open) => {
+      if (!panel || !panelBtn) return;
+      panel.hidden = !open;
+      panelBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+
+    /* Full-window mode. */
+    const expandable = root.hasAttribute('data-expandable');
+    const expandBtn = root.querySelector('[data-perc-expand]');
+    let expanded = false;
+    const setExpanded = (on) => {
+      if (!expandBtn || on === expanded) return;
+      expanded = on;
+      host.classList.toggle('perc-expanded', on);
+      document.documentElement.classList.toggle('perc-locked', on);
+      expandBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      expandBtn.querySelector('[data-perc-expand-label]').textContent =
+        on ? expandBtn.dataset.labelClose : expandBtn.dataset.labelOpen;
+      expandBtn.querySelector('[data-icon-open]').classList.toggle('hidden', on);
+      expandBtn.querySelector('[data-icon-close]').classList.toggle('hidden', !on);
+      /* Opening it is an invitation to play: bring the controls up where
+         there is room for them beside the field, and put them away again
+         on the way out. */
+      setPanel(on && window.matchMedia('(min-width: 768px)').matches);
+      syncChrome();
+    };
+    if (expandBtn) {
+      expandBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setExpanded(!expanded);
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && expanded) {
+          setExpanded(false);
+          expandBtn.focus();
+        }
+      });
+    }
+
     if (panelBtn && panel) {
-      const setPanel = (open) => {
-        panel.hidden = !open;
-        panelBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      };
       panelBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         setPanel(panel.hidden);
       });
+      /* In the band a click elsewhere dismisses the panel; in the full
+         window clicks on the field are play, and the panel stays put. */
       document.addEventListener('click', (e) => {
-        if (!panel.hidden && !controls.contains(e.target)) setPanel(false);
+        if (!panel.hidden && !expanded && !controls.contains(e.target)) setPanel(false);
       });
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !panel.hidden) {
+        if (e.key === 'Escape' && !panel.hidden && !expanded) {
           setPanel(false);
           panelBtn.focus();
         }
@@ -1335,13 +1419,19 @@ const termLang = lang === 'en' ? undefined : 'en';
 
     /* Controls, readout and the crosshair only make sense when the field
        is actually running. */
-    const syncChrome = () => {
+    /* The readout needs room: in a full-height hero that is `lg`; in the
+       expandable band it only appears once the field is opened. */
+    function syncChrome() {
       if (controls) controls.hidden = reduced.matches;
-      if (hud) hud.hidden = reduced.matches || !window.matchMedia('(min-width: 1024px)').matches;
+      const roomy = expandable
+        ? expanded && window.matchMedia('(min-width: 640px)').matches
+        : window.matchMedia('(min-width: 1024px)').matches;
+      if (hud) hud.hidden = reduced.matches || !roomy;
       host.style.cursor = !reduced.matches && finePointer.matches ? 'crosshair' : '';
-    };
+    }
     syncChrome();
     window.matchMedia('(min-width: 1024px)').addEventListener('change', syncChrome);
+    window.matchMedia('(min-width: 640px)').addEventListener('change', syncChrome);
 
     /* ---- Lifecycle -------------------------------------------------------- */
     new MutationObserver(() => {
@@ -1364,6 +1454,7 @@ const termLang = lang === 'en' ? undefined : 'en';
     });
 
     reduced.addEventListener('change', () => {
+      if (reduced.matches) setExpanded(false);
       syncChrome();
       if (reduced.matches) { stop(); if (ready) draw(); } else start();
     });

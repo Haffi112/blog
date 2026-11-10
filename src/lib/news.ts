@@ -1,9 +1,11 @@
 import type { ImageMetadata } from 'astro';
 import { getCollection } from 'astro:content';
 import { getPostsFor, postLang, postUrl } from '~/lib/posts';
-import { fallbackLang, pick, useTranslations, type Lang } from '~/i18n/utils';
+import { fallbackLang, pick, type Lang } from '~/i18n/utils';
 
 /** A photo attached to a news item, with its alt text in the page's language. */
+export type NewsKind = 'paper' | 'talk' | 'media' | 'award' | 'grant' | 'role' | 'group' | 'video' | 'post';
+
 export interface NewsImage {
   src: ImageMetadata;
   alt: string;
@@ -16,8 +18,8 @@ export interface NewsEntry {
   date: Date;
   text: string;
   link?: string;
-  /** Printed before `text`, e.g. "New post: " for blog items. */
-  prefix?: string;
+  /** What the item is about, for the label above the text. */
+  kind?: NewsKind;
   /** `lang` for `text` when it differs from the page (an English title on /is/). */
   textLang?: string;
   /** `hreflang` for the link, when it opens a page in another language. */
@@ -33,14 +35,13 @@ export interface NewsEntry {
  * page leaves them out, because the posts are already listed above it.
  */
 export async function getNews(lang: Lang, { withPosts = false } = {}): Promise<NewsEntry[]> {
-  const t = useTranslations(lang);
-
   const items: NewsEntry[] = (await getCollection('news')).map((n) => ({
     date: n.data.date,
     text: pick(lang, n.data.text, n.data.text_is),
     textLang: lang === 'is' && !n.data.text_is ? 'en' : undefined,
     link: pick(lang, n.data.link, n.data.link_is),
     precision: n.data.precision,
+    kind: n.data.kind,
     images: n.data.images.map((img) => ({
       src: img.src,
       alt: pick(lang, img.alt, img.alt_is),
@@ -55,7 +56,7 @@ export async function getNews(lang: Lang, { withPosts = false } = {}): Promise<N
       const foreign = postLang(post) === lang ? undefined : postLang(post);
       items.push({
         date: post.data.date,
-        prefix: t.home.newPost,
+        kind: 'post',
         text: post.data.title,
         textLang: foreign,
         hreflang: foreign,

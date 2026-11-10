@@ -1,0 +1,57 @@
+---
+/**
+ * Frame for every section page (Research, Publications, Group …).
+ *
+ * From `lg` up it is two columns on the site grid: a rail that starts at
+ * the same left edge as the wordmark and holds the page title, its lede
+ * and the "on this page" links, and the reading column beside it. The rail
+ * is sticky, so the section links stay in reach on long pages. Below `lg`
+ * it stacks into the single centred column: title, lede, links, content.
+ *
+ * `sections` are anchors inside the page (`#id`); `wide` lets the content
+ * column take the remaining width instead of the 65ch measure (the CV embed).
+ * The `aside` slot is for anything else that belongs under the lede.
+ */
+interface Section {
+  id: string;
+  label: string;
+}
+interface Props {
+  title: string;
+  lede?: string;
+  sections?: Section[];
+  /** Accessible name for the section links. */
+  sectionsLabel?: string;
+  wide?: boolean;
+}
+
+const { title, lede, sections = [], sectionsLabel, wide = false } = Astro.props;
+---
+<div
+  class:list={[
+    'mx-auto px-6 pb-12 max-w-prose lg:max-w-page lg:grid lg:gap-x-16',
+    wide ? 'lg:grid-cols-[19rem_minmax(0,1fr)]' : 'lg:grid-cols-[19rem_minmax(0,65ch)]'
+  ]}
+>
+  <header class="pt-12 md:pt-16 pb-8 border-b border-rule lg:border-b-0 lg:pb-8 lg:sticky lg:top-15 lg:self-start lg:max-h-[calc(100dvh-3.75rem)] lg:overflow-y-auto">
+    <h1 class="text-display-sm lg:text-[2.25rem] lg:leading-[1.1] font-light text-ink break-words">{title}</h1>
+    {lede && (
+      <p class="mt-4 font-prose text-[1.0625rem] lg:text-[1rem] leading-[1.6] text-ink-muted">{lede}</p>
+    )}
+    <slot name="aside" />
+    {sections.length > 0 && (
+      <nav aria-label={sectionsLabel} class="mt-5 lg:mt-7 lg:pt-5 lg:border-t lg:border-rule">
+        <ul class="flex flex-wrap gap-x-5 gap-y-2 lg:flex-col lg:gap-y-2.5 font-mono text-xs uppercase tracking-[0.04em]">
+          {sections.map((s) => (
+            <li><a href={`#${s.id}`} class="text-ink-muted hover:text-ink transition-colors">{s.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+    )}
+  </header>
+  <!-- The first block's own top margin would push the column below the
+       title's cap line; the column's padding sets that offset instead. -->
+  <div class="min-w-0 lg:pt-[4.5rem] lg:[&>*:first-child]:mt-0">
+    <slot />
+  </div>
+</div>

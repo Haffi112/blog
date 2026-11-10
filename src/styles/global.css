@@ -1,11 +1,11 @@
-/* Type system — "quiet paper": Newsreader carries everything editorial
-   (display, headings, body prose), IBM Plex Mono carries metadata (dates,
-   eyebrows, nav, tags), IBM Plex Sans is the UI sans for controls and dense
-   lists. Italic is loaded for Newsreader only — the design leans on it for
-   affiliations, captions and author lines. */
+/* Type system — "quiet paper": Newsreader carries everything that is read
+   (display, headings, body prose, descriptions) and is the default face;
+   IBM Plex Mono carries metadata and controls (dates, eyebrows, nav, tags,
+   buttons). There is no sans on the site. Italic is loaded for Newsreader
+   only — the design leans on it for affiliations, captions and author
+   lines. */
 @import "@fontsource-variable/newsreader";
 @import "@fontsource-variable/newsreader/wght-italic.css";
-@import "@fontsource-variable/ibm-plex-sans";
 @import "@fontsource/ibm-plex-mono/latin-400.css";
 @import "@fontsource/ibm-plex-mono/latin-500.css";
 @import "tailwindcss";
@@ -134,7 +134,8 @@
 
   /* Fonts — tied to the @theme so themes can override --font-prose and the
      .prose-body component will reflow with the new family. */
-  --font-sans: "IBM Plex Sans Variable", "IBM Plex Sans", system-ui, sans-serif;
+  /* No sans web font is loaded; this is only the fallback for `font-sans`. */
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-serif: "Newsreader Variable", "Newsreader", Georgia, serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-prose: "Newsreader Variable", "Newsreader", Georgia, serif;
@@ -191,7 +192,8 @@
   html {
     background: var(--color-bg);
     color: var(--color-ink);
-    font-family: var(--font-sans);
+    /* Anything not explicitly set in mono is reading text: the serif. */
+    font-family: var(--font-prose);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     transition:

@@ -63,9 +63,7 @@ const en = {
       'I lead a research group working on language technology for Icelandic and Faroese, with projects in computer vision for the natural sciences, clinical AI and human genetics. I also talk about AI in public a lot, most recently in a ',
     bioLink: 'seven-part video series',
     bioAfter: '.',
-    ctaResearch: 'Research →',
-    ctaPublications: 'Publications →',
-    ctaCv: 'Download CV ↓'
+    ctaResearch: 'Research →'
   },
   perc: {
     about: 'About this animation and its controls',
@@ -78,6 +76,8 @@ const en = {
     sound: 'Sound',
     ignite: 'Ignite a cascade',
     newGraph: 'New graph',
+    expand: 'Open the field',
+    collapse: 'Close',
     hudTitle: 'bootstrap percolation',
     firing: 'firing',
     lastCascade: 'last cascade',
@@ -93,10 +93,25 @@ const en = {
   },
   home: {
     title: 'Home',
-    news: 'News',
+    latest: 'Latest',
     selected: 'Selected publications',
     all: 'All',
-    newPost: 'New post: '
+    leadKicker: 'Latest post',
+    read: 'Read the post',
+    about: 'More about me'
+  },
+  news: {
+    kinds: {
+      paper: 'Paper',
+      post: 'Post',
+      talk: 'Talk',
+      media: 'Media',
+      award: 'Award',
+      grant: 'Grant',
+      role: 'Role',
+      group: 'Group',
+      video: 'Video'
+    }
   },
   series: {
     heading: 'Video series',
@@ -113,7 +128,6 @@ const en = {
     description: "Research themes and the open datasets and models of Hafsteinn Einarsson's group.",
     lede: 'My group works across six research themes. Below is a short description of each, followed by the datasets and models we have released.',
     themes: 'Themes',
-    relatedPubs: 'Related publications →',
     projects: 'Open-source projects',
     projectsIntro:
       'Datasets, models, and tools released by the group. Most live on Hugging Face or GitHub; see the linked publication for context.'
@@ -318,9 +332,7 @@ const is: Dict = {
       'Ég stýri rannsóknarhópi sem vinnur að máltækni fyrir íslensku og færeysku, auk verkefna í tölvusjón fyrir náttúruvísindi, klínískri gervigreind og mannerfðafræði. Ég fjalla líka mikið um gervigreind á opinberum vettvangi, nú síðast í ',
     bioLink: 'sjö þátta myndbandaröð',
     bioAfter: '.',
-    ctaResearch: 'Rannsóknir →',
-    ctaPublications: 'Ritaskrá →',
-    ctaCv: 'Ferilskrá ↓'
+    ctaResearch: 'Rannsóknir →'
   },
   perc: {
     about: 'Um þessa hreyfimynd og stillingar hennar',
@@ -333,6 +345,8 @@ const is: Dict = {
     sound: 'Hljóð',
     ignite: 'Hefja keðjuverkun',
     newGraph: 'Nýtt net',
+    expand: 'Opna netið',
+    collapse: 'Loka',
     hudTitle: 'bootstrap percolation',
     firing: 'virkir',
     lastCascade: 'síðasta keðjuverkun',
@@ -344,10 +358,25 @@ const is: Dict = {
   },
   home: {
     title: 'Forsíða',
-    news: 'Fréttir',
+    latest: 'Nýjast',
     selected: 'Valdar greinar',
-    all: 'Allar',
-    newPost: 'Ný færsla: '
+    all: 'Allt',
+    leadKicker: 'Nýjasti pistillinn',
+    read: 'Lesa pistilinn',
+    about: 'Meira um mig'
+  },
+  news: {
+    kinds: {
+      paper: 'Grein',
+      post: 'Pistill',
+      talk: 'Erindi',
+      media: 'Fjölmiðlar',
+      award: 'Verðlaun',
+      grant: 'Styrkur',
+      role: 'Starf',
+      group: 'Hópurinn',
+      video: 'Myndband'
+    }
   },
   series: {
     heading: 'Myndbandaröð',
@@ -364,7 +393,6 @@ const is: Dict = {
     description: 'Rannsóknarsvið, opin gögn og hugbúnaður rannsóknarhóps Hafsteins Einarssonar.',
     lede: 'Hópurinn minn vinnur á sex rannsóknarsviðum. Hér fyrir neðan er stutt lýsing á hverju þeirra og yfirlit yfir þau gagnasöfn og líkön sem við höfum gefið út.',
     themes: 'Rannsóknarsvið',
-    relatedPubs: 'Tengdar greinar →',
     projects: 'Opin gögn og hugbúnaður',
     projectsIntro:
       'Gagnasöfn, líkön og tól sem hópurinn hefur gefið út. Flest eru á Hugging Face eða GitHub og nánar er fjallað um þau í tengdum greinum.'

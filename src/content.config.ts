@@ -38,6 +38,10 @@ const news = defineCollection({
           a graduation) show just the year instead of an invented month; store
           them as YYYY-01-01. */
       precision: z.enum(['year', 'month']).default('month'),
+      /** What the item is about; printed as a small label above the text
+          (labels in src/i18n/ui.ts, `news.kinds`). Blog posts in the feed
+          get 'post' automatically. */
+      kind: z.enum(['paper', 'talk', 'media', 'award', 'grant', 'role', 'group', 'video']).optional(),
       /** Photos shown as thumbnails under the text, each linking to a larger
           copy. `src` is relative to the YAML file (../../assets/news/…). */
       images: z

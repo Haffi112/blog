@@ -10,3 +10,4 @@ images:
   - src: ../../assets/news/celda-2026-slide.jpg
     alt: "Slide announcing the CELDA 2026 best paper: “Validating LLM-Generated Exam Questions Against Student Performance” by Hafsteinn Einarsson and Sigrún Helga Lund."
     alt_is: "Glæra þar sem tilkynnt er um bestu grein CELDA 2026: „Validating LLM-Generated Exam Questions Against Student Performance“ eftir Hafstein Einarsson og Sigrúnu Helgu Lund."
+kind: award

@@ -7,11 +7,12 @@ import { fallbackLang, pick, useTranslations, type Lang } from '~/i18n/utils';
 
 interface Props {
   pub: Publication;
-  variant?: 'selected' | 'list';
+  /** Cut the summary to three lines (used where the full text is shown elsewhere on the page). */
+  clamp?: boolean;
   lang?: Lang;
 }
 
-const { pub, variant = 'list', lang = 'en' } = Astro.props;
+const { pub, clamp = false, lang = 'en' } = Astro.props;
 
 const t = useTranslations(lang);
 const authors = displayAuthors(pub.authors);
@@ -25,10 +26,7 @@ const links = linkOrder
 const summary = pick(lang, pub.summary, pub.summary_is);
 const summaryLang = pub.summary ? fallbackLang(lang, pub.summary_is) : undefined;
 ---
-<article class:list={[
-  variant === 'list' && 'py-5 border-t border-rule first:border-t-0',
-  variant === 'selected' && 'border-l-2 border-accent-primary pl-5 md:pl-6 py-4 mb-7 last:mb-0'
-]}>
+<article class="py-5 border-t border-rule-soft first:border-t-0">
   <div class="flex items-center gap-3 mb-2">
     <ThemeTag theme={pub.theme} lang={lang} />
   </div>
@@ -46,7 +44,7 @@ const summaryLang = pub.summary ? fallbackLang(lang, pub.summary_is) : undefined
     {pub.year ? <span> · {pub.year}</span> : null}
   </p>
   {summary && (
-    <p class="mt-2.5 prose-body text-[1rem] leading-[1.6] text-ink-muted" lang={summaryLang}>{summary}</p>
+    <p class:list={['mt-2.5 prose-body text-[1rem] leading-[1.6] text-ink-muted', clamp && 'line-clamp-3']} lang={summaryLang}>{summary}</p>
   )}
   {(links.length > 0 || pub.bibtex) && (
     <ul class="mt-3 flex flex-wrap items-baseline gap-3.5">

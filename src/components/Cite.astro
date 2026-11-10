@@ -22,4 +22,4 @@ if (!number) {
   throw new Error(`${post.id}: <Cite key="${key}"> is not listed in the post's "cited" frontmatter`);
 }
 ---
-<a href={`#ref-${key}`} class="text-sm align-baseline">[{number}]</a>
+<a href={`#ref-${key}`} class="font-mono text-[0.8125em] align-baseline">[{number}]</a>

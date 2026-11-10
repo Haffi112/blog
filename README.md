@@ -43,8 +43,8 @@ You need:
 | Bibliography | `@retorquere/bibtex-parser` | Reads `references.bib` → `src/data/publications.json` |
 | RSS | `@astrojs/rss` | `/atom.xml`, `/is/atom.xml` |
 | Sitemap | `@astrojs/sitemap` | `/sitemap-index.xml`, with `en`/`is` alternates |
-| Fonts (site) | `@fontsource-variable/*`, `@fontsource/ibm-plex-mono` | Newsreader, IBM Plex Sans, IBM Plex Mono |
-| Fonts (CV) | Vendored static files in `cv/fonts/` | The same three faces as the site, as static instances |
+| Fonts (site) | `@fontsource-variable/newsreader`, `@fontsource/ibm-plex-mono` | Newsreader for everything read, IBM Plex Mono for metadata and controls |
+| Fonts (CV) | Vendored static files in `cv/fonts/` | Newsreader and IBM Plex Mono as on the site, plus IBM Plex Sans for running text |
 | Images | `astro:assets` (`<Picture>`, `<Image>`) | AVIF + WebP + fallback variants |
 | Social cards | `opentype.js` + `sharp` (`src/og/card.ts`) | One 1200×630 PNG per post and language, built with the site |
 | CV | Typst + custom template | `npm run cv` → `public/cv.pdf` + `public/cv-long.pdf` |
@@ -232,7 +232,7 @@ field — that's the safety net.
 Each page's body is `src/views/<Name>Page.astro` (the files under
 `src/pages/` are three-line wrappers, one per language). Long first-person
 prose is written there per language; short strings (nav, headings, labels,
-the homepage hero text) live in `src/i18n/ui.ts`, in both `en` and `is`.
+the front page masthead and bio) live in `src/i18n/ui.ts`, in both `en` and `is`.
 
 ### Update CV-only data (positions, education, awards)
 
@@ -334,8 +334,10 @@ follows the active theme.
 
 The look is "quiet paper": a warm off-white ground, near-black ink, one
 rust accent, hairline rules and square corners. Newsreader carries display
-type, headings and prose; IBM Plex Mono carries metadata (dates, eyebrows,
-nav, tags); IBM Plex Sans is the UI sans.
+type, headings and prose; IBM Plex Mono carries metadata and controls
+(dates, eyebrows, nav, tags, buttons). Section pages share one frame,
+`src/components/PageShell.astro`: a title rail on the left, the reading
+column beside it.
 
 | Token | Role |
 |---|---|

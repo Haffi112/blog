@@ -1,12 +1,14 @@
 ---
 import BaseLayout from '~/components/BaseLayout.astro';
-import PageHeader from '~/components/PageHeader.astro';
+import PageShell from '~/components/PageShell.astro';
 import SectionHeading from '~/components/SectionHeading.astro';
 import ThemeCard from '~/components/ThemeCard.astro';
 import ProjectCard from '~/components/ProjectCard.astro';
 import { themes } from '~/data/themes';
 import { useTranslations, type Lang } from '~/i18n/utils';
 import { getCollection } from 'astro:content';
+import pubsData from '~/data/publications.json';
+import type { Publication } from '~/data/publications.schema';
 
 /* Research page body, shared by /research/ and /is/research/. Media
    appearances and talks live on the Outreach page (WritingPage.astro). */
@@ -20,26 +22,31 @@ const t = useTranslations(lang);
 const projects = (await getCollection('projects'))
   .sort((a, b) => a.id.localeCompare(b.id))
   .map((p) => p.data);
+
+const pubCount = (code: string) => (pubsData as unknown as Publication[]).filter((p) => p.theme === code).length;
+const sections = [
+  { id: 'themes', label: t.research.themes },
+  { id: 'projects', label: t.research.projects }
+];
 ---
 <BaseLayout title={t.research.title} description={t.research.description} lang={lang}>
-  <section class="max-w-prose mx-auto px-6 pb-12">
-    <PageHeader title={t.research.title} lede={t.research.lede} />
+  <PageShell title={t.research.title} lede={t.research.lede} sections={sections} sectionsLabel={t.writing.sectionsLabel}>
 
     <section id="themes" class="mt-12 scroll-mt-20" data-reveal>
       <SectionHeading title={t.research.themes} />
-      <div class="mt-6 flex flex-col gap-4">
+      <div class="mt-2">
         {themes.map((th) => (
-          <ThemeCard title={th.title[lang]} body={th.body[lang]} anchor={th.code} lang={lang} />
+          <ThemeCard theme={th.code} title={th.title[lang]} body={th.body[lang]} count={pubCount(th.code)} lang={lang} />
         ))}
       </div>
     </section>
 
     <section id="projects" class="mt-16 scroll-mt-20" data-reveal>
       <SectionHeading title={t.research.projects} />
-      <p class="mt-3 text-ink-muted text-sm">{t.research.projectsIntro}</p>
+      <p class="mt-3 font-prose text-[0.9375rem] leading-[1.55] text-ink-muted">{t.research.projectsIntro}</p>
       <div class="mt-4">
         {projects.map((p) => <ProjectCard {...p} lang={lang} />)}
       </div>
     </section>
-  </section>
+  </PageShell>
 </BaseLayout>

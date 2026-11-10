@@ -10,7 +10,7 @@ const { keys } = Astro.props;
 // Same order as the numbers <Cite> prints.
 const refs = citedRefs(keys);
 ---
-<ol class="mt-8 max-w-prose text-sm text-ink-muted space-y-2 list-decimal pl-6">
+<ol class="mt-8 max-w-prose font-prose text-[0.9375rem] leading-[1.5] text-ink-muted space-y-2 list-decimal pl-6">
   {refs.map((r) => (
     <li id={`ref-${r.id}`} class="scroll-mt-20">
       {r.authors.map(formatAuthor).join('; ')}

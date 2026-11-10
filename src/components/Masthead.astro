@@ -1,0 +1,33 @@
+---
+import PercolationField from './PercolationField.astro';
+import { useTranslations, type Lang } from '~/i18n/utils';
+
+/**
+ * The front page's masthead: the name set large over a band of the live
+ * percolation field. The band is deliberately short — the page below is
+ * the journal — but the field is still the site's signature, so a button
+ * in its corner opens it to the full window to play with (see
+ * `expandable` in PercolationField.astro).
+ */
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+---
+<section class="relative overflow-hidden border-b border-rule">
+  <PercolationField lang={lang} expandable />
+
+  <!-- pointer-events-none lets clicks fall through the type to the canvas,
+       so the whole band is ignitable. Each block carries its own frosted
+       plate so the cascade stays visible between the lines. -->
+  <div class="relative pointer-events-none max-w-page mx-auto px-6 pt-16 pb-9 md:pt-[4.5rem] md:pb-12 flex flex-col items-start gap-3">
+    <p class="plate eyebrow px-3 py-1.5">{t.hero.eyebrow}</p>
+    <h1 class="plate px-2.5 md:px-4 py-2 text-[clamp(2.25rem,1rem+6.2vw,5rem)] leading-[1] tracking-[-0.022em] font-light text-ink">
+      Hafsteinn Einarsson
+    </h1>
+    <p class="plate px-3.5 py-2 font-prose italic font-light text-ink-muted text-[1.0625rem] md:text-[1.1875rem] leading-[1.45]">
+      {t.hero.affiliation[0]}, {t.hero.affiliation[1]}
+    </p>
+  </div>
+</section>

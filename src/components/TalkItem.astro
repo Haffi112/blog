@@ -30,9 +30,9 @@ const month = yearOnly ? '' : formatDate(date, lang, { month: 'short' });
     <p class="font-prose text-[1.0625rem] leading-[1.45] text-ink" lang={fallbackLang(lang, title_is)}>
       {link ? <a href={link}>{shownTitle}</a> : shownTitle}
     </p>
-    <p class="mt-0.5 text-sm text-ink-muted">
+    <p class="mt-0.5 font-prose italic text-[0.9375rem] leading-[1.45] text-ink-muted">
       {shownVenue}{shownPlace && <Fragment>, {shownPlace}</Fragment>}
-      {type !== 'invited' && <span class="meta ml-2">{t.talkTypes[type]}</span>}
+      {type !== 'invited' && <span class="meta ml-2 not-italic">{t.talkTypes[type]}</span>}
     </p>
   </div>
 </li>

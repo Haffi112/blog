@@ -1,14 +1,16 @@
 ---
 import { Image, getImage } from 'astro:assets';
-import type { NewsImage } from '~/lib/news';
+import type { NewsImage, NewsKind } from '~/lib/news';
+import { useTranslations, type Lang } from '~/i18n/utils';
 
 interface Props {
   date: Date;
   text: string;
   link?: string;
   newest?: boolean;
-  /** Printed before `text`, e.g. "New post: " for blog items. */
-  prefix?: string;
+  /** What the item is about: a small mono label above the text. */
+  kind?: NewsKind;
+  lang?: Lang;
   /** `lang` for `text` when it differs from the page (an English post title on /is/). */
   textLang?: string;
   /** `hreflang` for the link, when it opens a page in another language. */
@@ -19,7 +21,11 @@ interface Props {
   images?: NewsImage[];
 }
 
-const { date, text, link, newest = false, prefix, textLang, hreflang, precision = 'month', images = [] } = Astro.props;
+const { date, text, link, newest = false, kind, lang = 'en', textLang, hreflang, precision = 'month', images = [] } = Astro.props;
+const t = useTranslations(lang);
+/* Papers carry the house rust; everything else stays in muted ink, so the
+   feed does not turn into a colour chart. */
+const kindTone = kind === 'paper' || kind === 'post' ? 'text-accent-primary' : 'text-ink-faint';
 const iso = date.toISOString().slice(0, 10);
 const formatted = precision === 'year' ? iso.slice(0, 4) : iso.slice(0, 7); // YYYY or YYYY-MM
 /* Each thumbnail opens a larger copy, so the full-size original never ships. */
@@ -33,10 +39,15 @@ const full = await Promise.all(images.map((img) => getImage({ src: img.src, widt
     {formatted}
   </time>
   <p class="font-prose text-[1.0625rem] leading-[1.45] text-ink">
+    {kind && (
+      <span class:list={['block mb-1 font-mono text-[0.6875rem] uppercase tracking-[0.1em] leading-none', kindTone]}>{t.news.kinds[kind]}</span>
+    )}
+    {/* The whole sentence is the link, but it reads as prose: no
+        underline, a mono arrow marks it, and it turns rust on hover. */}
     {link ? (
-      <a href={link} hreflang={hreflang}>{prefix}{textLang ? <span lang={textLang}>{text}</span> : text}</a>
+      <a href={link} hreflang={hreflang} class="link-plain group">{textLang ? <span lang={textLang}>{text}</span> : text}<span class="meta ml-1.5 whitespace-nowrap group-hover:text-accent-primary transition-colors" aria-hidden="true">→</span></a>
     ) : (
-      <Fragment>{prefix}{textLang ? <span lang={textLang}>{text}</span> : text}</Fragment>
+      <Fragment>{textLang ? <span lang={textLang}>{text}</span> : text}</Fragment>
     )}
   </p>
   {images.length > 0 && (

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '~/components/BaseLayout.astro';
-import PageHeader from '~/components/PageHeader.astro';
+import PageShell from '~/components/PageShell.astro';
 import CourseCard from '~/components/CourseCard.astro';
 import { pick, useTranslations, type Lang } from '~/i18n/utils';
 import { getCollection } from 'astro:content';
@@ -27,10 +27,9 @@ courses.sort((a, b) =>
 );
 ---
 <BaseLayout title={t.teaching.title} description={t.teaching.description} lang={lang}>
-  <section class="max-w-prose mx-auto px-6 pb-12">
-    <PageHeader title={t.teaching.title} lede={t.teaching.lede} />
+  <PageShell title={t.teaching.title} lede={t.teaching.lede}>
     <div class="mt-8" data-reveal>
       {courses.map((c) => <CourseCard {...c} lang={lang} />)}
     </div>
-  </section>
+  </PageShell>
 </BaseLayout>

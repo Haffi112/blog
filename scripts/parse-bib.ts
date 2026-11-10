@@ -101,12 +101,18 @@ function maybeString(value: unknown): string | undefined {
 export function parseBib(bibSource: string): RawEntry[] {
   const result = parseBibtex(bibSource);
   const entries: any[] = result?.entries ?? [];
+  // The parser sentence-cases English fields. That is what we want for
+  // paper titles, but it also lower-cases journal and conference names
+  // ("Nature communications"), so venues are read from a second pass with
+  // the casing left as written in the .bib file.
+  const asWritten: any[] = parseBibtex(bibSource, { sentenceCase: false })?.entries ?? [];
+  const venues = new Map<string, string>(asWritten.map((entry: any) => [entry.key, venueFrom(entry)]));
   return entries.map((entry: any) => ({
     id: entry.key,
     type: entry.type,
     title: decodeLatex(asString(entry.fields?.title)),
     authors: authorsFrom(entry),
-    venue: venueFrom(entry),
+    venue: venues.get(entry.key) ?? venueFrom(entry),
     year: yearFrom(entry),
     pages: maybeString(entry.fields?.pages),
     volume: maybeString(entry.fields?.volume),
