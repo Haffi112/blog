@@ -9,7 +9,7 @@
  * Long prose with inline links (About page, panel copy) lives in the view
  * components as an `lang === 'is' ? … : …` branch instead of being split
  * into fragments here. Content entries (news, talks, projects, courses)
- * carry their own optional `*_is` fields — see src/content/config.ts.
+ * carry their own optional `*_is` fields — see src/content.config.ts.
  */
 
 export const languages = {
@@ -25,7 +25,7 @@ const isOne = (n: number) => new Intl.PluralRules('is-IS').select(n) === 'one';
 const en = {
   meta: {
     description:
-      'Hafsteinn Einarsson — Associate Professor at the University of Iceland and Principal Scientist at Amgen deCODE.',
+      'Hafsteinn Einarsson — Associate Professor of Computer Science and Head of Faculty at the University of Iceland.',
     skipToContent: 'Skip to content'
   },
   nav: {
@@ -46,7 +46,7 @@ const en = {
   },
   footer: {
     blurb:
-      'Machine learning research at the University of Iceland and Amgen deCODE: language, vision, clinical AI, and human genetics.',
+      'Machine learning research at the University of Iceland: language, vision, clinical AI, and human genetics.',
     explore: 'Explore',
     elsewhere: 'Elsewhere',
     sectionsLabel: 'Site sections',
@@ -56,8 +56,8 @@ const en = {
   hero: {
     eyebrow: 'Machine learning research',
     affiliation: [
-      'Associate Professor and Head of Faculty, University of Iceland',
-      'Principal Scientist, Amgen deCODE'
+      'Associate Professor and Head of Faculty',
+      'University of Iceland'
     ],
     bioBefore:
       'I lead a research group working on language technology for Icelandic and Faroese, with projects in computer vision for the natural sciences, clinical AI and human genetics. I also talk about AI in public a lot, most recently in a ',
@@ -246,8 +246,7 @@ const en = {
     tags: 'Tags',
     /** Shown on a translated post, linking to the original. */
     original: 'Originally written in English',
-    moreWriting: 'More posts',
-    author: 'Hafsteinn Einarsson'
+    moreWriting: 'More posts'
   },
   about: {
     title: 'About',
@@ -257,7 +256,7 @@ const en = {
     title: 'CV',
     heading: 'Curriculum Vitae',
     description: 'Curriculum Vitae — Hafsteinn Einarsson.',
-    lede: "Two versions, both generated from this site's content via a Typst template that mirrors the site's typography and palette.",
+    lede: "Two versions, both generated from this site's content via a Typst template that shares the site's typefaces and palette.",
     short: 'Short CV (2 pages) ↓',
     long: 'Full CV (all publications) ↓',
     embedLabel: "Hafsteinn Einarsson's short CV",
@@ -271,8 +270,7 @@ const en = {
     sims: {
       standard: 'Synchronous bootstrap percolation',
       dscaling: 'Local homeostatic plasticity',
-      izhikevich: 'NMDA enhanced, conductance based Izhikevich neuron',
-      dice: 'Dice parser'
+      izhikevich: 'NMDA enhanced, conductance based Izhikevich neuron'
     }
   }
 };
@@ -282,7 +280,7 @@ export type Dict = typeof en;
 const is: Dict = {
   meta: {
     description:
-      'Hafsteinn Einarsson – dósent við Háskóla Íslands og sérfræðingur hjá Íslenskri erfðagreiningu.',
+      'Hafsteinn Einarsson – dósent í tölvunarfræði og deildarforseti við Háskóla Íslands.',
     skipToContent: 'Fara beint í efnið'
   },
   nav: {
@@ -303,7 +301,7 @@ const is: Dict = {
   },
   footer: {
     blurb:
-      'Rannsóknir í vélnámi við Háskóla Íslands og hjá Íslenskri erfðagreiningu: máltækni, tölvusjón, klínísk gervigreind og mannerfðafræði.',
+      'Rannsóknir í vélnámi við Háskóla Íslands: máltækni, tölvusjón, klínísk gervigreind og mannerfðafræði.',
     explore: 'Á síðunni',
     elsewhere: 'Annars staðar',
     sectionsLabel: 'Hlutar síðunnar',
@@ -313,8 +311,8 @@ const is: Dict = {
   hero: {
     eyebrow: 'Rannsóknir í vélnámi',
     affiliation: [
-      'Dósent og deildarforseti, Háskóli Íslands',
-      'Sérfræðingur, Íslensk erfðagreining'
+      'Dósent og deildarforseti',
+      'Háskóli Íslands'
     ],
     bioBefore:
       'Ég stýri rannsóknarhópi sem vinnur að máltækni fyrir íslensku og færeysku, auk verkefna í tölvusjón fyrir náttúruvísindi, klínískri gervigreind og mannerfðafræði. Ég fjalla líka mikið um gervigreind á opinberum vettvangi, nú síðast í ',
@@ -493,8 +491,7 @@ const is: Dict = {
     references: 'Heimildir',
     tags: 'Efnisorð',
     original: 'Upprunalega skrifað á ensku',
-    moreWriting: 'Fleiri pistlar',
-    author: 'Hafsteinn Einarsson'
+    moreWriting: 'Fleiri pistlar'
   },
   about: {
     title: 'Um mig',
@@ -518,8 +515,7 @@ const is: Dict = {
     sims: {
       standard: 'Samstillt bootstrap percolation',
       dscaling: 'Staðbundin samvægismýkt',
-      izhikevich: 'Izhikevich-taugungur með leiðnilíkani og NMDA-styrkingu',
-      dice: 'Teningaþáttari'
+      izhikevich: 'Izhikevich-taugungur með leiðnilíkani og NMDA-styrkingu'
     }
   }
 };

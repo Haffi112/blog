@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-Source for **haffi112.github.io** — the academic homepage of Hafsteinn Einarsson (Associate Professor, U. of Iceland; Principal Scientist, deCODE genetics). Built with **Astro 7** (MDX on the unified/remark pipeline), deployed via GitHub Actions to a separate `Haffi112/haffi112.github.io` repo on every push to `master`. The same site data drives two **Typst**-generated CV PDFs.
+Source for **hafst1.is** (served from the `haffi112.github.io` Pages repo) — the academic homepage of Hafsteinn Einarsson (Associate Professor and Head of Faculty, U. of Iceland). Built with **Astro 7** (MDX on the unified/remark pipeline), deployed via GitHub Actions to a separate `Haffi112/haffi112.github.io` repo on every push to `master`. The same site data drives two **Typst**-generated CV PDFs.
 
 For a long-form tour see `README.md` — this file is the operator's cheat sheet.
 
@@ -60,11 +60,12 @@ Key invariants:
 | Add news item (homepage feed) | `src/content/news/YYYY-MM-slug.yml` — the homepage shows the latest five (blog posts included); the full list is at the bottom of `/writing/` (`src/lib/news.ts`). Optional `images:` list (`src: ../../assets/news/<file>`, `alt`, `alt_is`) shows thumbnails that link to a 1600px copy |
 | Outreach page sections (blog, videos, media, talks, news) | `src/views/WritingPage.astro` (served at `/writing/`). The section order, labels and anchors are `writing.sections` in `src/i18n/ui.ts`; the page's own section links and the nav's Outreach submenu both read them through `outreachSections()` (`src/i18n/utils.ts`), so add or reorder a section there. Op-eds are not a separate list: they sit in "In the media" with their type label |
 | Add blog post | `src/content/blog/YYYY-MM-DD-slug.mdx` (set `draft: true` to exclude) |
-| Add publication | Append to `references.bib`, then optionally enrich `src/data/pub-overrides.yaml` (`summary`, `summary_is`, links). The "Cite" button shows the entry's own BibTeX, extracted by `scripts/parse-bib.ts` |
+| Add publication | Append to `references.bib` (unique citekey — `parse-bib` fails on a duplicate), then add its entry to `src/data/pub-overrides.yaml`: `theme` (without one the paper is counted but not listed, and `parse-bib` warns), plus optional `summary`, `summary_is`, links. The "Cite" button shows the entry's own BibTeX, extracted by `scripts/parse-bib.ts` |
 | Translate a blog post | Copy it to `src/content/blog/is/<same filename>.mdx` and translate (see "Bilingual site") |
 | Mark publication as "selected" / set theme | `src/data/pub-overrides.yaml` (key is the BibTeX citekey) |
 | Add student / course / project / talk | One YAML in the matching `src/content/{students,teaching,projects,talks}/` (talks are listed at `/writing/#talks`) |
-| Change CV-only data (positions, education, awards) | `src/data/cv-static.yaml`, then `npm run cv` |
+| Change CV-only data (positions, education, awards, outreach roles) | `src/data/cv-static.yaml`, then `npm run cv`. The short CV must stay at 2 pages (the download label says so): check with `pdfinfo public/cv.pdf` |
+| How author lists are printed (site and CV) | `displayAuthors()` in `src/lib/format-authors.ts`: up to six authors in full, otherwise the first three, an ellipsis, your name and "et al." — also for consortium papers whose BibTeX ends in `and others` before reaching you |
 | Tweak hero text on homepage | Strings in `src/i18n/ui.ts` (`hero.*`, both languages); layout in `src/components/Hero.astro` |
 | Tune the hero animation (density, thresholds, inhibition, audio) | `src/components/PercolationField.astro` — model constants are the block near the top; see "Things that have bitten people" before changing them |
 | Add a press / media appearance | `media_appearances` in `src/data/cv-static.yaml` — the one list feeds both the CV and `/writing/#media` (read at build time by `src/lib/media.ts`). Needs `title_is`, `title_en`, `outlet`, `type`, `url` |
@@ -74,7 +75,7 @@ Key invariants:
 | Pick the social-share image for a post | Add `hero: ../../assets/<image>.png` to the post's frontmatter (otherwise a title card is generated) |
 | Add a footnote in a post | Standard GFM syntax: `[^name]` inline + `[^name]: …` block; littlefoot turns it into a hover/click popover |
 | Change or add a UI string (nav, headings, buttons, labels) | `src/i18n/ui.ts`, in **both** `en` and `is` (the build fails if one is missing) |
-| Icelandic text for a news item / talk / project / course | The entry's optional `*_is` field: `text_is`, `title_is`, `venue_is`, `summary_is`, `description_is` (see `src/content/config.ts`) |
+| Icelandic text for a news item / talk / project / course | The entry's optional `*_is` field: `text_is`, `title_is`, `venue_is`, `summary_is`, `description_is` (see `src/content.config.ts`) |
 | Icelandic name for a talk location | `places` in `src/i18n/ui.ts` |
 | Research theme text, publication theme headings, theme tags | `src/data/themes.ts` (both languages) |
 | Add a page in both languages | View in `src/views/`, wrappers in `src/pages/x/` and `src/pages/is/x/`, path in `translatedRoutes` (`src/i18n/utils.ts`) |
@@ -100,6 +101,7 @@ Every `.mdx` post inherits a few things automatically. Worth knowing before touc
 - **Per-post OG image.** `src/views/PostPage.astro` computes the social-share URL: if the post has `hero:` in frontmatter, that image is resized to 1200×630 via `getImage({ position: 'attention' })`; otherwise it uses the card from `src/pages/og/[...slug].png.ts`. Cards (and `/og/default.png`, `/og/default-is.png` for every other page) are drawn by `src/og/card.ts`: paper ground, a seeded percolation-graph motif, the title in Newsreader. **All card text is converted to outlines with opentype.js** from the static fonts in `src/og/fonts/` (instances cut from the OFL variable fonts with `fonttools varLib.instancer`). Don't switch back to SVG `<text>` or sharp's Pango `text` input: both resolve fonts through the OS, and on macOS sharp silently ignores a supplied `fontfile` and renders a system sans.
 - **Math** (remark-math + rehype-katex): a post with math adds `import 'katex/dist/katex.min.css';` to its own MDX imports, so the 29 KB stylesheet loads only there. A literal dollar amount in prose must be written `\$` or remark-math may pair it with another one.
 - **Code blocks** go through **astro-expressive-code** (frames, syntax highlighting, copy button, word wrap on by default). The integration is registered in `astro.config.mjs` *and* its rehype plugin is wired into `mdx({ processor: unified({ rehypePlugins }) })` — both are required, see "Things that have bitten people".
+- **Citations in old posts.** `<Cite key="…" />` prints the reference's position in that post's own list (`src/lib/citations.ts`, shared with `Bibliography.astro`), found from the page URL. Every cited key must be in the post's `cited:` frontmatter or the build fails.
 - **Footnotes** use GFM (`[^name]` syntax) at build time, then **littlefoot** at runtime swaps the inline `<sup>` for a small accent-coloured superscript with a popover. Mounted from `PostLayout.astro`; styling lives in `src/styles/global.css` **outside `@layer components`** so it can win against littlefoot's own CSS.
 - **`<figure>` / `<figcaption>`.** Scoped styling in `.prose-body` gives captions a hairline rule, smaller italic centred serif type, and a 56ch cap. Use `<Picture {...pictureProps} src={imported} />` inside `<figure>` for AVIF + WebP + PNG fallback at multiple widths; the `pictureProps` spread is conventionally defined as `export const pictureProps = {...}` at the top of the MDX.
 
@@ -107,7 +109,7 @@ Every `.mdx` post inherits a few things automatically. Worth knowing before touc
 
 - **`publications.json` is gitignored.** If `astro dev` shows stale pubs, run `npm run parse-bib`.
 - **Typst `--` parsing.** `#start--present` is parsed as one identifier. Use string concatenation (`str(start) + "–" + str(end)`) in template helpers. Already worked around in `cv/template.typ`.
-- **Typst variable fonts.** Typst is picky in `set text` mode. Use static (not variable) TTFs in `cv/fonts/` and register with `--font-path`.
+- **Typst variable fonts.** Typst is picky in `set text` mode. Use static (not variable) TTFs in `cv/fonts/` and register with `--font-path`. The CV uses the site's faces (Newsreader, IBM Plex Sans, IBM Plex Mono); the files there are static instances cut from the OFL variable fonts with `fonttools varLib.instancer`, and the light large-optical-size cut for the name is renamed "Newsreader Display" so it does not collide with the text cut of the same weight class.
 - **GitHub Pages stale after deploy.** Wait 1–3 minutes. The Actions tab shows when `peaceiris/actions-gh-pages@v4` finished; then hard-reload.
 - **CI uses Node 24 with `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true`.** Local Node 22 is fine; don't add Node-version-specific syntax beyond that.
 - **expressive-code's MDX wiring.** Registering `expressiveCode(opts)` before `mdx()` in `integrations` is necessary but not sufficient: the rehype plugin doesn't reach `.mdx` files via `extendMarkdownConfig`. The fix in `astro.config.mjs` is belt-and-suspenders — `expressiveCode(opts)` keeps the vite plugin, *and* `rehypeExpressiveCode` is added directly to the MDX processor. No duplication occurs because `.md` files aren't used.

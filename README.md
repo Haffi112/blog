@@ -1,8 +1,10 @@
-# haffi112.github.io
+# hafst1.is
 
-Source for [haffi112.github.io](https://haffi112.github.io/) — academic homepage for Hafsteinn Einarsson (Associate Professor of Computer Science, University of Iceland; Principal Scientist, deCODE genetics).
+Source for [hafst1.is](https://hafst1.is/) — academic homepage for Hafsteinn Einarsson (Associate Professor of Computer Science and Head of Faculty, University of Iceland), in English and Icelandic.
 
-The site is built with [Astro](https://astro.build) and deployed via GitHub Actions to the separate [`Haffi112/haffi112.github.io`](https://github.com/Haffi112/haffi112.github.io) repo on every push to `master`. CVs are generated from the same site data using [Typst](https://typst.app).
+The site is built with [Astro](https://astro.build) and deployed via GitHub Actions to the separate [`Haffi112/haffi112.github.io`](https://github.com/Haffi112/haffi112.github.io) repo (served at hafst1.is through `public/CNAME`) on every push to `master`. CVs are generated from the same site data using [Typst](https://typst.app).
+
+`CLAUDE.md` is the shorter operator's cheat sheet: where each kind of edit goes, how the bilingual routing works, and the pitfalls that have bitten before.
 
 ---
 
@@ -26,7 +28,6 @@ You need:
 
 - **Node 22+** (the CI runner uses Node 24)
 - **Typst 0.14+** — `brew install typst` (or skip if you don't need to regenerate CVs locally; the committed PDFs work fine for dev/preview)
-- **pandoc** (only needed for the optional `old_cvs/` → reference conversions in `scripts/`; not part of the regular build)
 
 ---
 
@@ -34,14 +35,18 @@ You need:
 
 | Layer | Choice | Notes |
 |---|---|---|
-| Static site generator | Astro 5 | Zero JS by default, content collections, MDX |
-| Styling | Tailwind CSS 4 via `@tailwindcss/vite` | CSS-first `@theme` config in `src/styles/global.css` |
+| Static site generator | Astro 7 | Zero JS by default, content collections (Content Layer), MDX on the unified/remark pipeline |
+| Languages | Astro i18n | English at the root, Icelandic under `/is/`; strings in `src/i18n/ui.ts` |
+| Styling | Tailwind CSS 4 via `@tailwindcss/vite` + daisyUI (theme system only) | CSS-first `@theme` config in `src/styles/global.css`; light and dark themes |
 | Math (blog) | KaTeX via `remark-math` + `rehype-katex` | Static HTML, no runtime JS |
+| Code blocks | `astro-expressive-code` | Frames, highlighting, copy button |
 | Bibliography | `@retorquere/bibtex-parser` | Reads `references.bib` → `src/data/publications.json` |
-| RSS | `@astrojs/rss` | `/atom.xml` |
-| Sitemap | `@astrojs/sitemap` | `/sitemap-index.xml` |
-| Fonts | `@fontsource-variable/*` (web) + vendored TTFs in `cv/fonts/` (CV) | Inter, Source Serif 4, JetBrains Mono |
-| Images | `astro:assets` (`<Picture>`) | AVIF + WebP + PNG variants |
+| RSS | `@astrojs/rss` | `/atom.xml`, `/is/atom.xml` |
+| Sitemap | `@astrojs/sitemap` | `/sitemap-index.xml`, with `en`/`is` alternates |
+| Fonts (site) | `@fontsource-variable/*`, `@fontsource/ibm-plex-mono` | Newsreader, IBM Plex Sans, IBM Plex Mono |
+| Fonts (CV) | Vendored static files in `cv/fonts/` | The same three faces as the site, as static instances |
+| Images | `astro:assets` (`<Picture>`, `<Image>`) | AVIF + WebP + fallback variants |
+| Social cards | `opentype.js` + `sharp` (`src/og/card.ts`) | One 1200×630 PNG per post and language, built with the site |
 | CV | Typst + custom template | `npm run cv` → `public/cv.pdf` + `public/cv-long.pdf` |
 | Tests | Vitest | Only the bibliography parser is unit-tested |
 | Deploy | GitHub Actions → `peaceiris/actions-gh-pages@v4` | Push to master → live site |
@@ -53,57 +58,63 @@ You need:
 ```
 blog/
 ├─ src/
-│  ├─ assets/                  Image sources processed by astro:assets (hafsteinn.png)
+│  ├─ assets/                  Image sources processed by astro:assets
 │  ├─ components/              Reusable .astro components
-│  ├─ content/                 Astro content collections (typed Markdown / YAML)
-│  │  ├─ blog/                 *.mdx blog posts
-│  │  ├─ news/                 *.yml news items (homepage feed)
+│  ├─ content/                 Astro content collections (typed MDX / YAML)
+│  │  ├─ blog/                 *.mdx blog posts; Icelandic translations in blog/is/
+│  │  ├─ news/                 *.yml news items (homepage feed, /writing/#news)
 │  │  ├─ projects/             *.yml open-source projects shown on /research/
 │  │  ├─ students/             *.yml supervised students shown on /group/
-│  │  ├─ talks/                *.yml talks and outreach shown on /research/
-│  │  ├─ teaching/             *.yml courses shown on /teaching/
-│  │  └─ config.ts             Zod schemas for each collection
+│  │  ├─ talks/                *.yml talks and outreach shown on /writing/#talks
+│  │  └─ teaching/             *.yml courses shown on /teaching/
+│  ├─ content.config.ts        Zod schemas for each collection
 │  ├─ data/
-│  │  ├─ cv-static.yaml        Positions, education, awards, service for the CV
-│  │  ├─ pub-overrides.yaml    Per-publication theme, summary, links, selected flag
+│  │  ├─ cv-static.yaml        Positions, education, awards, service, media appearances
+│  │  ├─ pub-overrides.yaml    Per-publication theme, summaries, links, selected flag
+│  │  ├─ themes.ts             The six research themes, in both languages
+│  │  ├─ series.ts             The AI-risk video series (episodes, links)
 │  │  ├─ publications.json     Generated by scripts/parse-bib.ts (gitignored)
 │  │  ├─ publications.schema.ts
 │  │  └─ cited-refs.json       Generated; refs cited by old blog posts (gitignored)
+│  ├─ i18n/
+│  │  ├─ ui.ts                 Every UI string, in English and Icelandic
+│  │  └─ utils.ts              getLang, localizePath, alternates, pick, formatDate …
 │  ├─ layouts/
-│  │  └─ PostLayout.astro      Wraps each blog post; renders auto bibliography
-│  ├─ lib/
-│  │  └─ format-authors.ts     Bolds "Einarsson, H." in author lists
-│  ├─ pages/                   File-based routes
-│  │  ├─ index.astro           /
-│  │  ├─ about/, cv/, research/, group/, teaching/, blog/, publications/, simulations/
+│  │  └─ PostLayout.astro      Wraps each blog post; renders its reference list
+│  ├─ lib/                     posts, news, media, citations, author formatting
+│  ├─ og/                      Social-card renderer and its fonts
+│  ├─ views/                   Page bodies, one per page, shared by both languages
+│  ├─ pages/                   File-based routes: thin wrappers around src/views/
+│  │  ├─ index.astro, about/, cv/, research/, group/, teaching/,
+│  │  │  publications/, simulations/, writing/
+│  │  ├─ is/                   The same routes in Icelandic
 │  │  ├─ [year]/[month]/[day]/[slug]/index.astro    Date-based blog post URLs
-│  │  ├─ atom.xml.ts                                /atom.xml
+│  │  ├─ og/                   Social cards (/og/<slug>.png, /og/default.png)
+│  │  ├─ atom.xml.ts           /atom.xml
 │  │  └─ 404.astro
 │  └─ styles/
-│     └─ global.css            Tokens, Tailwind import, custom dark variant
+│     └─ global.css            Theme tokens, Tailwind import, component classes
 ├─ public/                     Static assets copied verbatim to dist/ root
-│  ├─ img/hafsteinn.png        JSON-LD-stable copy (and dev fallback)
+│  ├─ img/hafsteinn-einarsson.jpg   Press photo (About page, JSON-LD)
 │  ├─ cv.pdf, cv-long.pdf      Generated by npm run cv (committed)
-│  ├─ og/default.png           OpenGraph card image
 │  ├─ js/, css/                Legacy assets used by the 2016 simulations
-│  └─ simulations/*.html       Pre-rendered standalone D3/jQuery simulations
+│  └─ simulations/*.html       Standalone D3 simulations from 2016
 ├─ cv/
-│  ├─ template.typ             Shared Typst styling (mirrors site palette + fonts)
+│  ├─ template.typ             Shared Typst layout and helpers
+│  ├─ theme.typ                CV colour tokens (mirror the site's light palette)
 │  ├─ short.typ                2-page CV (selected publications + key sections)
 │  ├─ long.typ                 Full CV (all publications, full supervision list)
 │  ├─ data.typ                 Generated; gitignored
-│  └─ fonts/                   Vendored OFL fonts (Inter, Source Serif 4, JetBrains Mono)
+│  └─ fonts/                   Vendored OFL fonts (Newsreader, IBM Plex Sans, IBM Plex Mono)
 ├─ scripts/
 │  ├─ parse-bib.ts             references.bib + pub-overrides.yaml → publications.json
 │  ├─ generate-cv.ts           Reads site data → cv/data.typ → compiles both CV PDFs
 │  ├─ __tests__/               Vitest tests
 │  └─ fixtures/                Test fixtures
-├─ references.bib              Source of truth for publications (BibTeX, 70+ entries)
+├─ references.bib              Source of truth for publications (BibTeX, 80+ entries)
 ├─ _bibliography/references.bib  Refs cited by old blog posts (Hodgkin-Huxley etc.)
-├─ docs/plans/                 Phase plans + design doc from the website refresh
-├─ .github/workflows/deploy.yml  CI: build + deploy to Haffi112/haffi112.github.io
+├─ .github/workflows/          deploy.yml (build + deploy), links.yml (weekly link check)
 ├─ astro.config.mjs
-├─ tailwind.config.mjs         (kept minimal; Tailwind 4 config lives in CSS)
 ├─ tsconfig.json
 ├─ vitest.config.ts
 ├─ deploy.sh                   Local build helper (Actions does the real deploy)
@@ -127,7 +138,7 @@ The site is content-collection-driven. Most edits don't touch any `.astro` or `.
    title: Your post title
    date: 2026-05-12
    excerpt: 1-2 sentence summary used in the blog index and atom feed.
-   cited:               # optional; only needed if you use <Cite />
+   cited:               # required for every key you use in <Cite />
      - hodgkin1952quantitative
    ---
 
@@ -140,6 +151,9 @@ The site is content-collection-driven. Most edits don't touch any `.astro` or `.
    <Cite key="hodgkin1952quantitative" />.
    ```
 
+   `<Cite>` prints the reference's number in the post's own reference
+   list, so the build fails if a key is missing from `cited`.
+
 2. The URL is derived from the date in the frontmatter:
    `/2026/05/12/slug/` (with the date prefix stripped from the slug).
 
@@ -147,7 +161,10 @@ The site is content-collection-driven. Most edits don't touch any `.astro` or `.
    from build output.
 
 4. Inline interactive widgets: see one of the 2016 posts for the
-   `<Simulation>` component pattern (loads jQuery + custom JS).
+   `<Simulation>` component pattern (loads the post's own scripts from `public/js/`).
+
+5. Icelandic translation: copy the file to `src/content/blog/is/` under
+   the same filename and translate it (see "Bilingual site" in `CLAUDE.md`).
 
 ### Add a news item (homepage feed)
 
@@ -156,26 +173,34 @@ Create `src/content/news/YYYY-MM-event.yml`:
 ```yaml
 date: 2026-05-12
 text: "Short sentence describing the news."
+text_is: "Sama frétt á íslensku."        # optional; falls back to English
 link: https://example.com/announcement   # optional
 ```
 
-The home page shows the 5 most recent items.
+The home page shows the 5 most recent items (blog posts included); the
+full list is at the bottom of `/writing/`.
 
 ### Add a publication
 
 The bibliography is in `references.bib` at repo root. Two-step update:
 
 1. Append a normal `@article{…}` or `@inproceedings{…}` entry. Use the
-   BibTeX `lastNameYEARkeyword` citation key convention.
+   BibTeX `lastNameYEARkeyword` citation key convention. Keys must be
+   unique: `parse-bib` fails on a duplicate.
 
-2. Optionally enrich it in `src/data/pub-overrides.yaml`:
+2. Add its entry to `src/data/pub-overrides.yaml`. Only `theme` is
+   needed, but without one the paper is counted and not listed
+   (`parse-bib` prints a warning), because `/publications/` and the long
+   CV group by theme:
 
    ```yaml
    yourkey2026title:
-     theme: nlp-is        # nlp-is | cv-nat | clinical-ai | genetics | comp-neuro
-     selected: true       # appears in /publications/#selected and on /
+     theme: nlp-is        # nlp-is | cv-nat | clinical-ai | genetics | comp-neuro | discrete-math
+     selected: true       # appears under "Selected" on /publications/ and on /
      summary: |
        1-2 sentences (3-4 if selected). Plain prose, no marketing.
+     summary_is: |
+       The same in Icelandic (optional; falls back to English).
      links:
        doi: https://doi.org/10.1000/example
        arxiv: https://arxiv.org/abs/2410.00001
@@ -198,20 +223,21 @@ One YAML file per entry under the matching directory:
 - `src/content/projects/<project>.yml`
 - `src/content/talks/<event>.yml`
 
-The Zod schemas in `src/content/config.ts` define the required and
+The Zod schemas in `src/content.config.ts` define the required and
 optional fields. The build fails loudly if a YAML is missing a required
 field — that's the safety net.
 
 ### Update the About page or any page-level text
 
-The pages are at `src/pages/*.astro`. They're small Astro components.
-Edit prose directly.
-
-The hero text on the homepage is in `src/components/Hero.astro`.
+Each page's body is `src/views/<Name>Page.astro` (the files under
+`src/pages/` are three-line wrappers, one per language). Long first-person
+prose is written there per language; short strings (nav, headings, labels,
+the homepage hero text) live in `src/i18n/ui.ts`, in both `en` and `is`.
 
 ### Update CV-only data (positions, education, awards)
 
-Edit `src/data/cv-static.yaml`. This data isn't displayed on the site
+Edit `src/data/cv-static.yaml`. Apart from `media_appearances`, which
+also feeds `/writing/#media`, this data isn't displayed on the site
 (intentionally — the site shows current narrative, the CV shows
 chronological detail).
 
@@ -230,8 +256,7 @@ This:
    every `src/content/{students,teaching,projects,talks}/*.yml`.
 2. Writes a single `cv/data.typ` Typst data file.
 3. Compiles `cv/short.typ` → `public/cv.pdf` (2 pages).
-4. Compiles `cv/long.typ` → `public/cv-long.pdf` (9 pages, all
-   publications).
+4. Compiles `cv/long.typ` → `public/cv-long.pdf` (all publications).
 
 If you change anything that affects the CV — a publication summary, a
 new student, a new award, updated positions — re-run `npm run cv` and
@@ -247,8 +272,9 @@ typst watch cv/short.typ --root . --font-path cv/fonts
 # Then open public/cv.pdf in any PDF viewer that auto-reloads (e.g. Skim on Mac)
 ```
 
-To tweak styling, edit `cv/template.typ` (colors, fonts, section
-headings, helpers). The palette mirrors `src/styles/global.css`.
+To tweak styling, edit `cv/theme.typ` (colours) or `cv/template.typ`
+(fonts, section headings, helpers). The palette mirrors the light theme
+in `src/styles/global.css`.
 
 ---
 
@@ -300,27 +326,32 @@ trigger a deploy from the Actions tab on GitHub without pushing.
 ## How the design system works
 
 `src/styles/global.css` is the single source of truth for design
-tokens. Tailwind 4 reads the `@theme` block and generates utilities like
-`bg-bg`, `text-ink-muted`, `border-rule`, `text-accent-primary`, etc.
+tokens. The palette is defined once per theme as daisyUI theme blocks
+(`light` and `dark`, in OKLCH); the `@theme` block then aliases the names
+the markup uses (`bg-bg`, `text-ink-muted`, `border-rule`,
+`text-accent-primary` …) to those theme variables, so every utility
+follows the active theme.
 
-| Token | Light | Dark | Used for |
-|---|---|---|---|
-| `--color-bg` | `#FAFAF6` | `#131013` | Page background |
-| `--color-bg-elev` | `#FFFFFF` | `#1A171C` | Elevated surfaces (selected pub cards) |
-| `--color-ink` | `#1A1418` | `#EDE9E3` | Primary text |
-| `--color-ink-muted` | `#5A5560` | `#8A8389` | Secondary text |
-| `--color-rule` | `#E8E4E2` | `#292528` | Borders, dividers |
-| `--color-accent-primary` | `#5B3A78` | `#B79BDF` | Brand (aubergine) — links, nav, JSON-LD |
-| `--color-accent-warm` | `#8E5E0F` | `#E5C46E` | Gold accent — active nav, awards |
-| `--color-accent-energy` | `#A84A1F` | `#E58A5E` | Burnt orange — used sparingly |
+The look is "quiet paper": a warm off-white ground, near-black ink, one
+rust accent, hairline rules and square corners. Newsreader carries display
+type, headings and prose; IBM Plex Mono carries metadata (dates, eyebrows,
+nav, tags); IBM Plex Sans is the UI sans.
 
-Dark mode is triggered by `[data-theme="dark"]` set via the inline
-no-FOUC script in `BaseLayout`. A toggle in the nav flips the value
-and persists it to `localStorage`.
+| Token | Role |
+|---|---|
+| `--color-bg` / `--color-bg-elev` | Paper, and the warmer raised surface (footer, panels) |
+| `--color-ink` / `--color-ink-muted` / `--color-ink-faint` | Text at 100%, 70% and 60% (all clear WCAG AA) |
+| `--color-rule` / `--color-rule-soft` | Structural hairlines / separators inside lists |
+| `--color-accent-primary` | Rust — hover states, active nav, theme tags |
+| `--color-accent-warm`, `--color-accent-energy` | Secondary accents, used sparingly |
 
-To change a color, edit `src/styles/global.css` (both the `@theme` block
-and the `[data-theme="dark"]` override). To match the change in the CV,
-also edit `cv/template.typ`.
+The theme is `[data-theme]` on `<html>`, set before paint by the inline
+script in `BaseLayout` (system preference unless the visitor has chosen).
+The toggle in the nav flips it and persists the choice to `localStorage`.
+
+To change a colour, edit the two theme blocks at the top of
+`src/styles/global.css`. To match the change in the CV, also edit
+`cv/theme.typ`.
 
 ---
 
@@ -336,9 +367,9 @@ part of an identifier when it follows `#start`. Use string concatenation
 **Build fails on `npm run cv` in CI** — verify `typst-community/setup-typst@v4`
 runs before `npm run build`.
 
-**"unknown font family: inter"** — Typst is picky about variable fonts
-in `set text` mode. The vendored static Inter variants in `cv/fonts/`
-fix this. If you replace the fonts, use static (not variable) TTFs and
+**"unknown font family" in Typst** — Typst is picky about variable fonts
+in `set text` mode. The files in `cv/fonts/` are static instances for
+that reason. If you replace the fonts, use static (not variable) TTFs and
 register them with `--font-path`.
 
 **Live site stale after push** — GitHub Pages caches aggressively. Wait
@@ -358,14 +389,10 @@ npx lighthouse http://localhost:4321/ --chrome-flags="--headless"
 
 ## Project history
 
-Migrated from Jekyll (Lanyon theme, 2016–2018) to Astro in May 2026.
-The four-phase migration is documented under `docs/plans/`:
-
-1. `docs/plans/2026-05-11-website-refresh-design.md` — the design doc
-2. `docs/plans/2026-05-11-website-refresh-phase-1.md` — Astro foundation
-3. `docs/plans/2026-05-11-website-refresh-phase-2.md` — Research / Group / Teaching
-4. `docs/plans/2026-05-11-website-refresh-phase-3.md` — Blog migration
-5. `docs/plans/2026-05-11-website-refresh-phase-4.md` — SEO / a11y / performance
+Migrated from Jekyll (Lanyon theme, 2016–2018) to Astro in May 2026,
+redesigned ("quiet paper") and made bilingual in July 2026.
+The planning documents for both rebuilds are in the git history
+(`docs/plans/`, removed once the work shipped).
 
 The original Jekyll source (Lanyon theme: `_config.yml`, `_layouts/`,
 `_posts/`, etc.) was removed from the repo root after the migration

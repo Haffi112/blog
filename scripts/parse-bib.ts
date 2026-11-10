@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import yaml from 'js-yaml';
 import { parse as parseBibtex } from '@retorquere/bibtex-parser';
 import type {
@@ -171,11 +171,29 @@ async function processBibFile(
   const bibSource = readFileSync(bibPath, 'utf8');
   const raw = parseBib(bibSource);
   const sources = extractBibtexSources(bibSource);
+
+  // A repeated citekey gives two entries one override and one "Cite" text.
+  const ids = raw.map((entry) => entry.id);
+  const repeated = [...new Set(ids.filter((id, i) => ids.indexOf(id) !== i))];
+  if (repeated.length) {
+    throw new Error(`Duplicate citation key(s) in ${path.relative(ROOT, bibPath)}: ${repeated.join(', ')}`);
+  }
+  const orphans = Object.keys(overrides).filter((key) => !ids.includes(key));
+  if (orphans.length) {
+    console.warn(`Warning: pub-overrides.yaml has entries with no BibTeX entry: ${orphans.join(', ')}`);
+  }
   const merged = raw.map((entry) => ({
     ...merge(entry, overrides[entry.id]),
     bibtex: sources.get(entry.id)
   }));
   merged.sort((a, b) => b.year - a.year || a.id.localeCompare(b.id));
+  // The publications page and the long CV list entries by theme only.
+  if (Object.keys(overrides).length) {
+    const unthemed = merged.filter((entry) => !entry.theme).map((entry) => entry.id);
+    if (unthemed.length) {
+      console.warn(`Warning: no theme in pub-overrides.yaml, so not listed on /publications/: ${unthemed.join(', ')}`);
+    }
+  }
   writeFileSync(outPath, JSON.stringify(merged, null, 2));
   console.log(`Wrote ${merged.length} publications to ${outPath}`);
 }
@@ -189,7 +207,8 @@ async function main() {
   await processBibFile(citedBib, citedOut, {});
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Run only as a script (`tsx scripts/parse-bib.ts`), not when imported by the tests.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((err) => {
     console.error(err);
     process.exit(1);

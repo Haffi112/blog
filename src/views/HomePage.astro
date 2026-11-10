@@ -17,9 +17,6 @@ interface Props {
 }
 const { lang } = Astro.props;
 const t = useTranslations(lang);
-/* Content that is only in English gets marked as such on Icelandic pages. */
-const foreign = lang === 'en' ? undefined : 'en';
-
 /* Latest five, blog posts included so new writing shows up here; the full
    list lives at the bottom of the Writing page. */
 const news = (await getNews(lang, { withPosts: true })).slice(0, 5);

@@ -5,7 +5,7 @@ export async function GET() {
   const png = await renderCard({
     eyebrow: 'hafst1.is',
     title: 'Hafsteinn Einarsson',
-    subtitle: 'Dósent og deildarforseti við Háskóla Íslands. Vísindamaður hjá Íslenskri erfðagreiningu.',
+    subtitle: 'Dósent og deildarforseti við Háskóla Íslands.',
     seed: 'default',
     byline: false
   });

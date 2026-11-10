@@ -1,23 +1,25 @@
 ---
-import cited from '~/data/cited-refs.json';
-import type { Publication } from '~/data/publications.schema';
+import { getCollection } from 'astro:content';
+import { citedRefs } from '~/lib/citations';
+import { postUrl } from '~/lib/posts';
 
+/**
+ * Inline citation marker, "[2]", linking to the post's reference list.
+ * The number is the reference's position in that list (Bibliography.astro),
+ * so the post is looked up from the page URL to read its `cited` keys.
+ */
 interface Props {
   key: string;
 }
 
 const { key } = Astro.props;
-const refs = cited as unknown as Publication[];
-const ref = refs.find((r) => r.id === key);
-const number = ref ? refs.indexOf(ref) + 1 : null;
+const post = (await getCollection('blog')).find((p) => postUrl(p) === Astro.url.pathname);
+if (!post) throw new Error(`<Cite key="${key}"> used outside a blog post (${Astro.url.pathname})`);
 
-if (!ref) {
-  // Surface broken citations at build time
-  console.warn(`[Cite] Unknown bibtex key: ${key}`);
+const number = citedRefs(post.data.cited).findIndex((r) => r.id === key) + 1;
+// A marker with no entry in the list would be a dead link: fail the build.
+if (!number) {
+  throw new Error(`${post.id}: <Cite key="${key}"> is not listed in the post's "cited" frontmatter`);
 }
 ---
-{ref ? (
-  <a href={`#ref-${ref.id}`} class="text-sm align-baseline">[{number}]</a>
-) : (
-  <span class="text-accent-energy">[?{key}]</span>
-)}
+<a href={`#ref-${key}`} class="text-sm align-baseline">[{number}]</a>

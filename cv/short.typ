@@ -32,7 +32,7 @@
 ]
 
 #section-title("Selected Publications")
-#text(size: 8.5pt, fill: muted)[
+#text(size: 8pt, fill: muted)[
   Full list at #link(data.contact.website + "publications/")[#data.contact.website.replace("https://", "")publications/].
   In NLP/ML venues, last author denotes the senior position.
 ]

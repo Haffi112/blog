@@ -29,7 +29,7 @@ const projects = (await getCollection('projects'))
       <SectionHeading title={t.research.themes} />
       <div class="mt-6 flex flex-col gap-4">
         {themes.map((th) => (
-          <ThemeCard theme={th.code} title={th.title[lang]} body={th.body[lang]} anchor={th.code} lang={lang} />
+          <ThemeCard title={th.title[lang]} body={th.body[lang]} anchor={th.code} lang={lang} />
         ))}
       </div>
     </section>

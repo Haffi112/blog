@@ -5,8 +5,7 @@ export async function GET() {
   const png = await renderCard({
     eyebrow: 'hafst1.is',
     title: 'Hafsteinn Einarsson',
-    subtitle:
-      'Associate Professor and Head of Faculty, University of Iceland. Principal Scientist, Amgen deCODE.',
+    subtitle: 'Associate Professor and Head of Faculty, University of Iceland.',
     seed: 'default',
     byline: false
   });

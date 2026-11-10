@@ -71,7 +71,7 @@ const articleLd = {
   lang={lang}
   alternates={alternates}
 >
-  <script slot="head" type="application/ld+json" set:html={JSON.stringify(articleLd)} />
+  <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(articleLd)} />
   <article class="max-w-prose mx-auto px-6 pt-10 pb-12 md:pt-14">
     <header class="pb-8 border-b border-rule">
       <a href={localizePath('/writing/', lang)} class="link-plain font-mono text-xs text-ink-muted">← {t.post.back}</a>

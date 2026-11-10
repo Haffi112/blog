@@ -15,12 +15,10 @@ const blog = defineCollection({
     z.object({
       title: z.string(),
       date: z.date(),
-      updated: z.date().optional(),
       excerpt: z.string().optional(),
       tags: z.array(z.string()).default([]),
       draft: z.boolean().default(false),
       hero: image().optional(),
-      customCss: z.array(z.string()).default([]),
       cited: z.array(z.string()).default([])
     })
 });
@@ -58,7 +56,7 @@ const talks = defineCollection({
     venue_is: z.string().optional(),
     /** English place name; the Icelandic one comes from `places` in src/i18n/ui.ts. */
     location: z.string().optional(),
-    link: z.string().url().optional(),
+    link: z.url().optional(),
     type: z.enum(['invited', 'keynote', 'outreach', 'workshop']).default('invited')
   })
 });
@@ -73,10 +71,10 @@ const projects = defineCollection({
     summary_is: z.string().optional(),
     links: z
       .object({
-        repo: z.string().url().optional(),
-        huggingface: z.string().url().optional(),
-        site: z.string().url().optional(),
-        dataset: z.string().url().optional()
+        repo: z.url().optional(),
+        huggingface: z.url().optional(),
+        site: z.url().optional(),
+        dataset: z.url().optional()
       })
       .default({}),
     tags: z.array(z.string()).default([]),
@@ -95,7 +93,7 @@ const students = defineCollection({
     title_is: z.string().optional(),
     startYear: z.number().int().optional(),
     endYear: z.number().int().optional(),
-    link: z.string().url().optional(),
+    link: z.url().optional(),
     nowAt: z.string().optional(),
     nowAt_is: z.string().optional(),
     supervisor: z.string().optional()
@@ -112,7 +110,7 @@ const teaching = defineCollection({
     semesters: z.array(z.string()).default([]),
     description: z.string(),
     description_is: z.string().optional(),
-    syllabus: z.string().url().optional()
+    syllabus: z.url().optional()
   })
 });
 

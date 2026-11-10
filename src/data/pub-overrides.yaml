@@ -130,15 +130,6 @@ lengler2016connectivity:
     (bounded-size rules) í slembinetaferlum og er framlag til kenninga um
     leggjavalsferli af Achlioptas-gerð. Annals of Applied Probability.
 
-porterhippocam:
-  theme: comp-neuro
-  summary: |
-    Conference contribution related to hippocampal modelling
-    (collaboration with the Hippocam consortium).
-  summary_is: |
-    Ráðstefnuframlag um líkanagerð af drekanum (hippocampus), unnið í
-    samstarfi við Hippocam-rannsóknarhópinn.
-
 # === Icelandic and Faroese NLP / language models ===
 
 snaebjarnarson2022natural:
@@ -521,13 +512,21 @@ saldarriaga2024diagnostic:
     Co-authored international survey of diagnostic and therapeutic
     practice for heart failure with preserved ejection fraction (HFpEF),
     contributing the Icelandic Heart Failure Registry data. Current
-    Problems in Cardiology / EJHF (a related conference abstract shares
-    the same citation key).
+    Problems in Cardiology.
   summary_is: |
     Alþjóðleg samstarfskönnun á greiningar- og meðferðarvenjum við
     hjartabilun með varðveitt útfallsbrot (HFpEF), með gögnum úr íslensku
     hjartabilunarskránni sem framlagi Íslands. Current Problems in
-    Cardiology / EJHF (tengt ráðstefnuágrip deilir sama tilvísunarlykli).
+    Cardiology.
+
+saldarriaga2024diagnosticabstract:
+  theme: clinical-ai
+  summary: |
+    Conference abstract (EJHF) of the international survey of diagnostic
+    and therapeutic practice for HFpEF around the world.
+  summary_is: |
+    Ráðstefnuágrip (EJHF) um alþjóðlegu könnunina á greiningar- og
+    meðferðarvenjum við HFpEF víða um heim.
 
 guidetti2025differences:
   theme: clinical-ai

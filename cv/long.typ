@@ -89,7 +89,7 @@
 ]
 
 #section-title("Teaching")
-#text(size: 8.5pt, fill: muted)[
+#text(size: 8pt, fill: muted)[
   Roughly 300+ students per academic year across these courses.
 ]
 #v(0.4em)
@@ -97,7 +97,7 @@
   #entry(course-level-label(t.level))[
     *#t.title* — #t.description
     #if t.at("semesters", default: ()).len() > 0 [
-       #text(fill: muted, size: 9pt)[_Taught:_ #t.semesters.join(", ").]
+       #text(fill: muted, size: 8.5pt)[_Taught:_ #t.semesters.join(", ").]
     ]
   ]
 ]
@@ -109,10 +109,17 @@
   ]
 ]
 
-#section-title("Talks and Outreach")
+#section-title("Talks")
 #for t in data.talks [
   #entry([#str(t.year)])[
     *#t.title*, #t.venue#if t.at("location", default: none) != none [, #t.location]#if t.at("type", default: none) != none [#h(0.4em)#talk-type-label(t.type)]
+  ]
+]
+
+#section-title("Outreach and Community")
+#for o in data.outreach [
+  #entry(_range(o.start, o.end))[
+    *#o.title*, #o.venue
   ]
 ]
 
@@ -136,7 +143,7 @@
 ]
 
 #section-title("Media Appearances")
-#text(size: 8.5pt, fill: muted)[
+#text(size: 8pt, fill: muted)[
   Selected interviews, opinion pieces and broadcast appearances on AI, language technology, and research. Titles are in Icelandic with English translations underneath. Linked entries open the original story.
 ]
 #v(0.4em)

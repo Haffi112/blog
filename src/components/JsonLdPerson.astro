@@ -6,18 +6,11 @@ const personJsonLd = {
   '@type': 'Person',
   name: 'Hafsteinn Einarsson',
   jobTitle: 'Associate Professor of Computer Science and Head of Faculty',
-  affiliation: [
-    {
-      '@type': 'Organization',
-      name: 'University of Iceland',
-      url: 'https://www.hi.is/'
-    },
-    {
-      '@type': 'Organization',
-      name: 'Amgen deCODE',
-      url: 'https://www.decode.com/'
-    }
-  ],
+  affiliation: {
+    '@type': 'Organization',
+    name: 'University of Iceland',
+    url: 'https://www.hi.is/'
+  },
   url: 'https://hafst1.is/',
   image: 'https://hafst1.is/img/hafsteinn-einarsson.jpg',
   sameAs: [
@@ -43,4 +36,4 @@ const personJsonLd = {
   ]
 };
 ---
-<script type="application/ld+json" set:html={JSON.stringify(personJsonLd)}></script>
+<script is:inline type="application/ld+json" set:html={JSON.stringify(personJsonLd)}></script>

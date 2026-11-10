@@ -1,5 +1,6 @@
-# Static CV data — not displayed on the site, used by scripts/generate-cv.ts
-# to build cv.pdf (short) and cv-long.pdf (long).
+# Static CV data, used by scripts/generate-cv.ts to build cv.pdf (short) and
+# cv-long.pdf (long). One list is also shown on the site: media_appearances
+# feeds /writing/#media (src/lib/media.ts).
 #
 # To update: edit this file, then run `npm run cv` to regenerate.
 # Site content (publications, students, talks, projects, teaching) is read
@@ -22,7 +23,7 @@ research_statement: >-
   translation resources to evaluation sets for gender bias, sentiment,
   and question answering. The same toolkit supports collaborations in
   marine and agricultural vision, automated clinical coding with the
-  National Hospital, and human genetics at deCODE. I was trained in
+  National Hospital, and, from 2021 to 2026, human genetics at deCODE. I was trained in
   probabilistic combinatorics and models of cortical circuits. That
   background still shows in how the group works: explicit assumptions,
   small data budgets, and results we can check.
@@ -39,13 +40,13 @@ current_positions:
     start: 2024
     end: present
     location: Iceland
-
-previous_positions:
   - title: Co-founder
     institution: KatlaCode
     start: 2024
     end: present
     location: Iceland
+
+previous_positions:
   - title: Principal Scientist
     institution: Amgen deCODE
     start: 2021
@@ -213,40 +214,21 @@ service:
       start: 2013
       end: 2016
 
+# Community roles that are not talks (talks live in src/content/talks/).
+# Shown on the long CV under "Outreach and Community".
 outreach:
-  - title: AI and ethics
-    venue: UNESCO forum on AI and Ethics
-    year: 2023
-  - title: AI in teaching
-    venue: Icelandic teaching academy conference
-    year: 2023
-  - title: AI in higher education
-    venue: University of Akureyri teaching conference
-    year: 2023
-  - title: AI keynote
-    venue: UTmessan (Icelandic IT conference)
-    year: 2022
-  - title: AI keynote
-    venue: UTmessan
-    year: 2021
-  - title: Interview on AI
-    venue: RÚV (Icelandic National Broadcasting Service)
-    year: 2021
   - title: Judge
-    venue: First Lego League
-    year: 2023
-  - title: Judge
-    venue: First Lego League
-    year: 2024
-  - title: Judge
-    venue: First Lego League
-    year: 2025
+    venue: First Lego League Iceland
+    start: 2023
+    end: 2026
   - title: Mentor
     venue: Nordic Open Data and AI Hackathon
-    year: 2022
+    start: 2022
+    end: 2022
   - title: Judge
     venue: Icelandic environmental Datathon
-    year: 2020
+    start: 2020
+    end: 2020
 
 media_appearances:
   - date: 2026-10-05

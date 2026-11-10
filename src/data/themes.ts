@@ -76,8 +76,8 @@ export const themes: ThemeText[] = [
       is: 'Mannerfðafræði og reiknilíffræði'
     },
     body: {
-      en: 'Research-scientist position at Amgen deCODE. Genome-wide-association work on common conditions where the analysis intersects with NLP-style methods, including a Nature Communications paper on BMI-associated variants and disease risk.',
-      is: 'Starf mitt sem sérfræðingur hjá Íslenskri erfðagreiningu. Víðtækar erfðamengisrannsóknir (GWAS) á algengum sjúkdómum þar sem greiningin skarast við aðferðir úr máltækni, meðal annars grein í Nature Communications um breytileika sem tengjast líkamsþyngdarstuðli og sjúkdómsáhættu.'
+      en: 'Work from my years as a Principal Scientist at Amgen deCODE (2021–2026). Genome-wide-association work on common conditions where the analysis intersects with NLP-style methods, including a Nature Communications paper on BMI-associated variants and disease risk.',
+      is: 'Rannsóknir frá árum mínum sem sérfræðingur hjá Íslenskri erfðagreiningu (2021–2026). Víðtækar erfðamengisrannsóknir (GWAS) á algengum sjúkdómum þar sem greiningin skarast við aðferðir úr máltækni, meðal annars grein í Nature Communications um breytileika sem tengjast líkamsþyngdarstuðli og sjúkdómsáhættu.'
     },
     heading: {
       en: 'Human genetics and computational biology',

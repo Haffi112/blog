@@ -365,7 +365,6 @@
     display: block;
     width: 100%;
     height: auto;
-    border-radius: 0.25rem;
   }
   .prose-body figure figcaption {
     margin: 0.875rem auto 0;
@@ -384,7 +383,6 @@
     font-family: var(--font-mono);
     font-size: 0.78em;
     padding: 0.05em 0.3em;
-    border-radius: 0.25rem;
     background: var(--color-bg-elev);
   }
 
@@ -429,7 +427,7 @@
   --popover-background-color: var(--color-bg-elev);
   --popover-text-color: var(--color-ink);
   --popover-border: 1px solid var(--color-rule);
-  --popover-border-radius: 0.5rem;
+  --popover-border-radius: 0;
   --popover-shadow: 0 8px 24px -8px rgb(0 0 0 / 0.18), 0 2px 6px -2px rgb(0 0 0 / 0.08);
   --popover-width: 22em;
   --popover-max-width: min(22em, 90vw);
@@ -466,7 +464,6 @@
 .littlefoot__button:focus-visible {
   outline: 2px solid var(--color-accent-primary);
   outline-offset: 2px;
-  border-radius: 0.125rem;
 }
 
 /* --- Scroll reveals -----------------------------------------------------

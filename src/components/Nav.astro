@@ -247,7 +247,7 @@ const otherHref = switchTo ?? switchHref(here);
     /* If the viewport grows past md the desktop nav takes over — collapse. */
     const mq = window.matchMedia('(min-width: 768px)');
     const onChange = (e) => { if (e.matches) setOpen(false); };
-    mq.addEventListener ? mq.addEventListener('change', onChange) : mq.addListener(onChange);
+    mq.addEventListener('change', onChange);
 
     /* Desktop submenu: Escape hides it and returns focus to its parent
        link; it comes back once the pointer leaves or focus moves into it

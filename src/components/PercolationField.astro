@@ -1273,6 +1273,10 @@ const termLang = lang === 'en' ? undefined : 'en';
     host.addEventListener('touchstart', onTouch, { passive: true });
     host.addEventListener('touchmove', onTouch, { passive: true });
     host.addEventListener('touchend', onUp);
+    /* A touch the browser takes over (scroll, pinch, a system gesture)
+       ends with touchcancel, not touchend; without this the ignition
+       front would keep growing with no finger on the screen. */
+    host.addEventListener('touchcancel', onUp);
 
     /* ---- Controls --------------------------------------------------------- */
     const controls = root.querySelector('[data-perc-controls]');

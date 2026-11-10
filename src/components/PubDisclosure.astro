@@ -1,6 +1,6 @@
 ---
 import type { Publication } from '~/data/publications.schema';
-import { formatAuthor, isYou } from '~/lib/format-authors';
+import { displayAuthors } from '~/lib/format-authors';
 import ThemeTag from './ThemeTag.astro';
 import CiteButton from './CiteButton.astro';
 import { fallbackLang, pick, useTranslations, type Lang } from '~/i18n/utils';
@@ -19,6 +19,7 @@ interface Props {
 const { pub, lang = 'en' } = Astro.props;
 
 const t = useTranslations(lang);
+const authors = displayAuthors(pub.authors);
 const linkOrder: Array<keyof Publication['links']> = ['doi', 'arxiv', 'pdf', 'code', 'huggingface', 'dataset'];
 
 const links = linkOrder
@@ -38,12 +39,12 @@ const byline = [pub.venue, pub.year].filter(Boolean).join(' · ');
         {pub.title}
       </span>
       <span class="font-prose italic text-[0.9375rem] leading-[1.4] text-ink-muted">
-        {pub.authors.map((a, i) => (
-          <Fragment>
-            {isYou(a) ? <strong class="font-medium text-ink">{formatAuthor(a)}</strong> : formatAuthor(a)}
-            {i < pub.authors.length - 1 ? ', ' : ''}
-          </Fragment>
-        ))}
+    {authors.map((a, i) => (
+      <Fragment>
+        {a.me ? <strong class="font-medium text-ink">{a.text}</strong> : a.text}
+        {i < authors.length - 1 ? ', ' : ''}
+      </Fragment>
+    ))}
         {byline && <Fragment> · {byline}</Fragment>}
       </span>
     </div>
