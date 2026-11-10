@@ -39,17 +39,17 @@ current_positions:
     start: 2024
     end: present
     location: Iceland
-  - title: Principal Scientist
-    institution: Amgen deCODE
-    start: 2021
-    end: present
-    location: Iceland
 
 previous_positions:
   - title: Co-founder
     institution: KatlaCode
     start: 2024
     end: present
+    location: Iceland
+  - title: Principal Scientist
+    institution: Amgen deCODE
+    start: 2021
+    end: 2026  # tenure ended November 2026
     location: Iceland
   - title: Assistant Professor in Computer Science
     institution: University of Iceland
