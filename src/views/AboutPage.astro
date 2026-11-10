@@ -3,6 +3,7 @@ import BaseLayout from '~/components/BaseLayout.astro';
 import JsonLdPerson from '~/components/JsonLdPerson.astro';
 import PageShell from '~/components/PageShell.astro';
 import Prose from '~/components/Prose.astro';
+import StudentNotice from '~/components/StudentNotice.astro';
 import { aiSeries, seriesWatchUrlFor } from '~/data/series';
 import { localizePath, useTranslations, type Lang } from '~/i18n/utils';
 
@@ -25,6 +26,7 @@ const sections =
         { id: 'bakgrunnur', label: 'Bakgrunnur' },
         { id: 'ferilskra', label: 'Ferilskrá' },
         { id: 'fjolmidlar', label: 'Fyrir fjölmiðla' },
+        { id: 'nemendur', label: 'Doktorsnám og starfsnám' },
         { id: 'samband', label: 'Hafa samband' }
       ]
     : [
@@ -32,6 +34,7 @@ const sections =
         { id: 'beyond-research', label: 'Beyond research' },
         { id: 'cv', label: 'CV' },
         { id: 'press', label: 'For journalists' },
+        { id: 'students', label: 'Prospective students' },
         { id: 'contact', label: 'Contact' }
       ];
 ---
@@ -127,6 +130,11 @@ const sections =
             <a href="/img/hafsteinn-einarsson.jpg" download="hafsteinn-einarsson.jpg">Sækja mynd</a> (960 × 1280)
             (frjálst að nota með umfjöllun um mig).
           </p>
+
+          {/* Sits directly above the contact details on purpose: it is
+              the answer to the most common email. */}
+          <h2 id="nemendur">Doktorsnám og starfsnám</h2>
+          <StudentNotice lang={lang} />
 
           <h2 id="samband">Hafa samband</h2>
           <ul>
@@ -224,6 +232,11 @@ const sections =
             <a href="/img/hafsteinn-einarsson.jpg" download="hafsteinn-einarsson.jpg">Download a photo</a> (960 × 1280)
             (free to use alongside coverage of my work).
           </p>
+
+          {/* Sits directly above the contact details on purpose: it is
+              the answer to the most common email. */}
+          <h2 id="students">Prospective students</h2>
+          <StudentNotice lang={lang} />
 
           <h2 id="contact">Contact</h2>
           <ul>

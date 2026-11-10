@@ -3,6 +3,7 @@ import BaseLayout from '~/components/BaseLayout.astro';
 import PageShell from '~/components/PageShell.astro';
 import SectionHeading from '~/components/SectionHeading.astro';
 import PersonCard from '~/components/PersonCard.astro';
+import StudentNotice from '~/components/StudentNotice.astro';
 import { pick, useTranslations, type Lang } from '~/i18n/utils';
 import { getCollection } from 'astro:content';
 
@@ -46,6 +47,10 @@ const sections = order
 ---
 <BaseLayout title={t.group.title} description={t.group.description} lang={lang}>
   <PageShell title={t.group.title} lede={t.group.lede} sections={sections} sectionsLabel={t.writing.sectionsLabel}>
+    {/* First thing on the page: most people who land here are deciding
+        whether to write about a position. */}
+    <div class="mt-8"><StudentNotice lang={lang} /></div>
+
     {order.map((role) => {
       const members = all.filter((s) => s.role === role);
       if (members.length === 0) return null;

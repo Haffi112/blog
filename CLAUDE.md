@@ -72,6 +72,7 @@ Key invariants:
 | Video series (episodes, YouTube/TikTok links) | `src/data/series.ts` — used by the homepage feature, About, the Outreach page's Videos section, footer and JSON-LD |
 | Tweak any page prose | `src/views/<Name>Page.astro` (the files in `src/pages/` are thin wrappers); short strings in `src/i18n/ui.ts` |
 | Page frame (title rail + reading column) | `src/components/PageShell.astro`. Every section page uses it: from `lg` the title, lede and "on this page" links sit in a sticky left rail aligned with the wordmark; below `lg` it stacks. Pass `sections` (`{id, label}`) for the rail links and give the matching elements those ids |
+| Notice to prospective PhD students / interns | `src/components/StudentNotice.astro` (both languages; shown on About above the contact details and at the top of Group). Edit or remove it there when you are taking students again |
 | Replace the hero portrait | `src/assets/hafsteinn.png` is a **cut-out** (transparent background) so it works on both themes; a photo with a background shows as a bright block in dark mode. The press photo is `public/img/hafsteinn-einarsson.jpg` (960 × 1280, with background) |
 | Tweak design tokens | `src/styles/global.css` (and mirror colours in `cv/theme.typ` for the CV) |
 | Pick the social-share image for a post | Add `hero: ../../assets/<image>.png` to the post's frontmatter (otherwise a title card is generated) |

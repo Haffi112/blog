@@ -1,0 +1,46 @@
+---
+import type { Lang } from '~/i18n/utils';
+
+/**
+ * Notice to prospective PhD students and interns, shown above the contact
+ * details on the About page and at the top of the Group page — the two
+ * places people look before writing. One component so the wording and the
+ * links cannot drift; edit or remove it here when the situation changes.
+ */
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+---
+<blockquote class="notice prose-body">
+  {lang === 'is' ? (
+    <p>
+      Ég tek ekki við nýjum doktorsnemum eða starfsnemum sem stendur og get
+      því miður ekki svarað fyrirspurnum um slíkar stöður. Doktorsnemastöður
+      við Háskóla Íslands eru auglýstar á síðunni
+      <a href="https://hi.is/haskolinn/mannaudur/laus-storf">Laus störf</a>
+      á vef háskólans.
+    </p>
+  ) : (
+    <p>
+      I am not accepting PhD students or interns at the moment, and I am
+      unable to reply to enquiries about such positions. PhD positions at the
+      University of Iceland are advertised on the university's
+      <a href="https://english.hi.is/about-ui/working-ui/vacancies">job listings page</a>.
+    </p>
+  )}
+</blockquote>
+
+<style>
+  /* The same quiet panel as the press bios, with the rust rule so it is
+     not read past. */
+  .notice {
+    margin: 0.5rem 0 1.25rem;
+    padding: 0.875rem 1.125rem;
+    border-left: 2px solid var(--color-accent-primary);
+    background: var(--color-bg-elev);
+  }
+  .notice p {
+    margin: 0;
+  }
+</style>
